@@ -47,7 +47,7 @@ dependencies {
 tasks.named('test') {
     outputs.dir snippetsDir
     useJUnitPlatform()
-    finalizedBy(jacocoTestReport)
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.named('asciidoctor') {
@@ -55,11 +55,10 @@ tasks.named('asciidoctor') {
     dependsOn test
 }
 
-jacocoTestReport {
+tasks.jacocoTestReport {
     dependsOn test
     reports {
-        xml.required = true
-        html.required = true
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml").get().asFile
+        xml.required.set(true)
+        html.required.set(true)
     }
 }
