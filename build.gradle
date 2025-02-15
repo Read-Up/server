@@ -15,6 +15,11 @@ java {
     }
 }
 
+jacoco {
+    toolVersion = "0.8.10"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
@@ -55,7 +60,7 @@ tasks.named('asciidoctor') {
     dependsOn test
 }
 
-tasks.jacocoTestReport {
+tasks.named('jacocoTestReport') {
     dependsOn test
     reports {
         xml.required.set(true)
