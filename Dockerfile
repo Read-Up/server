@@ -5,11 +5,9 @@ COPY . .
 
 RUN chmod +x gradlew && ./gradlew build -x test
 
-RUN mkdir -p /app/build_output && cp build/libs/*.jar /app/build_output/app.jar
-
 FROM openjdk:21-jdk-slim
 WORKDIR /app
 
-COPY --from=builder /app/build_output/app.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
 CMD ["java", "-jar", "app.jar"]
