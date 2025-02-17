@@ -18,7 +18,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/readup
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/readup-sever
             docker compose down
             docker compose up -d
             docker system prune -f
