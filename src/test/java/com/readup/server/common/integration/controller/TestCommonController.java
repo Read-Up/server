@@ -29,6 +29,6 @@ public class TestCommonController {
 
 	@GetMapping("/test/success")
 	public ApiResponse<String> getSuccessResponse() {
-		return ApiResponse.success("Success Response Data", "정상 응답입니다.");
+		return ApiResponse.success("Success Response Data", "Successful response.");
 	}
 }
