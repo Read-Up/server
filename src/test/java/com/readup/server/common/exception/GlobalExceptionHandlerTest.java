@@ -1,4 +1,4 @@
-package com.readup.server.common.integration.exception.exception;
+package com.readup.server.common.exception;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.readup.server.common.integration.controller.TestCommonController;
+import com.readup.server.common.controller.TestCommonController;
 
 @WebMvcTest(TestCommonController.class)
 @AutoConfigureMockMvc(addFilters = false)

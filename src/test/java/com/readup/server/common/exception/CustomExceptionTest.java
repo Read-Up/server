@@ -1,14 +1,9 @@
-package com.readup.server.common.unit;
+package com.readup.server.common.exception;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import com.readup.server.common.exception.ControllerException;
-import com.readup.server.common.exception.ErrorCode;
-import com.readup.server.common.exception.RepositoryException;
-import com.readup.server.common.exception.ServiceException;
 
 public class CustomExceptionTest {
 
