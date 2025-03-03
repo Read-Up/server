@@ -15,23 +15,17 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(ControllerException.class)
 	public ResponseEntity<ErrorResponse> handleControllerException(ControllerException ex) {
-		log.error("[ControllerException] {} - {}", ex.getErrorCode(), ex.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getMessage());
-		return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
+		return buildErrorResponse(ex, ex.getErrorCode(), "ControllerException");
 	}
 
 	@ExceptionHandler(ServiceException.class)
 	public ResponseEntity<ErrorResponse> handleServiceException(ServiceException ex) {
-		log.error("[ServiceException] {} - {}", ex.getErrorCode(), ex.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getMessage());
-		return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
+		return buildErrorResponse(ex, ex.getErrorCode(), "ServiceException");
 	}
 
 	@ExceptionHandler(RepositoryException.class)
 	public ResponseEntity<ErrorResponse> handleRepositoryException(RepositoryException ex) {
-		log.error("[RepositoryException] {} - {}", ex.getErrorCode(), ex.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(ex.getErrorCode(), ex.getMessage());
-		return new ResponseEntity<>(errorResponse, ex.getErrorCode().getHttpStatus());
+		return buildErrorResponse(ex, ex.getErrorCode(), "RepositoryException");
 	}
 
 	@ExceptionHandler(Exception.class)
@@ -40,4 +34,11 @@ public class GlobalExceptionHandler {
 		ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+	private ResponseEntity<ErrorResponse> buildErrorResponse(Exception ex, ErrorCode errorCode, String exceptionType) {
+		log.error("[{}] {} - {}", exceptionType, errorCode, ex.getMessage());
+		ErrorResponse errorResponse = new ErrorResponse(errorCode, ex.getMessage());
+		return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
+	}
+
 }
