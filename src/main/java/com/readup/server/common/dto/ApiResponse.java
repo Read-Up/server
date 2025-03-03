@@ -1,16 +1,20 @@
 package com.readup.server.common.dto;
 
 public record ApiResponse<T>(boolean success, T data, String message) {
-	
-	public static <T> ApiResponse<T> success(T data, String message) {
+
+	public static <T> ApiResponse<T> successResponse(T data, String message) {
 		return new ApiResponse<>(true, data, message);
 	}
 
-	public static <T> ApiResponse<T> success(T data) {
+	public static <T> ApiResponse<T> successResponse(T data) {
 		return new ApiResponse<>(true, data, "Request succeeded.");
 	}
 
-	public static <T> ApiResponse<T> failure(String message) {
+	public static <T> ApiResponse<T> successResponse() {
+		return new ApiResponse<>(true, null, "Request succeeded.");
+	}
+
+	public static <T> ApiResponse<T> failureResponse(String message) {
 		return new ApiResponse<>(false, null, message);
 	}
 }
