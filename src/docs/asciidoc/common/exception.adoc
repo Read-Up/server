@@ -1,0 +1,19 @@
+== Exception Handling
+
+=== Controller Exception
+include::{snippets}/common/exception/controller-exception/curl-request.adoc[]
+include::{snippets}/common/exception/controller-exception/http-request.adoc[]
+include::{snippets}/common/exception/controller-exception/http-response.adoc[]
+include::{snippets}/common/exception/controller-exception/response-body.adoc[]
+
+=== Service Exception
+include::{snippets}/common/exception/service-exception/curl-request.adoc[]
+include::{snippets}/common/exception/service-exception/http-request.adoc[]
+include::{snippets}/common/exception/service-exception/http-response.adoc[]
+include::{snippets}/common/exception/service-exception/response-body.adoc[]
+
+=== Repository Exception
+include::{snippets}/common/exception/repository-exception/curl-request.adoc[]
+include::{snippets}/common/exception/repository-exception/http-request.adoc[]
+include::{snippets}/common/exception/repository-exception/http-response.adoc[]
+include::{snippets}/common/exception/repository-exception/response-body.adoc[]
