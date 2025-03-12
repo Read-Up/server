@@ -3,7 +3,7 @@ package com.readup.server.auth.dto;
 import lombok.Getter;
 
 @Getter
-public class KakaoAuthRequestDto {
+public class KakaoAuthRequest {
 
     private String grant_type = "authorization_code";
     private String client_id;

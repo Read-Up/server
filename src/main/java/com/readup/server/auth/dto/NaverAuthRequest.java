@@ -1,6 +1,6 @@
 package com.readup.server.auth.dto;
 
-public class NaverAuthRequestDto {
+public class NaverAuthRequest {
 
     private String grant_type;
     private String client_id;

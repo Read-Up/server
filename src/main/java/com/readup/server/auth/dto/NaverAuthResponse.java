@@ -1,6 +1,6 @@
 package com.readup.server.auth.dto;
 
-public class NaverAuthResponseDto {
+public class NaverAuthResponse {
 
     private String access_token;
     private String refresh_token;
