@@ -1,11 +1,15 @@
 package com.readup.server.auth.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class GoogleAuthRequest {
 
-    private String client_id;
-    private String client_secret;
+    private String clientId;
+    private String clientSecret;
     private String code;
-    private String code_verifier;
-    private String grant_type = "authorization_code";
-    private String redirect_uri;
+    private String codeVerifier;
+    private String grantType = "authorization_code";
+    private String redirectUri;
 }

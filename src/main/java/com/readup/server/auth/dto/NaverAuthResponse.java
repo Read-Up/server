@@ -1,11 +1,15 @@
 package com.readup.server.auth.dto;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class NaverAuthResponse {
 
-    private String access_token;
-    private String refresh_token;
-    private String token_type;
-    private String expires_in;
+    private String accessToken;
+    private String refreshToken;
+    private String tokenType;
+    private String expiresIn;
     private String error;
-    private String error_description;
+    private String errorDescription;
 }
