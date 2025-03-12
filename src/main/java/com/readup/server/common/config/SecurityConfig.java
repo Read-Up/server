@@ -14,7 +14,13 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/api/oauth2/google").permitAll()
+                        .requestMatchers("/api/oauth2/kakao").permitAll()
+                        .requestMatchers("/api/oauth2/naver").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/private/**").authenticated()
+                        .anyRequest().denyAll())
                 .build();
     }
 }
