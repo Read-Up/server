@@ -1,5 +1,6 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClient {
 
 	@Override
 	public BookInfoVO getBookInfo(String isbn) {
-		
+
 		ResponseEntity<GetBookNationalLibraryOfKoreaResponse> getBookNationalLibraryOfKoreaResponse
 			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(CERT_KEY, isbn, "json", 1, 10);
 
@@ -39,7 +40,8 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClient {
 			.publisher(bookDetail.getPublisher())
 			.author(bookDetail.getAuthor())
 			.isbn(bookDetail.getEaIsbn())
-			.tableOfContentsUrl(bookDetail.getBookTbCntUrl())
+			.titleUrl(bookDetail.getTitleUrl())
+			.chapterList(List.of())
 			.build();
 	}
 
