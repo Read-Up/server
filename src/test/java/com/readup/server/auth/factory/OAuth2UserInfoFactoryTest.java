@@ -1,0 +1,66 @@
+package com.readup.server.auth.factory;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import com.readup.server.auth.dto.GoogleOAuth2UserInfo;
+import com.readup.server.auth.dto.KakaoOAuth2UserInfo;
+import com.readup.server.auth.dto.NaverOAuth2UserInfo;
+import com.readup.server.auth.dto.OAuth2UserInfo;
+import com.readup.server.auth.exception.UnsupportedOAuthProviderException;
+
+class OAuth2UserInfoFactoryTest {
+
+	private OAuth2UserInfoFactory oAuth2UserInfoFactory = new OAuth2UserInfoFactory();
+
+	@Test
+	@DisplayName("구글 oauth2 유저 인포 반환하기")
+	void test_google_oAuth2UserInfo_provider_success() {
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("sub", "readup");
+		attributes.put("email", "readup@readup.com");
+
+		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("google", attributes);
+		assertTrue(oAuth2UserInfo instanceof GoogleOAuth2UserInfo, "반환된 userInfo가 GoogleOAuth2UserInfo 여야 함.");
+	}
+
+	@Test
+	@DisplayName("네이버 oauth2 유저 인포 반환하기")
+	void test_naver_oAuth2UserInfo_provider_success() {
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("response", new HashMap<String, Object>() {{
+			put("id", "readup");
+			put("email", "readup@readup.com");
+		}});
+
+		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("naver", attributes);
+		assertTrue(oAuth2UserInfo instanceof NaverOAuth2UserInfo, "반환된 userInfo가 NaverOAuth2UserInfo 여야 함.");
+	}
+
+	@Test
+	@DisplayName("카카오 oauth2 유저 인포 반환하기")
+	void test_kakao_oAuth2UserInfo_provider_success() {
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("id", "readup");
+		attributes.put("kakao_account", "readup@readup.com");
+
+		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("kakao", attributes);
+		assertTrue(oAuth2UserInfo instanceof KakaoOAuth2UserInfo, "반환된 userInfo가 KakaoOAuth2UserInfo 여야 함.");
+	}
+
+	@Test
+	@DisplayName("provider를 찾지 못하면 에러")
+	void test_unknown_oAuth2UserInfo_provider_success() {
+		Map<String, Object> attributes = new HashMap<>();
+
+		Exception exception = assertThrows(UnsupportedOAuthProviderException.class, () -> {
+			oAuth2UserInfoFactory.getOAuth2UserInfo("unknown", attributes);
+		});
+		assertTrue(exception.getMessage().contains("Unknown registration id : unknown"));
+	}
+}

@@ -1,7 +1,11 @@
 package com.readup.server.auth.application;
 
-import org.springframework.stereotype.Service;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.stereotype.Component;
 
-@Service
-public class OAuth2AuthenticationFailureHandler {
+import lombok.RequiredArgsConstructor;
+
+@Component
+@RequiredArgsConstructor
+public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 }
