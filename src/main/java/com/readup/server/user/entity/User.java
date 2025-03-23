@@ -1,4 +1,6 @@
-package com.readup.server.user.domain;
+package com.readup.server.user.entity;
+
+import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,7 +13,7 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "user")
-public class User {
+public class User extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

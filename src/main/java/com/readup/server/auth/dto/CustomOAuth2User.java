@@ -8,7 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.entity.SocialAccount;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

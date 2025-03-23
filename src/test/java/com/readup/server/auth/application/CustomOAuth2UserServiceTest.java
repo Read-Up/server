@@ -17,8 +17,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.readup.server.auth.domain.CreateSocialAccountRequest;
-import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.dto.CreateSocialAccountRequest;
+import com.readup.server.auth.entity.SocialAccount;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.dto.OAuth2UserInfo;
 import com.readup.server.auth.factory.OAuth2UserInfoFactory;

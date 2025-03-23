@@ -1,6 +1,7 @@
-package com.readup.server.auth.domain;
+package com.readup.server.auth.entity;
 
-import com.readup.server.user.domain.User;
+import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "social_account")
-public class SocialAccount {
+public class SocialAccount extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

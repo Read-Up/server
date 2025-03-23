@@ -1,4 +1,4 @@
-package com.readup.server.auth.domain;
+package com.readup.server.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
