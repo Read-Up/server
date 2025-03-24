@@ -10,6 +10,10 @@ on:
       - main
       - development
 
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   ContinuousIntegration:
     runs-on: ubuntu-latest
