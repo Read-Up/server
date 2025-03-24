@@ -2,7 +2,7 @@ package com.readup.server.book.infrastructure.client.bookinfo;
 
 import com.readup.server.book.infrastructure.client.bookinfo.vo.BookInfoVO;
 
-public interface BookInfoClient {
+public interface BookInfoClientFacade {
 
 	BookInfoVO getBookInfo(String isbn);
 
