@@ -2,6 +2,8 @@ package com.readup.server.auth.dto;
 
 import java.util.Map;
 
+import com.readup.server.auth.exception.OAuth2PropertyNotFoundException;
+
 public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 
 	public KakaoOAuth2UserInfo(Map<String, Object> attributes) {
@@ -34,6 +36,6 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo {
 		if (properties instanceof Map) {
 			return (Map<String, Object>)properties;
 		}
-		throw new IllegalArgumentException("KakaoOAuth2UserInfo : No properties found");
+		throw new OAuth2PropertyNotFoundException("KakaoOAuth2UserInfo : No properties found");
 	}
 }

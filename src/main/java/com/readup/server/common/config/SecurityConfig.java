@@ -1,4 +1,4 @@
-package com.readup.server.security.config;
+package com.readup.server.common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
