@@ -24,7 +24,7 @@ import com.readup.server.common.controller.TestCommonController;
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -33,7 +33,7 @@ public class GlobalExceptionHandlerTest {
 	private WebApplicationContext context;
 
 	@BeforeEach
-	public void setUp(RestDocumentationContextProvider restDocumentation) {
+	void setUp(RestDocumentationContextProvider restDocumentation) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
 			.apply(documentationConfiguration(restDocumentation))
 			.build();
@@ -41,7 +41,7 @@ public class GlobalExceptionHandlerTest {
 
 	@Test
 	@DisplayName("컨트롤러 예외 발생 시 올바른 에러 응답 반환")
-	public void whenControllerExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
+	void whenControllerExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
 		mockMvc.perform(get("/test/controller"))
 			.andExpect(status().isBadRequest())
 			.andExpect(jsonPath("$.error").value("INVALID_REQUEST"))
@@ -51,7 +51,7 @@ public class GlobalExceptionHandlerTest {
 
 	@Test
 	@DisplayName("서비스 예외 발생 시 올바른 에러 응답 반환")
-	public void whenServiceExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
+	void whenServiceExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
 		mockMvc.perform(get("/test/service"))
 			.andExpect(status().isNotFound())
 			.andExpect(jsonPath("$.error").value("RESOURCE_NOT_FOUND"))
@@ -61,7 +61,7 @@ public class GlobalExceptionHandlerTest {
 
 	@Test
 	@DisplayName("레포지토리 예외 발생 시 올바른 에러 응답 반환")
-	public void whenRepositoryExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
+	void whenRepositoryExceptionThrown_thenReturnsProperErrorResponse() throws Exception {
 		mockMvc.perform(get("/test/repository"))
 			.andExpect(status().isInternalServerError())
 			.andExpect(jsonPath("$.error").value("INTERNAL_SERVER_ERROR"))

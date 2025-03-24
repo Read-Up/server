@@ -12,7 +12,8 @@ public class RandomNicknameGenerator {
 
 	private static final Random RANDOM = new Random();
 
-	private RandomNicknameGenerator() {}
+	private RandomNicknameGenerator() {
+	}
 
 	public static String generate() {
 		int adjectiveIndex = RANDOM.nextInt(ADJECTIVES.size());
