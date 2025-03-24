@@ -1,11 +1,14 @@
 package com.readup.server.book.presentation;
 
+import static com.readup.server.common.dto.ApiResponse.*;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.book.application.BookInfoService;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
+import com.readup.server.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,10 +19,10 @@ public class BookInfoController {
 	private final BookInfoService bookInfoService;
 
 	@GetMapping("/external-books/{isbn}")
-	public GetExternalBookResponse getBookInfo(@PathVariable String isbn) {
+	public ApiResponse<GetExternalBookResponse> getBookInfo(@PathVariable String isbn) {
 
 		GetExternalBookResponse response = bookInfoService.getBookInfo(isbn);
 
-		return response;
+		return successResponse(response);
 	}
 }
