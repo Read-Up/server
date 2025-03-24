@@ -1,7 +1,6 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea;
 
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -11,7 +10,7 @@ import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofko
 public interface BookInfoNationalLibraryOfKoreaFeignClient {
 
 	@GetMapping("/SearchApi.do")
-	ResponseEntity<GetBookNationalLibraryOfKoreaResponse> getBookInfoByIsbn(
+	GetBookNationalLibraryOfKoreaResponse getBookInfoByIsbn(
 		@RequestParam("cert_key") String certKey,
 		@RequestParam("isbn") String isbn,
 		@RequestParam("result_style") String resultStyle,

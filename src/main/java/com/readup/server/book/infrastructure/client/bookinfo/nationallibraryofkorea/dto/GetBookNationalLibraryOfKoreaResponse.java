@@ -22,5 +22,8 @@ public class GetBookNationalLibraryOfKoreaResponse {
 
 	@JsonProperty("docs")
 	private List<BookDetail> docs;
-}
 
+	public BookDetail getBookDetail() {
+		return docs.getFirst();
+	}
+}
