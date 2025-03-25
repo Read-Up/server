@@ -23,10 +23,10 @@ public class SocialAccountService {
 
 	private SocialAccount toEntity(CreateSocialAccountRequest createSocialAccountRequest, User user) {
 		return SocialAccount.builder()
-			.email(createSocialAccountRequest.getEmail())
+			.email(createSocialAccountRequest.email())
 			.user(user)
-			.provider(createSocialAccountRequest.getProvider())
-			.providerUid(createSocialAccountRequest.getProviderUid())
+			.provider(createSocialAccountRequest.provider())
+			.providerUid(createSocialAccountRequest.providerUid())
 			.build();
 	}
 }

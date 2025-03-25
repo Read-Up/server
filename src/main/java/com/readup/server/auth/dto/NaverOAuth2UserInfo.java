@@ -4,11 +4,9 @@ import java.util.Map;
 
 import com.readup.server.auth.exception.OAuth2PropertyNotFoundException;
 
-public class NaverOAuth2UserInfo extends OAuth2UserInfo {
-
-	public NaverOAuth2UserInfo(Map<String, Object> attributes) {
-		super(attributes);
-	}
+public record NaverOAuth2UserInfo(
+	Map<String, Object> attributes
+) implements OAuth2UserInfo {
 
 	@Override
 	public String getId() {

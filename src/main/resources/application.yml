@@ -3,6 +3,7 @@ spring:
     name: server
   profiles:
     active: local
+
   security:
     oauth2:
       client:
