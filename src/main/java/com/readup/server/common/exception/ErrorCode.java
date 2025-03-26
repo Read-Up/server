@@ -13,6 +13,12 @@ public enum ErrorCode {
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
+	// Client
+	API_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "API 서버 오류가 발생했습니다."),
+
+	// NationalLibraryOfKorea
+	EXTERNAL_BOOK_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "책을 찾을 수 없습니다."),
+
 	// Book
 	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다.");
 
