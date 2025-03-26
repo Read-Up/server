@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class Book {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id;
 
 	@Column(name = "title", nullable = false, unique = true)
