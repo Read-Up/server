@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 import com.readup.server.book.infrastructure.client.bookinfo.BookInfoClientFacade;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.GetBookNationalLibraryOfKoreaResponse;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.feign.BookInfoNationalLibraryOfKoreaFeignClient;
 import com.readup.server.book.infrastructure.client.bookinfo.vo.BookInfoVO;
+import com.readup.server.common.exception.ErrorCode;
+import com.readup.server.common.exception.FeignException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +31,11 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
 			nationalLibraryOfKoreaProperties.getCertKey(), isbn, "json", 1, 10);
 
-		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail();
-
-		if (Objects.isNull(bookDetail)) {
-			return null;
+		if (Objects.equals(getBookNationalLibraryOfKoreaResponse.getTotalCount(), "0")) {
+			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
 		}
+
+		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail();
 
 		return BookInfoVO.builder()
 			.bookTitle(bookDetail.getTitle())
