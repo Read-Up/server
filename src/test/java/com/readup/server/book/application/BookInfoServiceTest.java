@@ -65,7 +65,7 @@ class BookInfoServiceTest {
 				.chapterList(List.of())
 				.build();
 
-			given(bookInfoClientRegistry.getBookInfoClient(anyString())).willReturn(bookInfoClientFacade);
+			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
 			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
 			given(bookJpaRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(false);
 			given(bookJpaRepository.save(any(Book.class))).willReturn(savedBook);
@@ -94,7 +94,7 @@ class BookInfoServiceTest {
 				.chapterList(List.of())
 				.build();
 
-			given(bookInfoClientRegistry.getBookInfoClient(anyString())).willReturn(bookInfoClientFacade);
+			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
 			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
 			given(bookJpaRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(true);
 

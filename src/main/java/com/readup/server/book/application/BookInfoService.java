@@ -16,14 +16,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BookInfoService {
-	private static final String SERVICE_NAME = "NationalLibraryOfKorea";
 	private final BookInfoClientRegistry bookInfoClientRegistry;
 	private final BookJpaRepository bookJpaRepository;
 
 	@Transactional
 	public GetExternalBookResponse getBookInfo(String isbn) {
 
-		BookInfoVO bookInfoVO = bookInfoClientRegistry.getBookInfoClient(SERVICE_NAME).getBookInfo(isbn);
+		BookInfoVO bookInfoVO = bookInfoClientRegistry.getDefaultBookInfoClient().getBookInfo(isbn);
 
 		if (bookJpaRepository.existsByIsbnOrTitle(bookInfoVO.isbn(), bookInfoVO.bookTitle())) {
 			throw new ServiceException(ErrorCode.DUPLICATE_BOOK, "Book already exists");

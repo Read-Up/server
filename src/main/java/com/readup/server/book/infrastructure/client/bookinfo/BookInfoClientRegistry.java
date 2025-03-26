@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class BookInfoClientRegistry {
 	private final List<BookInfoClientFacade> bookInfoClientFacadeList;
 	private final Map<String, BookInfoClientFacade> clientMap = new HashMap<>();
+	private final BookInfoClientProperties bookInfoClientProperties;
 
 	@PostConstruct
 	public void init() {
@@ -26,5 +27,9 @@ public class BookInfoClientRegistry {
 			throw new IllegalArgumentException("Not supported service name: " + serviceName);
 		}
 		return client;
+	}
+
+	public BookInfoClientFacade getDefaultBookInfoClient() {
+		return getBookInfoClient(bookInfoClientProperties.getDefaultServiceName());
 	}
 }

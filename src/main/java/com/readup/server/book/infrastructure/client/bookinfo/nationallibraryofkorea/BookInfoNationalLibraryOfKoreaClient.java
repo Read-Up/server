@@ -18,15 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacade {
 
-	private static final String SERVICE_NAME = "NationalLibraryOfKorea";
-	private static final String CERT_KEY = "8232ebc025bba7cf95003b64a6aa560fb0a4195f5f04414055848499e05c8534";
+	private final NationalLibraryOfKoreaProperties nationalLibraryOfKoreaProperties;
 	private final BookInfoNationalLibraryOfKoreaFeignClient bookInfoNationalLibraryOfKoreaFeignClient;
 
 	@Override
 	public BookInfoVO getBookInfo(String isbn) {
 
 		GetBookNationalLibraryOfKoreaResponse getBookNationalLibraryOfKoreaResponse
-			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(CERT_KEY, isbn, "json", 1, 10);
+			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
+			nationalLibraryOfKoreaProperties.getCertKey(), isbn, "json", 1, 10);
 
 		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail();
 
@@ -46,6 +46,6 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 
 	@Override
 	public String getServiceName() {
-		return SERVICE_NAME;
+		return nationalLibraryOfKoreaProperties.getServiceName();
 	}
 }
