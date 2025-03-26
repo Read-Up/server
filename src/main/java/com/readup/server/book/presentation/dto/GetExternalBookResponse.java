@@ -16,14 +16,14 @@ public record GetExternalBookResponse(
 	String isbn,
 	List<String> tableOfContents
 ) {
-	public static GetExternalBookResponse from(Book savedBook) {
+	public static GetExternalBookResponse from(Book book) {
 		return GetExternalBookResponse.builder()
-			.bookId(savedBook.getId())
-			.bookTitle(savedBook.getTitle())
-			.publisher(savedBook.getPublisher())
-			.author(savedBook.getAuthor())
-			.isbn(savedBook.getIsbn())
-			.tableOfContents(savedBook.getChapterList().stream().map(Chapter::getName).toList())
+			.bookId(book.getId())
+			.bookTitle(book.getTitle())
+			.publisher(book.getPublisher())
+			.author(book.getAuthor())
+			.isbn(book.getIsbn())
+			.tableOfContents(book.getChapterList().stream().map(Chapter::getName).toList())
 			.build();
 	}
 }
