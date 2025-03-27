@@ -53,8 +53,8 @@ class CustomAuthorizationRequestResolverTest {
 
 		//then
 		assertThat(result).isNotNull();
-		assertEquals(request.getSession().getAttribute("redirect"),
-			"http://frontend.com/after-login");
+		assertEquals("http://frontend.com/after-login",
+			request.getSession().getAttribute("redirect"));
 	}
 
 	@ParameterizedTest
@@ -70,7 +70,7 @@ class CustomAuthorizationRequestResolverTest {
 
 		//then
 		assertThat(result).isNotNull();
-		assertEquals(request.getSession().getAttribute("redirect"),
-			"http://frontend.com/after-login");
+		assertEquals("http://frontend.com/after-login",
+			request.getSession().getAttribute("redirect"));
 	}
 }

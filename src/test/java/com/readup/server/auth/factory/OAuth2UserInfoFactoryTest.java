@@ -17,7 +17,7 @@ import com.readup.server.auth.exception.UnsupportedOAuthProviderException;
 
 class OAuth2UserInfoFactoryTest {
 
-	private OAuth2UserInfoFactory oAuth2UserInfoFactory = new OAuth2UserInfoFactory();
+	private final OAuth2UserInfoFactory oAuth2UserInfoFactory = new OAuth2UserInfoFactory();
 
 	@Test
 	@DisplayName("구글 oauth2 유저 인포 반환하기")
@@ -27,7 +27,7 @@ class OAuth2UserInfoFactoryTest {
 		attributes.put("email", "readup@readup.com");
 
 		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("google", attributes);
-		assertTrue(oAuth2UserInfo instanceof GoogleOAuth2UserInfo, "반환된 userInfo가 GoogleOAuth2UserInfo 여야 함.");
+		assertInstanceOf(GoogleOAuth2UserInfo.class, oAuth2UserInfo, "반환된 userInfo가 GoogleOAuth2UserInfo 여야 함.");
 	}
 
 	@Test
@@ -40,7 +40,7 @@ class OAuth2UserInfoFactoryTest {
 		}});
 
 		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("naver", attributes);
-		assertTrue(oAuth2UserInfo instanceof NaverOAuth2UserInfo, "반환된 userInfo가 NaverOAuth2UserInfo 여야 함.");
+		assertInstanceOf(NaverOAuth2UserInfo.class, oAuth2UserInfo, "반환된 userInfo가 NaverOAuth2UserInfo 여야 함.");
 	}
 
 	@Test
@@ -51,7 +51,7 @@ class OAuth2UserInfoFactoryTest {
 		attributes.put("kakao_account", "readup@readup.com");
 
 		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo("kakao", attributes);
-		assertTrue(oAuth2UserInfo instanceof KakaoOAuth2UserInfo, "반환된 userInfo가 KakaoOAuth2UserInfo 여야 함.");
+		assertInstanceOf(KakaoOAuth2UserInfo.class, oAuth2UserInfo, "반환된 userInfo가 KakaoOAuth2UserInfo 여야 함.");
 	}
 
 	@Test
