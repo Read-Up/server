@@ -1,4 +1,4 @@
-package com.readup.server.user.entity;
+package com.readup.server.user.domain;
 
 import com.readup.server.common.entity.BaseEntity;
 

@@ -1,7 +1,7 @@
-package com.readup.server.auth.entity;
+package com.readup.server.auth.domain;
 
 import com.readup.server.common.entity.BaseEntity;
-import com.readup.server.user.entity.User;
+import com.readup.server.user.domain.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

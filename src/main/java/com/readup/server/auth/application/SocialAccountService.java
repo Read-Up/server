@@ -3,9 +3,9 @@ package com.readup.server.auth.application;
 import org.springframework.stereotype.Service;
 
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
-import com.readup.server.auth.entity.SocialAccount;
+import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.auth.infrastructure.SocialAccountRepository;
-import com.readup.server.user.entity.User;
+import com.readup.server.user.domain.User;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
