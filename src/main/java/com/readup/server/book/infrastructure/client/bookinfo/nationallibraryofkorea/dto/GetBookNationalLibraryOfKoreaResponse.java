@@ -4,25 +4,16 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class GetBookNationalLibraryOfKoreaResponse {
+public record GetBookNationalLibraryOfKoreaResponse(
 	@JsonProperty("TOTAL_COUNT")
-	private String totalCount;
+	String totalCount,
 
 	@JsonProperty("PAGE_NO")
-	private String pageNo;
+	String pageNo,
 
 	@JsonProperty("docs")
-	private List<BookDetail> docs;
-
+	List<BookDetail> docs
+) {
 	public BookDetail getBookDetail() {
 		return docs.getFirst();
 	}
