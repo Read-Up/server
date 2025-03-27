@@ -1,4 +1,4 @@
-package com.readup.server.auth.repository;
+package com.readup.server.auth.infrastructure;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

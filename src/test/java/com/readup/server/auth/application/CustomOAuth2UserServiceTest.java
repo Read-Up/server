@@ -21,7 +21,7 @@ import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.entity.SocialAccount;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.dto.OAuth2UserInfo;
-import com.readup.server.auth.factory.OAuth2UserInfoFactory;
+import com.readup.server.auth.infrastructure.OAuth2UserInfoFactory;
 import com.readup.server.util.TestUtils;
 
 @ExtendWith(MockitoExtension.class)

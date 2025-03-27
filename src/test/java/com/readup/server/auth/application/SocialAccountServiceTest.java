@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.entity.SocialAccount;
-import com.readup.server.auth.repository.SocialAccountRepository;
+import com.readup.server.auth.infrastructure.SocialAccountRepository;
 
 @ExtendWith(MockitoExtension.class)
 class SocialAccountServiceTest {

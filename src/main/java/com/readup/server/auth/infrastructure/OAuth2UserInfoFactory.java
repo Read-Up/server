@@ -1,4 +1,4 @@
-package com.readup.server.auth.factory;
+package com.readup.server.auth.infrastructure;
 
 import java.util.Map;
 
