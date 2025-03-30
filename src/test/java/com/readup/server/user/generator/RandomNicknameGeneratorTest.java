@@ -15,10 +15,10 @@ class RandomNicknameGeneratorTest {
 		String generatedRandomNickname = RandomNicknameGenerator.generate();
 
 		boolean isAdjectiveContained = RandomNicknameGenerator.ADJECTIVES.stream()
-			.anyMatch(generatedRandomNickname::startsWith);
+				.anyMatch(generatedRandomNickname::startsWith);
 
 		boolean isNounContained = RandomNicknameGenerator.NOUNS.stream()
-			.anyMatch(generatedRandomNickname::endsWith);
+				.anyMatch(generatedRandomNickname::endsWith);
 
 		// then
 		assertNotNull(generatedRandomNickname);
