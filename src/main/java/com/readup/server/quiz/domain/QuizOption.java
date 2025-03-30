@@ -1,14 +1,12 @@
 package com.readup.server.quiz.domain;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,27 +15,24 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "quiz")
+@Table(name = "quiz_option")
 @Getter
 @Builder
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
-public class Quiz {
+public class QuizOption {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
-	// TODO: Chapter Entity 추가 후 변경 필요
-	@Column(name = "chapter_id")
-	private Long chapterId;
+	@ManyToOne
+	@JoinColumn(name = "quiz_id", nullable = false)
+	private Quiz quiz;
 
-	@Column(columnDefinition = "TEXT")
-	private String question;
+	@Column(name = "is_correct", nullable = false)
+	private boolean isCorrect;
 
-	@Column(columnDefinition = "TEXT")
-	private String description;
-
-	@OneToMany(mappedBy = "quiz", fetch = FetchType.EAGER)
-	private List<QuizOption> quizOptions;
+	@Column(name = "option_text", columnDefinition = "TEXT")
+	private String optionText;
 }
