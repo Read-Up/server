@@ -1,6 +1,0 @@
-== Successful Response
-
-include::{snippets}/common/success-response/curl-request.adoc[]
-include::{snippets}/common/success-response/http-request.adoc[]
-include::{snippets}/common/success-response/http-response.adoc[]
-include::{snippets}/common/success-response/response-body.adoc[]

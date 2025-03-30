@@ -1,7 +1,0 @@
-= ReadUp API Documentation
-:toc: left
-:toclevels: 3
-:snippets: ../../../../build/generated-snippets
-
-include::./src/docs/asciidoc/common/apiResponse.adoc[]
-include::./src/docs/asciidoc/common/exception.adoc[]
