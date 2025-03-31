@@ -1,6 +1,11 @@
 package com.readup.server.book.domain;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
+
+import com.readup.server.common.exception.DomainException;
+import com.readup.server.common.exception.ErrorCode;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,4 +53,25 @@ public class Book {
 
 	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
 	List<Chapter> chapterList;
+
+	public void updateChapterList(List<Chapter> chapterList) {
+		List<Chapter> sortedChapterList = chapterList.stream()
+			.sorted(Comparator.comparing(Chapter::getChapterNumber))
+			.toList();
+
+		validateChapterOrder(sortedChapterList);
+
+		this.chapterList = sortedChapterList;
+	}
+
+	private void validateChapterOrder(List<Chapter> chapters) {
+		IntStream.range(0, chapters.size())
+			.forEach(i -> {
+				int expected = i + 1;
+				int actual = chapters.get(i).getChapterNumber();
+				if (actual != expected) {
+					throw new DomainException(ErrorCode.INVALID_CHAPTER_NUMBER);
+				}
+			});
+	}
 }
