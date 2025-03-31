@@ -20,6 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacade {
 
+	private static final String RESULT_STYLE = "json";
+	private static final String INVALID_TOTAL_COUNT = "0";
+	private static final int PAGE_NO = 1;
+	private static final int PAGE_SIZE = 10;
 	private final NationalLibraryOfKoreaProperties nationalLibraryOfKoreaProperties;
 	private final BookInfoNationalLibraryOfKoreaFeignClient bookInfoNationalLibraryOfKoreaFeignClient;
 
@@ -28,13 +32,14 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 
 		GetBookNationalLibraryOfKoreaResponse getBookNationalLibraryOfKoreaResponse
 			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
-			nationalLibraryOfKoreaProperties.getCertKey(), isbn, "json", 1, 10);
+			nationalLibraryOfKoreaProperties.getCertKey(), isbn, RESULT_STYLE, PAGE_NO, PAGE_SIZE);
 
-		if (Objects.equals(getBookNationalLibraryOfKoreaResponse.totalCount(), "0")) {
+		if (Objects.equals(getBookNationalLibraryOfKoreaResponse.totalCount(), INVALID_TOTAL_COUNT)) {
 			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
 		}
 
-		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail();
+		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail()
+			.orElseThrow(() -> new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND));
 
 		return BookInfoVO.from(bookDetail);
 	}
