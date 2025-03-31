@@ -20,7 +20,10 @@ public enum ErrorCode {
 	EXTERNAL_BOOK_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "책을 찾을 수 없습니다."),
 
 	// Book
-	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다.");
+	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다."),
+
+	//auth
+	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
