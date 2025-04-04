@@ -24,7 +24,7 @@ import com.readup.server.common.controller.TestCommonController;
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
-public class ApiResponseTest {
+class ApiResponseTest {
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -41,7 +41,7 @@ public class ApiResponseTest {
 
 	@Test
 	@DisplayName("정상 응답 반환 테스트")
-	public void whenNormalEndpointCalled_thenReturnsSuccessResponse() throws Exception {
+	void whenNormalEndpointCalled_thenReturnsSuccessResponse() throws Exception {
 		mockMvc.perform(get("/test/success"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.success").value(true))
