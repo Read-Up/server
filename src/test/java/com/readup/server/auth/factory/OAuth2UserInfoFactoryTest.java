@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.readup.server.auth.infrastructure.OAuth2UserInfoFactory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,8 @@ import com.readup.server.auth.dto.GoogleOAuth2UserInfo;
 import com.readup.server.auth.dto.KakaoOAuth2UserInfo;
 import com.readup.server.auth.dto.NaverOAuth2UserInfo;
 import com.readup.server.auth.dto.OAuth2UserInfo;
-import com.readup.server.auth.exception.UnsupportedOAuthProviderException;
+import com.readup.server.auth.infrastructure.OAuth2UserInfoFactory;
+import com.readup.server.common.exception.ServiceException;
 
 class OAuth2UserInfoFactoryTest {
 
@@ -59,7 +59,7 @@ class OAuth2UserInfoFactoryTest {
 	void test_unknown_oAuth2UserInfo_provider_success() {
 		Map<String, Object> attributes = new HashMap<>();
 
-		Exception exception = assertThrows(UnsupportedOAuthProviderException.class, () -> {
+		Exception exception = assertThrows(ServiceException.class, () -> {
 			oAuth2UserInfoFactory.getOAuth2UserInfo("unknown", attributes);
 		});
 		assertTrue(exception.getMessage().contains("Unknown registration id : unknown"));

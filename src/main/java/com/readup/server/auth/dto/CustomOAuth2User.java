@@ -1,7 +1,9 @@
 package com.readup.server.auth.dto;
 
+import static com.readup.server.auth.dto.UserRole.*;
+
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -14,7 +16,7 @@ public record CustomOAuth2User(
 	Long id,
 	String email,
 	Map<String, Object> attributes,
-	Collection<? extends GrantedAuthority> authorities
+	List<GrantedAuthority> authorities
 ) implements OAuth2User {
 
 	@Override
@@ -37,7 +39,7 @@ public record CustomOAuth2User(
 			socialAccount.getId(),
 			socialAccount.getEmail(),
 			attributes,
-			Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
+			List.of(new SimpleGrantedAuthority(ROLE_USER.name()))
 		);
 	}
 }

@@ -23,7 +23,8 @@ public enum ErrorCode {
 	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다."),
 
 	//auth
-	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다.");
+	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
+	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;

@@ -1,8 +1,10 @@
 package com.readup.server.auth.dto;
 
+import static com.readup.server.common.exception.ErrorCode.*;
+
 import java.util.Map;
 
-import com.readup.server.auth.exception.OAuth2PropertyNotFoundException;
+import com.readup.server.common.exception.ServiceException;
 
 public record KakaoOAuth2UserInfo(
 	Map<String, Object> attributes
@@ -34,6 +36,6 @@ public record KakaoOAuth2UserInfo(
 		if (properties instanceof Map) {
 			return (Map<String, Object>)properties;
 		}
-		throw new OAuth2PropertyNotFoundException("KakaoOAuth2UserInfo : No properties found");
+		throw new ServiceException(PROPERTY_NOT_FOUND, "KakaoOAuth2UserInfo : No properties found");
 	}
 }
