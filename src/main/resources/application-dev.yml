@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: ${MYSQL_URL}
+    username: ${MYSQL_USER_NAME}
+    password: ${MYSQL_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        default_schema: "dev"
+        default_batch_fetch_size: 500
+    open-in-view: false
+
+book-info-client:
+  default-service-name: "NationalLibraryOfKorea"
+  national-library:
+    cert-key: ${NATIONAL_LIBRARY_API_KEY}
+    service-name: "NationalLibraryOfKorea"

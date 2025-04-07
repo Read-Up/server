@@ -21,17 +21,18 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor
 public class Chapter {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
 	@Column(name = "name", nullable = false)
-	String name;
+	private String name;
 
 	@Column(name = "chapter_number", nullable = false)
-	Integer chapterNumber;
+	private Integer chapterNumber;
 
 	@ManyToOne
 	@JoinColumn(name = "book_id", nullable = false)
-	Book book;
+	private Book book;
 }

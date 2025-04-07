@@ -31,28 +31,28 @@ public class Book {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Long id;
+	private Long id;
 
-	@Column(name = "title", nullable = false, unique = true)
-	String title;
+	@Column(name = "title", nullable = false)
+	private String title;
 
 	@Column(name = "author", nullable = false)
-	String author;
+	private String author;
 
 	@Column(name = "publisher", nullable = false)
-	String publisher;
+	private String publisher;
 
 	@Column(name = "isbn", nullable = false, unique = true)
-	String isbn;
+	private String isbn;
 
 	@Column(name = "title_url")
-	String titleUrl;
+	private String titleUrl;
 
 	@Column(name = "summary")
-	String summary;
+	private String summary;
 
 	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
-	List<Chapter> chapterList;
+	private List<Chapter> chapterList;
 
 	public void updateChapterList(List<Chapter> chapterList) {
 		List<Chapter> sortedChapterList = chapterList.stream()

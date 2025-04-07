@@ -3,6 +3,7 @@ package com.readup.server.book.infrastructure.client.bookinfo.vo;
 import java.util.List;
 
 import com.readup.server.book.domain.Book;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
 
 import lombok.Builder;
 
@@ -16,6 +17,17 @@ public record BookInfoVO(
 	String summary,
 	List<ChapterVO> chapterList
 ) {
+	public static BookInfoVO from(BookDetail bookDetail) {
+		return BookInfoVO.builder()
+			.bookTitle(bookDetail.title())
+			.publisher(bookDetail.publisher())
+			.author(bookDetail.author())
+			.isbn(bookDetail.eaIsbn())
+			.titleUrl(bookDetail.titleUrl())
+			.chapterList(List.of())
+			.build();
+	}
+
 	public Book toEntity() {
 		return Book.builder()
 			.title(bookTitle)

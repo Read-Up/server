@@ -24,7 +24,11 @@ public enum ErrorCode {
 	BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "책을 찾을 수 없습니다."),
 
 	// Chapter
-	INVALID_CHAPTER_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 챕터 번호입니다.");
+	INVALID_CHAPTER_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 챕터 번호입니다."),
+
+	//auth
+	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다.");
+
 
 	private final HttpStatus httpStatus;
 	private final String message;

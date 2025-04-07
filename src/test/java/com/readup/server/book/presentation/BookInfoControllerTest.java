@@ -12,13 +12,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
@@ -27,19 +26,15 @@ import com.readup.server.book.application.BookInfoService;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.ServiceException;
-import com.readup.server.common.security.SecurityConfig;
 
 @WebMvcTest(BookInfoController.class)
-@Import(SecurityConfig.class)
+@AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
 class BookInfoControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
-
-	@Autowired
-	private WebApplicationContext context;
 
 	@MockitoBean
 	private BookInfoService bookInfoService;
@@ -49,7 +44,7 @@ class BookInfoControllerTest {
 	class GetBookInfo {
 
 		private final Long isbn = 9788960773417L;
-		private final String uri = "/external-books/{isbn}";
+		private final String uri = "/api/public/external-books/{isbn}";
 
 		@Test
 		@DisplayName("ISBN 기반 책 정보 가져오기 성공")

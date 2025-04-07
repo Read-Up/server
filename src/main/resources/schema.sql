@@ -10,8 +10,7 @@ CREATE TABLE `book` (
                         `title` varchar(255) NOT NULL,
                         `title_url` varchar(255) DEFAULT NULL,
                         PRIMARY KEY (`id`),
-                        UNIQUE KEY `uk_book_isbn` (`isbn`),
-                        UNIQUE KEY `uk_book_title` (`title`)
+                        UNIQUE KEY `uk_book_isbn` (`isbn`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 
 CREATE TABLE `chapter` (

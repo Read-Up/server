@@ -1,29 +1,24 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class GetBookNationalLibraryOfKoreaResponse {
+public record GetBookNationalLibraryOfKoreaResponse(
 	@JsonProperty("TOTAL_COUNT")
-	private String totalCount;
+	String totalCount,
 
 	@JsonProperty("PAGE_NO")
-	private String pageNo;
+	String pageNo,
 
 	@JsonProperty("docs")
-	private List<BookDetail> docs;
-
-	public BookDetail getBookDetail() {
-		return docs.getFirst();
+	List<BookDetail> docs
+) {
+	public Optional<BookDetail> getBookDetail() {
+		if (docs == null || docs.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.of(docs.getFirst());
 	}
 }

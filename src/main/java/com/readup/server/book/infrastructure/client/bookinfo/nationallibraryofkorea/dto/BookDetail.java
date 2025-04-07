@@ -2,131 +2,122 @@ package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofk
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class BookDetail {
-
+public record BookDetail(
 	@JsonProperty("PUBLISHER")
-	private String publisher;
+	String publisher,
 
 	@JsonProperty("DDC")
-	private String ddc;
+	String ddc,
 
 	@JsonProperty("UPDATE_DATE")
-	private String updateDate;
+	String updateDate,
 
 	@JsonProperty("EA_ADD_CODE")
-	private String eaAddCode;
+	String eaAddCode,
 
 	@JsonProperty("PUBLISHER_URL")
-	private String publisherUrl;
+	String publisherUrl,
 
 	@JsonProperty("AUTHOR")
-	private String author;
+	String author,
 
 	@JsonProperty("SERIES_TITLE")
-	private String seriesTitle;
+	String seriesTitle,
 
 	@JsonProperty("KDC")
-	private String kdc;
+	String kdc,
 
 	@JsonProperty("EDITION_STMT")
-	private String editionStmt;
+	String editionStmt,
 
 	@JsonProperty("BOOK_TB_CNT_URL")
-	private String bookTbCntUrl;
+	String bookTbCntUrl,
 
 	@JsonProperty("BOOK_TB_CNT")
-	private String bookTbCnt;
+	String bookTbCnt,
 
 	@JsonProperty("BOOK_INTRODUCTION_URL")
-	private String bookIntroductionUrl;
+	String bookIntroductionUrl,
 
 	@JsonProperty("BOOK_INTRODUCTION")
-	private String bookIntroduction;
+	String bookIntroduction,
 
 	@JsonProperty("BOOK_SUMMARY_URL")
-	private String bookSummaryUrl;
+	String bookSummaryUrl,
 
 	@JsonProperty("BOOK_SUMMARY")
-	private String bookSummary;
+	String bookSummary,
 
 	@JsonProperty("TITLE_URL")
-	private String titleUrl;
+	String titleUrl,
 
 	@JsonProperty("SET_ISBN")
-	private String setIsbn;
+	String setIsbn,
 
 	@JsonProperty("REAL_PUBLISH_DATE")
-	private String realPublishDate;
+	String realPublishDate,
 
 	@JsonProperty("PRE_PRICE")
-	private String prePrice;
+	String prePrice,
 
 	@JsonProperty("DEPOSIT_YN")
-	private String depositYn;
+	String depositYn,
 
 	@JsonProperty("BOOK_SIZE")
-	private String bookSize;
+	String bookSize,
 
 	@JsonProperty("EBOOK_YN")
-	private String ebookYn;
+	String ebookYn,
 
 	@JsonProperty("REAL_PRICE")
-	private String realPrice;
+	String realPrice,
 
 	@JsonProperty("FORM")
-	private String form;
+	String form,
 
 	@JsonProperty("CONTROL_NO")
-	private String controlNo;
+	String controlNo,
 
 	@JsonProperty("SERIES_NO")
-	private String seriesNo;
+	String seriesNo,
 
 	@JsonProperty("EA_ISBN")
-	private String eaIsbn;
+	String eaIsbn,
 
 	@JsonProperty("INPUT_DATE")
-	private String inputDate;
+	String inputDate,
 
 	@JsonProperty("SET_EXPRESSION")
-	private String setExpression;
+	String setExpression,
 
 	@JsonProperty("VOL")
-	private String vol;
+	String vol,
 
 	@JsonProperty("CIP_YN")
-	private String cipYn;
+	String cipYn,
 
 	@JsonProperty("SUBJECT")
-	private String subject;
+	String subject,
 
 	@JsonProperty("BIB_YN")
-	private String bibYn;
+	String bibYn,
 
 	@JsonProperty("TITLE")
-	private String title;
+	String title,
 
 	@JsonProperty("PUBLISH_PREDATE")
-	private String publishPredate;
+	String publishPredate,
 
 	@JsonProperty("SET_ADD_CODE")
-	private String setAddCode;
+	String setAddCode,
 
 	@JsonProperty("PAGE")
-	private String page;
+	String page,
 
 	@JsonProperty("RELATED_ISBN")
-	private String relatedIsbn;
+	String relatedIsbn,
 
 	@JsonProperty("FORM_DETAIL")
-	private String formDetail;
+	String formDetail
+) {
 }
