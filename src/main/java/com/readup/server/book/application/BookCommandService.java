@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.Chapter;
-import com.readup.server.book.infrastructure.repository.BookJpaRepository;
+import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookCommandService {
 
-	private final BookJpaRepository bookJpaRepository;
+	private final BookRepository bookRepository;
 
 	public void updateChapterList(UpdateChapterListRequest request) {
-		Book book = bookJpaRepository.getBookById(request.bookId());
+		Book book = bookRepository.getBookById(request.bookId());
 
 		List<Chapter> chapterList = request.toChapterList();
 		book.updateChapterList(chapterList);

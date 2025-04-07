@@ -1,4 +1,4 @@
-package com.readup.server.book.infrastructure.client.bookinfo;
+package com.readup.server.book.application.client;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;

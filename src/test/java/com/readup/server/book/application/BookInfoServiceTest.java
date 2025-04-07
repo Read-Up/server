@@ -14,10 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.readup.server.book.application.client.BookInfoClientFacade;
+import com.readup.server.book.application.client.BookInfoClientRegistry;
+import com.readup.server.book.application.client.vo.BookInfoVO;
 import com.readup.server.book.domain.Book;
-import com.readup.server.book.infrastructure.client.bookinfo.BookInfoClientFacade;
-import com.readup.server.book.infrastructure.client.bookinfo.BookInfoClientRegistry;
-import com.readup.server.book.infrastructure.client.bookinfo.vo.BookInfoVO;
 import com.readup.server.book.infrastructure.repository.BookJpaRepository;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
 import com.readup.server.common.exception.ServiceException;
