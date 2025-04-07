@@ -107,7 +107,7 @@ tasks.register('setDocs') {
             from "build/api-spec"
             include "*.json"
             include "*.yaml"
-            into "build/resources/main/static/springdoc"
+            into "build/resources/main/static/api/springdoc"
         }
     }
 }
