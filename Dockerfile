@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY ./ ./
 
-RUN ./gradlew clean build -x test
+RUN ./gradlew clean build
 
 FROM openjdk:21-jdk-slim
 WORKDIR /app
