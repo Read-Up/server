@@ -20,7 +20,7 @@ public class BookRegistrationController {
 
 	private final BookRegistrationService bookRegistrationService;
 
-	@PostMapping("/private/book-registrations")
+	@PostMapping("/api/private/book-registrations")
 	public ApiResponse<CreateBookRegistrationResponse> createBookRegistration(@AuthenticationPrincipal Long userId,
 		@RequestBody CreateBookRegistrationRequest request) {
 		return successResponse(bookRegistrationService.createBookRegistration(userId, request));

@@ -54,7 +54,7 @@ class BookRegistrationControllerTest {
 		final Long userId = 1L;
 		final String title = "함께 자라기";
 		final String isbn = "9788966262335";
-		final String uri = "/private/book-registrations";
+		final String uri = "/api/private/book-registrations";
 		final CreateBookRegistrationRequest request = new CreateBookRegistrationRequest(title, isbn);
 
 		final Long bookRegistrationId = 1L;
