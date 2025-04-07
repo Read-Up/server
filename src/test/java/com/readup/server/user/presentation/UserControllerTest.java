@@ -1,7 +1,7 @@
 package com.readup.server.user.presentation;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -42,6 +42,7 @@ class UserControllerTest {
 			mockMvc.perform(get(uri))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data").value(randomNickname))
+
 				// docs
 				.andDo(document("user-get-random-nickname",
 					responseFields(
