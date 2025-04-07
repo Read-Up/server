@@ -91,7 +91,7 @@ compileJava {
 openapi3 {
     servers = [
             {
-                url = 'http://localhost:8080'
+                url = '/'
             }
     ]
     title = 'USER API'
