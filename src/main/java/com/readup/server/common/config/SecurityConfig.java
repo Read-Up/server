@@ -7,10 +7,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 import com.readup.server.auth.application.CustomOAuth2UserService;
 import com.readup.server.auth.application.OAuth2AuthenticationFailureHandler;
 import com.readup.server.auth.application.OAuth2AuthenticationSuccessHandler;
-import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +30,7 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize -> authorize
+				.requestMatchers("/api/docs", "/api/swagger-ui/**", "/api/api-docs/**", "api/springdoc/**").permitAll()
 				.requestMatchers("/api/public/**").permitAll()
 				.requestMatchers("/api/private/**").authenticated()
 				.anyRequest().denyAll())
