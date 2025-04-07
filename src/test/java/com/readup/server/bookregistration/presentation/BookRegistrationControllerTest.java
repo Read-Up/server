@@ -3,8 +3,10 @@ package com.readup.server.bookregistration.presentation;
 import static com.readup.server.bookregistration.domain.model.RegistrationStatus.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.*;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
+import static org.springframework.restdocs.payload.JsonFieldType.*;
+import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -70,15 +73,24 @@ class BookRegistrationControllerTest {
 		mockMvc.perform(post(uri)
 				.contentType(APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request)))
-			.andDo(print())
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.success").value(true),
 				jsonPath("$.data.requesterId").value(userId),
 				jsonPath("$.data.title").value(title),
 				jsonPath("$.data.isbn").value(isbn),
-				jsonPath("$.data.registrationStatus").value(bookRegistrationStatus.name())
-			);
+				jsonPath("$.data.registrationStatus").value(bookRegistrationStatus.name()))
+
+			// docs
+			.andDo(document("book-registration-create",
+				responseFields(
+					fieldWithPath("success").type(BOOLEAN).description("응답 성공 여부"),
+					fieldWithPath("data.id").type(NUMBER).description("책 등록 요청 PK"),
+					fieldWithPath("data.requesterId").type(NUMBER).description("책 등록 요청 유저 PK"),
+					fieldWithPath("data.title").type(STRING).description("책 제목"),
+					fieldWithPath("data.isbn").type(STRING).description("책 ISBN"),
+					fieldWithPath("data.registrationStatus").type(STRING).description("책 등록 요청 상태"),
+					fieldWithPath("message").type(STRING).description("성공 메시지"))));
 	}
 
 	private Authentication mockAuthentication(Long userId) {
