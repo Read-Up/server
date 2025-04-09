@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "chapter")
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Chapter {
 
 	@Id
