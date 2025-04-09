@@ -4,9 +4,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.readup.server.common.entity.BaseEntity;
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,9 +30,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "book")
 @Getter
 @Builder
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE book SET deleted_at = NOW() WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Book {
+public class Book extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

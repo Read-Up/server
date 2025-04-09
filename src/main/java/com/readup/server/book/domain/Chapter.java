@@ -1,5 +1,10 @@
 package com.readup.server.book.domain;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.readup.server.common.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,9 +23,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "chapter")
 @Getter
 @Builder
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE chapter SET deleted_at = NOW() WHERE id = ?")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Chapter {
+public class Chapter extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
