@@ -4,10 +4,10 @@ import java.util.List;
 
 import com.readup.server.book.domain.Chapter;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateChapterListRequest(
-	@NotNull Long bookId,
 	@NotNull List<UpdateChapterRequest> chapters
 ) {
 
@@ -15,5 +15,17 @@ public record UpdateChapterListRequest(
 		return chapters.stream()
 			.map(UpdateChapterRequest::toEntity)
 			.toList();
+	}
+
+	public record UpdateChapterRequest(
+		@NotNull Integer chapterNumber,
+		@NotBlank String chapterName
+	) {
+		public Chapter toEntity() {
+			return Chapter.builder()
+				.chapterNumber(chapterNumber)
+				.name(chapterName)
+				.build();
+		}
 	}
 }
