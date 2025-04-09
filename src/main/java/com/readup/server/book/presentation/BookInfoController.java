@@ -4,6 +4,7 @@ import static com.readup.server.common.dto.ApiResponse.*;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.book.application.BookInfoService;
@@ -14,11 +15,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/public/external-books")
 public class BookInfoController {
 
 	private final BookInfoService bookInfoService;
 
-	@GetMapping("/external-books/{isbn}")
+	@GetMapping("/{isbn}")
 	public ApiResponse<GetExternalBookResponse> getBookInfo(@PathVariable String isbn) {
 
 		GetExternalBookResponse response = bookInfoService.getBookInfo(isbn);
