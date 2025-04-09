@@ -3,6 +3,7 @@ package com.readup.server.book.application;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.Chapter;
@@ -17,6 +18,7 @@ public class BookCommandService {
 
 	private final BookRepository bookRepository;
 
+	@Transactional
 	public void updateChapterList(UpdateChapterListRequest request) {
 		Book book = bookRepository.getBookById(request.bookId());
 
