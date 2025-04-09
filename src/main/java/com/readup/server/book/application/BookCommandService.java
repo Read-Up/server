@@ -19,8 +19,8 @@ public class BookCommandService {
 	private final BookRepository bookRepository;
 
 	@Transactional
-	public void updateChapterList(UpdateChapterListRequest request) {
-		Book book = bookRepository.getBookById(request.bookId());
+	public void updateChapterList(Long bookId, UpdateChapterListRequest request) {
+		Book book = bookRepository.getBookById(bookId);
 
 		List<Chapter> chapterList = request.toChapterList();
 		book.updateChapterList(chapterList);

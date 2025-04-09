@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
+import com.readup.server.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +20,9 @@ public class BookController {
 	private final BookCommandService bookCommandService;
 
 	@PutMapping("/{bookId}/chapters")
-	public void updateChapterList(@PathVariable Long bookId, @RequestBody UpdateChapterListRequest request) {
-		bookCommandService.updateChapterList(request);
+	public ApiResponse<Void> updateChapterList(@PathVariable Long bookId,
+		@RequestBody UpdateChapterListRequest request) {
+		bookCommandService.updateChapterList(bookId, request);
+		return ApiResponse.successResponse();
 	}
 }
