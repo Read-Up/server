@@ -18,7 +18,7 @@ import com.readup.server.book.application.client.BookInfoClientFacade;
 import com.readup.server.book.application.client.BookInfoClientRegistry;
 import com.readup.server.book.application.client.vo.BookInfoVO;
 import com.readup.server.book.domain.Book;
-import com.readup.server.book.infrastructure.repository.BookJpaRepository;
+import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
 import com.readup.server.common.exception.ServiceException;
 
@@ -35,7 +35,7 @@ class BookInfoServiceTest {
 	private BookInfoClientFacade bookInfoClientFacade;
 
 	@Mock
-	private BookJpaRepository bookJpaRepository;
+	private BookRepository bookRepository;
 
 	@Nested
 	@DisplayName("책 정보 가져오기 테스트")
@@ -67,8 +67,8 @@ class BookInfoServiceTest {
 
 			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
 			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
-			given(bookJpaRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(false);
-			given(bookJpaRepository.save(any(Book.class))).willReturn(savedBook);
+			given(bookRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(false);
+			given(bookRepository.save(any(Book.class))).willReturn(savedBook);
 
 			// when
 			GetExternalBookResponse getExternalBookResponse = bookInfoService.getBookInfo(isbn);
@@ -96,7 +96,7 @@ class BookInfoServiceTest {
 
 			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
 			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
-			given(bookJpaRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(true);
+			given(bookRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(true);
 
 			// when-then
 			assertThrows(ServiceException.class, () -> bookInfoService.getBookInfo(isbn));
