@@ -58,7 +58,7 @@ public class Book extends BaseEntity {
 	@Column(name = "summary")
 	private String summary;
 
-	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Chapter> chapterList;
 
 	public void updateChapterList(List<Chapter> chapterList) {
@@ -68,7 +68,9 @@ public class Book extends BaseEntity {
 
 		validateChapterOrder(sortedChapterList);
 
-		this.chapterList = sortedChapterList;
+		this.chapterList.clear();
+		this.chapterList.addAll(sortedChapterList);
+		this.chapterList.forEach(chapter -> chapter.updateBook(this));
 	}
 
 	private void validateChapterOrder(List<Chapter> chapters) {

@@ -42,4 +42,11 @@ public class Chapter extends BaseEntity {
 	@ManyToOne
 	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
+
+	public void updateBook(Book book) {
+		if (this.book != null) {
+			this.book.getChapterList().remove(this);
+		}
+		this.book = book;
+	}
 }
