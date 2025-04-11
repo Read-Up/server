@@ -1,7 +1,7 @@
-name: 'ContinuousIntegrationJacoco'
+name: 'ContinuousIntegrationCreateDockerImage'
 
 on:
-  pull_request_target:
+  push:
     branches:
       - main
       - development
@@ -56,3 +56,19 @@ jobs:
         run: |
           echo "Total coverage ${{ steps.jacoco.outputs.coverage-overall }}"
           echo "Changed Files coverage ${{ steps.jacoco.outputs.coverage-changed-files }}"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/readup-server:${{ github.sha }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/readup-server:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/readup-server:latest
+
+      - name: Push Docker Image
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/readup-server:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/readup-server:latest
