@@ -51,10 +51,10 @@ public class TokenProvider {
 			.toList();
 
 		return Jwts.builder()
-			.setSubject(oAuth2User.getName())
-			.setIssuer(ISSUER)
-			.setIssuedAt(now)
-			.setExpiration(expires)
+			.subject(oAuth2User.getName())
+			.issuer(ISSUER)
+			.issuedAt(now)
+			.expiration(expires)
 			.signWith(key)
 			.claim("roles", roles)
 			.compact();
@@ -68,17 +68,17 @@ public class TokenProvider {
 		Key key = keyManager.getRefreshTokenKey();
 
 		return Jwts.builder()
-			.setExpiration(expires)
+			.expiration(expires)
 			.signWith(key)
 			.compact();
 	}
 
 	public boolean validateAccessToken(String accessToken) {
 		try {
-			Jwts.parserBuilder()
-				.setSigningKey(keyManager.getAccessTokenKey())
+			Jwts.parser()
+				.verifyWith(keyManager.getAccessTokenKey())
 				.build()
-				.parseClaimsJws(accessToken);
+				.parseSignedClaims(accessToken);
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -87,10 +87,10 @@ public class TokenProvider {
 
 	public boolean validateRefreshToken(String refreshToken) {
 		try {
-			Jwts.parserBuilder()
-				.setSigningKey(keyManager.getRefreshTokenKey())
+			Jwts.parser()
+				.verifyWith(keyManager.getRefreshTokenKey())
 				.build()
-				.parseClaimsJws(refreshToken);
+				.parseSignedClaims(refreshToken);
 			return true;
 		} catch (Exception e) {
 			return false;

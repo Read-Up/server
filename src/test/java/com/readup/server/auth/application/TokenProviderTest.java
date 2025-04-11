@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.nio.charset.StandardCharsets;
-import java.security.Key;
 import java.util.Collection;
 import java.util.Collections;
+
+import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +41,7 @@ class TokenProviderTest {
 	@BeforeEach
 	void setUp() {
 		String sampleKey = "12345678901234567890123456789012";
-		Key key = Keys.hmacShaKeyFor(sampleKey.getBytes(StandardCharsets.UTF_8));
+		SecretKey key = Keys.hmacShaKeyFor(sampleKey.getBytes(StandardCharsets.UTF_8));
 
 		lenient().when(keyManager.getAccessTokenKey()).thenReturn(key);
 		lenient().when(keyManager.getRefreshTokenKey()).thenReturn(key);

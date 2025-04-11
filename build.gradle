@@ -33,7 +33,7 @@ repositories {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
     springCloudVersion = "2024.0.0"
-    jjwtVersion = '0.11.5'
+    jjwtVersion = '0.12.3'
 }
 
 dependencies {
@@ -42,6 +42,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+
     implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
     runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
