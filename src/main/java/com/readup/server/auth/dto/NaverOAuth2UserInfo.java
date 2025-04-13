@@ -1,8 +1,10 @@
 package com.readup.server.auth.dto;
 
+import static com.readup.server.common.exception.ErrorCode.*;
+
 import java.util.Map;
 
-import com.readup.server.auth.exception.OAuth2PropertyNotFoundException;
+import com.readup.server.common.exception.ServiceException;
 
 public record NaverOAuth2UserInfo(
 	Map<String, Object> attributes
@@ -32,6 +34,6 @@ public record NaverOAuth2UserInfo(
 		if (response instanceof Map) {
 			return (Map<String, Object>)response;
 		}
-		throw new OAuth2PropertyNotFoundException("NaverOAuth2UserInfo : No response found");
+		throw new ServiceException(PROPERTY_NOT_FOUND, "NaverOAuth2UserInfo : No response found");
 	}
 }
