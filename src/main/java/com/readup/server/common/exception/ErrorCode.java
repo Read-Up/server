@@ -23,8 +23,13 @@ public enum ErrorCode {
 	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다."),
 
 	//auth
-	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다.");
+	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
 
+	// Book Registration
+	DUPLICATE_BOOK_REGISTRATION(HttpStatus.CONFLICT, "이미 존재하는 책 등록 요청입니다.")
+
+
+	;
 	private final HttpStatus httpStatus;
 	private final String message;
 
