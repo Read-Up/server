@@ -58,7 +58,7 @@ public class Book extends BaseEntity {
 	@Column(name = "summary")
 	private String summary;
 
-	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Chapter> chapterList;
 
 	public void updateChapterList(List<Chapter> chapterList) {
