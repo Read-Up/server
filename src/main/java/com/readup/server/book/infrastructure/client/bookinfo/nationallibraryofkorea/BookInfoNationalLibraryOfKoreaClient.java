@@ -4,11 +4,11 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
-import com.readup.server.book.infrastructure.client.bookinfo.BookInfoClientFacade;
+import com.readup.server.book.application.client.BookInfoClientFacade;
+import com.readup.server.book.application.client.vo.BookInfoVO;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.GetBookNationalLibraryOfKoreaResponse;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.feign.BookInfoNationalLibraryOfKoreaFeignClient;
-import com.readup.server.book.infrastructure.client.bookinfo.vo.BookInfoVO;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.FeignException;
 
