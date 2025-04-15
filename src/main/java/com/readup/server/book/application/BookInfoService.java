@@ -25,7 +25,7 @@ public class BookInfoService {
 		BookInfoVO bookInfoVO = bookInfoClientRegistry.getDefaultBookInfoClient().getBookInfo(isbn);
 
 		if (bookRepository.existsByIsbnOrTitle(bookInfoVO.isbn(), bookInfoVO.bookTitle())) {
-			throw new ServiceException(ErrorCode.DUPLICATE_BOOK, "Book already exists");
+			throw new ServiceException(ErrorCode.DUPLICATE_BOOK);
 		}
 		Book newBook = bookInfoVO.toEntity();
 		Book savedBook = bookRepository.save(newBook);
