@@ -30,9 +30,9 @@ public class SecurityConfig {
 			.formLogin(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/api/docs", "/api/swagger-ui/**", "/api/api-docs/**", "/api/springdoc/**").permitAll()
-				.requestMatchers("/api/public/**").permitAll()
-				.requestMatchers("/api/private/**").authenticated()
+				.requestMatchers("/docs", "/swagger-ui/**", "/api-docs/**", "/springdoc/**").permitAll()
+				.requestMatchers("/public/**").permitAll()
+				.requestMatchers("/private/**").authenticated()
 				.anyRequest().denyAll())
 			.oauth2Login(oauth2 -> oauth2
 				.authorizationEndpoint(endpoint -> endpoint

@@ -32,7 +32,7 @@ class UserControllerTest {
 	void getRandomNickname() throws Exception {
 		// given
 		final String randomNickname = "지적인독서가";
-		final String uri = "/api/public/users/random-nickname";
+		final String uri = "/public/users/random-nickname";
 
 		// mocking
 		try (MockedStatic<RandomNicknameGenerator> mockedStatic = mockStatic(RandomNicknameGenerator.class)) {

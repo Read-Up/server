@@ -119,7 +119,7 @@ compileJava {
 openapi3 {
     servers = [
             {
-                url = '/'
+                url = '/api'
             }
     ]
     title = 'USER API'
@@ -135,7 +135,7 @@ tasks.register('setDocs') {
             from "build/api-spec"
             include "*.json"
             include "*.yaml"
-            into "build/resources/main/static/api/springdoc"
+            into "build/resources/main/static/springdoc"
         }
     }
 }

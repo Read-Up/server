@@ -68,7 +68,7 @@ class BookControllerTest {
 	@Nested
 	@DisplayName("책 검색 테스트")
 	class SearchBookTest {
-		private final String uri = "/api/public/books";
+		private final String uri = "/public/books";
 
 		@Test
 		@DisplayName("책 이름 기반 검색 성공 테스트")
@@ -122,7 +122,7 @@ class BookControllerTest {
 					resource(ResourceSnippetParameters.builder()
 						.tag("Book")
 						.queryParameters(
-							parameterWithName("title").description("책 제목"),
+							parameterWithName("title").optional().description("책 제목"),
 							parameterWithName("isbn").optional().description("책 ISBN")
 						)
 						.responseFields(
@@ -148,7 +148,7 @@ class BookControllerTest {
 	@Nested
 	@DisplayName("책 챕터 업데이트 테스트")
 	class UpdateChapterList {
-		private final String uri = "/api/public/books/{bookId}/chapters";
+		private final String uri = "/public/books/{bookId}/chapters";
 		private final Long bookId = 1L;
 		private final UpdateChapterListRequest updateChapterListRequest = new UpdateChapterListRequest(List.of(
 			new UpdateChapterListRequest.UpdateChapterRequest(1, "Chapter 1"),

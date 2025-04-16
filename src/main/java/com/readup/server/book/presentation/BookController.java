@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/public/books")
+@RequestMapping("/public/books")
 public class BookController {
 
 	private final BookCommandService bookCommandService;
@@ -40,7 +40,7 @@ public class BookController {
 	@PutMapping("/{bookId}/chapters")
 	public ApiResponse<Void> updateChapterList(@PathVariable Long bookId,
 		@RequestBody UpdateChapterListRequest request) {
-		
+
 		bookCommandService.updateChapterList(bookId, request);
 
 		return ApiResponse.successResponse();
