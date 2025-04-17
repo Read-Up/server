@@ -18,13 +18,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.common.controller.TestCommonController;
 
 @WebMvcTest(TestCommonController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs(outputDir = "build/generated-snippets")
-class ApiResponseTest {
+class ApiResponseTest extends AbstractWebMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;

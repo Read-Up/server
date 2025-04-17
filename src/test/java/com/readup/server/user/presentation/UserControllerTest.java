@@ -17,13 +17,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.user.generator.RandomNicknameGenerator;
 
 @AutoConfigureRestDocs
 @WebMvcTest(UserController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
-class UserControllerTest {
+class UserControllerTest extends AbstractWebMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;

@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.SimpleType;
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.book.application.BookInfoService;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
 import com.readup.server.common.exception.ErrorCode;
@@ -31,7 +32,7 @@ import com.readup.server.common.exception.ServiceException;
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-class BookInfoControllerTest {
+class BookInfoControllerTest extends AbstractWebMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;

@@ -22,9 +22,12 @@ public enum ErrorCode {
 	// Book
 	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다."),
 
-	//auth
+	// Auth
 	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
-	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다.");
+	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다."),
+
+	// Account
+	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;
