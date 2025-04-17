@@ -14,8 +14,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Builder
 @AllArgsConstructor(access = PRIVATE)
@@ -39,7 +41,7 @@ public class QuizOption extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isCorrect;
 
-	public static QuizOption create(Quiz quiz, int number, String content, boolean isCorrect) {
+	public static QuizOption create(Quiz quiz, Integer number, String content, Boolean isCorrect) {
 		return QuizOption.builder()
 			.quiz(quiz)
 			.number(number)

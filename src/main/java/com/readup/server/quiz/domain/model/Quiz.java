@@ -20,8 +20,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Builder
 @AllArgsConstructor(access = PRIVATE)
@@ -43,17 +45,26 @@ public class Quiz extends BaseEntity {
 	private String explanation;
 
 	@Column(nullable = false)
-	private Integer answer;
+	private Integer answerOptionNumber;
 
 	@OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<QuizOption> quizOptionList = new ArrayList<>();
+	private List<QuizOption> quizOptionList;
 
-	public static Quiz create(Chapter chapter, String question, String explanation, Integer correctQuizOptionNumber) {
+	public static Quiz create(Chapter chapter, String question, String explanation) {
 		return Quiz.builder()
 			.chapter(chapter)
 			.question(question)
 			.explanation(explanation)
-			.answer(correctQuizOptionNumber)
+			.quizOptionList(new ArrayList<>())
 			.build();
+	}
+
+	public void addAnswerOptionNumber(Integer answerOptionNumber) {
+		this.answerOptionNumber = answerOptionNumber;
+	}
+
+	public void addQuizOption(Integer number, String content, Boolean isCorrect) {
+		QuizOption quizOption = QuizOption.create(this, number, content, isCorrect);
+		quizOptionList.add(quizOption);
 	}
 }
