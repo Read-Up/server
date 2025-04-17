@@ -133,7 +133,6 @@ class QuizServiceTest {
 			verify(quizJpaRepository, never()).saveAll(any());
 		}
 
-		// 공통 검증 메서드
 		private void assertBasicResponse(CreateQuizListResponse response, Long expectedBookId, Long expectedChapterId,
 			int expectedQuizSize) {
 			assertNotNull(response);
