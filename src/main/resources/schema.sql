@@ -43,16 +43,16 @@ CREATE TABLE `chapter`
 
 CREATE TABLE `quiz`
 (
-    `id`                bigint                      NOT NULL AUTO_INCREMENT,
-    `answer`            int                         NOT NULL,
-    `chapter_id`        bigint                      NOT NULL,
-    `question`          varchar(150)                NOT NULL,
-    `explanation`       varchar(255)                DEFAULT NULL,
-    `created_at`        timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `created_by`        varchar(255)                DEFAULT NULL,
-    `updated_at`        timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `updated_by`        varchar(255)                DEFAULT NULL,
-    `deleted_at`        timestamp                   DEFAULT NULL,
+    `id`                            bigint                      NOT NULL AUTO_INCREMENT,
+    `chapter_id`                    bigint                      NOT NULL,
+    `question`                      varchar(150)                NOT NULL,
+    `explanation`                   varchar(255)                DEFAULT NULL,
+    `answer_option_number`          int                         NOT NULL,
+    `created_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_by`                    varchar(255)                DEFAULT NULL,
+    `updated_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by`                    varchar(255)                DEFAULT NULL,
+    `deleted_at`                    timestamp                   DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY           `fk_quiz_chapter_id` (`chapter_id`),
     CONSTRAINT `fk_quiz_chapter_id` FOREIGN KEY (`chapter_id`) REFERENCES `chapter` (`id`)
@@ -60,16 +60,16 @@ CREATE TABLE `quiz`
 
 CREATE TABLE `quiz_option`
 (
-    `id`                bigint                      NOT NULL AUTO_INCREMENT,
-    `quiz_id`           bigint                      NOT NULL,
-    `number`            int                         NOT NULL,
-    `content`           varchar(255)                NOT NULL,
-    `is_correct`        bit(1)                      DEFAULT NULL,
-    `created_at`        timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    `created_by`        varchar(255)                DEFAULT NULL,
-    `updated_at`        timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    `updated_by`        varchar(255)                DEFAULT NULL,
-    `deleted_at`         timestamp                  DEFAULT NULL,
+    `id`                            bigint                      NOT NULL AUTO_INCREMENT,
+    `quiz_id`                       bigint                      NOT NULL,
+    `number`                        int                         NOT NULL,
+    `content`                       varchar(255)                NOT NULL,
+    `is_correct`                    bit(1)                      DEFAULT NULL,
+    `created_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `created_by`                    varchar(255)                DEFAULT NULL,
+    `updated_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by`                    varchar(255)                DEFAULT NULL,
+    `deleted_at`                    timestamp                   DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY          `fk_quiz_option_quiz_id` (`quiz_id`),
     CONSTRAINT `fk_quiz_option_quiz_id` FOREIGN KEY (`quiz_id`) REFERENCES `quiz` (`id`)
