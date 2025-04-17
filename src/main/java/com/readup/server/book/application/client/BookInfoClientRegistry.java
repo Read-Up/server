@@ -1,4 +1,4 @@
-package com.readup.server.book.infrastructure.client.bookinfo;
+package com.readup.server.book.application.client;
 
 import java.util.HashMap;
 import java.util.List;

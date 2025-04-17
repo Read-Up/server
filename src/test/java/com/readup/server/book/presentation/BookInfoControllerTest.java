@@ -25,6 +25,7 @@ import com.epages.restdocs.apispec.SimpleType;
 import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.book.application.BookInfoService;
 import com.readup.server.book.presentation.dto.GetExternalBookResponse;
+import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.ServiceException;
 
@@ -65,10 +66,12 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 
 			// then
 			resultActions.andExpect(status().isOk())
+				.andExpect(jsonPath("$.success").value(true))
 				.andExpect(jsonPath("$.data.bookTitle").value(getExternalBookResponse.bookTitle()))
 				.andExpect(jsonPath("$.data.publisher").value(getExternalBookResponse.publisher()))
 				.andExpect(jsonPath("$.data.author").value(getExternalBookResponse.author()))
-				.andExpect(jsonPath("$.data.isbn").value(getExternalBookResponse.isbn()));
+				.andExpect(jsonPath("$.data.isbn").value(getExternalBookResponse.isbn()))
+				.andExpect(jsonPath("$.message").value(ApiResponse.DEFAULT_SUCCESS_MESSAGE));
 
 			// docs
 			resultActions.andDo(
@@ -77,6 +80,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 					preprocessRequest(prettyPrint()),
 					preprocessResponse(prettyPrint()),
 					resource(ResourceSnippetParameters.builder()
+						.tag("BookInfo")
 						.pathParameters(
 							parameterWithName("isbn").type(SimpleType.NUMBER).description("책 ISBN")
 						)
@@ -98,6 +102,8 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 
 			// then
 			resultActions.andExpect(status().isConflict())
+				.andExpect(jsonPath("$.success").value(false))
+				.andExpect(jsonPath("$.status").value(409))
 				.andExpect(jsonPath("$.error").value(ErrorCode.DUPLICATE_BOOK.name()))
 				.andExpect(jsonPath("$.message").value("Book already exists"));
 
@@ -107,6 +113,40 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 					preprocessRequest(prettyPrint()),
 					preprocessResponse(prettyPrint()),
 					resource(ResourceSnippetParameters.builder()
+						.tag("BookInfo")
+						.pathParameters(
+							parameterWithName("isbn").type(SimpleType.NUMBER).description("책 ISBN")
+						)
+						.build()
+					)
+				)
+			);
+		}
+
+		@Test
+		@DisplayName("ISBN 기반 책 정보 가져오기 실패 - 존재하지않는 ISBN")
+		void getBookInfoFailWhenBookNotFound() throws Exception {
+			// given
+			given(bookInfoService.getBookInfo(anyString()))
+				.willThrow(new ServiceException(ErrorCode.BOOK_NOT_FOUND));
+
+			// when
+			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
+
+			// then
+			resultActions.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.success").value(false))
+				.andExpect(jsonPath("$.status").value(404))
+				.andExpect(jsonPath("$.error").value(ErrorCode.BOOK_NOT_FOUND.name()))
+				.andExpect(jsonPath("$.message").value(ErrorCode.BOOK_NOT_FOUND.getMessage()));
+
+			resultActions.andDo(
+				MockMvcRestDocumentationWrapper.document(
+					"ISBN 기반 책 정보 조회 실패 - 존재하지 않는 ISBN",
+					preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					resource(ResourceSnippetParameters.builder()
+						.tag("BookInfo")
 						.pathParameters(
 							parameterWithName("isbn").type(SimpleType.NUMBER).description("책 ISBN")
 						)

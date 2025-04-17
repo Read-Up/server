@@ -21,13 +21,20 @@ public enum ErrorCode {
 
 	// Book
 	DUPLICATE_BOOK(HttpStatus.CONFLICT, "이미 존재하는 책입니다."),
+	BOOK_NOT_FOUND(HttpStatus.NOT_FOUND, "책을 찾을 수 없습니다."),
+
+	// Chapter
+	INVALID_CHAPTER_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 챕터 번호입니다."),
 
 	// Auth
 	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다."),
 
 	// Account
-	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다.");
+	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다."),
+
+	// Book Registration
+	DUPLICATE_BOOK_REGISTRATION(HttpStatus.CONFLICT, "이미 존재하는 책 등록 요청입니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;

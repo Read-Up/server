@@ -1,10 +1,23 @@
 package com.readup.server.book.infrastructure.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.readup.server.book.domain.Book;
+import com.readup.server.book.domain.repository.BookRepository;
+import com.readup.server.common.exception.ErrorCode;
+import com.readup.server.common.exception.RepositoryException;
 
-public interface BookJpaRepository extends JpaRepository<Book, Long> {
+public interface BookJpaRepository extends JpaRepository<Book, Long>, BookRepository {
 
 	boolean existsByIsbnOrTitle(String isbn, String title);
+
+	@Query("SELECT b FROM Book b LEFT JOIN FETCH b.chapterList c WHERE b.id = :id")
+	Optional<Book> findBookById(Long id);
+
+	default Book getBookById(Long id) {
+		return findBookById(id).orElseThrow(() -> new RepositoryException(ErrorCode.BOOK_NOT_FOUND));
+	}
 }

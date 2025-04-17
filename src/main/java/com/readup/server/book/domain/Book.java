@@ -1,7 +1,17 @@
 package com.readup.server.book.domain;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.common.exception.DomainException;
+import com.readup.server.common.exception.ErrorCode;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -20,9 +30,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "book")
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
-public class Book {
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE book SET deleted_at = NOW() WHERE id = ?")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Book extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +58,29 @@ public class Book {
 	@Column(name = "summary")
 	private String summary;
 
-	@OneToMany(mappedBy = "book", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Chapter> chapterList;
+
+	public void updateChapterList(List<Chapter> chapterList) {
+		List<Chapter> sortedChapterList = chapterList.stream()
+			.sorted(Comparator.comparing(Chapter::getChapterNumber))
+			.toList();
+
+		validateChapterOrder(sortedChapterList);
+
+		this.chapterList.clear();
+		this.chapterList.addAll(sortedChapterList);
+		this.chapterList.forEach(chapter -> chapter.updateBook(this));
+	}
+
+	private void validateChapterOrder(List<Chapter> chapters) {
+		IntStream.range(0, chapters.size())
+			.forEach(i -> {
+				int expected = i + 1;
+				int actual = chapters.get(i).getChapterNumber();
+				if (actual != expected) {
+					throw new DomainException(ErrorCode.INVALID_CHAPTER_NUMBER);
+				}
+			});
+	}
 }

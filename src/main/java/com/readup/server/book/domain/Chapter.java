@@ -1,5 +1,10 @@
 package com.readup.server.book.domain;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import com.readup.server.common.entity.BaseEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,9 +23,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "chapter")
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor
-public class Chapter {
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE chapter SET deleted_at = NOW() WHERE id = ?")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Chapter extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +42,11 @@ public class Chapter {
 	@ManyToOne
 	@JoinColumn(name = "book_id", nullable = false)
 	private Book book;
+
+	public void updateBook(Book book) {
+		if (this.book != null) {
+			this.book.getChapterList().remove(this);
+		}
+		this.book = book;
+	}
 }

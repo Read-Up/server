@@ -28,6 +28,11 @@ public class GlobalExceptionHandler {
 		return buildErrorResponse(ex, ex.getErrorCode(), "RepositoryException");
 	}
 
+	@ExceptionHandler(DomainException.class)
+	public ResponseEntity<ErrorResponse> handleDomainException(DomainException ex) {
+		return buildErrorResponse(ex, ex.getErrorCode(), "DomainException");
+	}
+
 	@ExceptionHandler(FeignException.class)
 	public ResponseEntity<ErrorResponse> handleFeignException(FeignException ex) {
 		return buildErrorResponse(ex, ex.getErrorCode(), "FeignException");

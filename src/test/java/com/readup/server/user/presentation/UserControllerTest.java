@@ -1,7 +1,7 @@
 package com.readup.server.user.presentation;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,7 +33,7 @@ class UserControllerTest extends AbstractWebMvcTest {
 	void getRandomNickname() throws Exception {
 		// given
 		final String randomNickname = "지적인독서가";
-		final String uri = "/public/users/random-nickname";
+		final String uri = "/api/public/users/random-nickname";
 
 		// mocking
 		try (MockedStatic<RandomNicknameGenerator> mockedStatic = mockStatic(RandomNicknameGenerator.class)) {
@@ -43,6 +43,7 @@ class UserControllerTest extends AbstractWebMvcTest {
 			mockMvc.perform(get(uri))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.data").value(randomNickname))
+
 				// docs
 				.andDo(document("user-get-random-nickname",
 					responseFields(

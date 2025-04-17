@@ -1,4 +1,4 @@
-package com.readup.server.book.infrastructure.client.bookinfo.vo;
+package com.readup.server.book.application.client.vo;
 
 import java.util.List;
 
