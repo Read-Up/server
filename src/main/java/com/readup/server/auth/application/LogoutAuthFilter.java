@@ -2,6 +2,9 @@ package com.readup.server.auth.application;
 
 import java.io.IOException;
 
+import com.readup.server.common.exception.ErrorCode;
+import com.readup.server.common.exception.ServiceException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -18,6 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LogoutAuthFilter extends OncePerRequestFilter {
@@ -49,6 +53,8 @@ public class LogoutAuthFilter extends OncePerRequestFilter {
 					break;
 				}
 			}
+		} else {
+			throw new ServiceException(ErrorCode.UNAUTHORIZED_USER);
 		}
 
 		if (refreshToken != null && !refreshToken.isEmpty()) {

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -38,7 +39,7 @@ import com.readup.server.common.exception.ErrorCode;
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(RestDocumentationExtension.class)
 @AutoConfigureRestDocs
-class BookControllerTest {
+class BookControllerTest extends AbstractWebMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;

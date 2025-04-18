@@ -29,6 +29,7 @@ public enum ErrorCode {
 	// Auth
 	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다."),
+	UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "로그인되지 않은 사용자입니다."),
 
 	// Account
 	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다."),
