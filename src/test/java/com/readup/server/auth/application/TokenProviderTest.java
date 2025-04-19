@@ -70,7 +70,7 @@ class TokenProviderTest {
 
 	@Test
 	@DisplayName("액세스 토큰 검증하기 - 성공")
-	void testGenerateAccessToken_success() {
+	void testValidateAccessToken_success() {
 		CustomOAuth2User user = mock(CustomOAuth2User.class);
 		when(user.getName()).thenReturn("readup");
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
@@ -89,14 +89,14 @@ class TokenProviderTest {
 
 	@Test
 	@DisplayName("액세스 토큰 검증하기 - 실패")
-	void testGenerateAccessToken_failure() {
+	void testValidateAccessToken_failure() {
 		boolean isValid = tokenProvider.validateAccessToken("invalidToken");
 		assertFalse(isValid);
 	}
 
 	@Test
 	@DisplayName("리프레쉬 토큰 검증하기 - 성공")
-	void testGenerateRefreshToken_success() {
+	void testValidateRefreshToken_success() {
 		CustomOAuth2User user = mock(CustomOAuth2User.class);
 		when(user.getName()).thenReturn("readup");
 		SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_USER");
@@ -115,7 +115,7 @@ class TokenProviderTest {
 
 	@Test
 	@DisplayName("리프레쉬 토큰 검증하기 - 실패")
-	void testGenerateRefreshToken_failure() {
+	void testValidateRefreshToken_failure() {
 		boolean isValid = tokenProvider.validateRefreshToken("invalidToken");
 		assertFalse(isValid);
 	}
