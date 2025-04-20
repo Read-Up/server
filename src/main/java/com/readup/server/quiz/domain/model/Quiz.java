@@ -1,5 +1,6 @@
 package com.readup.server.quiz.domain.model;
 
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -7,22 +8,21 @@ import static lombok.AccessLevel.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.readup.server.book.domain.Chapter;
 import com.readup.server.common.entity.BaseEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Table(name = "quiz")
 @Getter
 @Entity
 @Builder
@@ -34,37 +34,29 @@ public class Quiz extends BaseEntity {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(nullable = false)
-	private Chapter chapter;
-
 	@Column(nullable = false, length = 150)
 	private String question;
 
 	@Column
 	private String explanation;
 
-	@Column(nullable = false)
-	private Integer answerOptionNumber;
+	@ManyToOne(fetch = LAZY)
+	public QuizSet quizSet;
 
-	@OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "quiz", cascade = ALL, orphanRemoval = true)
 	private List<QuizOption> quizOptionList;
 
-	public static Quiz create(Chapter chapter, String question, String explanation) {
+	public static Quiz create(String question, String explanation, QuizSet quizSet) {
 		return Quiz.builder()
-			.chapter(chapter)
 			.question(question)
 			.explanation(explanation)
+			.quizSet(quizSet)
 			.quizOptionList(new ArrayList<>())
 			.build();
 	}
 
-	public void addAnswerOptionNumber(Integer answerOptionNumber) {
-		this.answerOptionNumber = answerOptionNumber;
-	}
-
-	public void addQuizOption(Integer number, String content, Boolean isCorrect) {
-		QuizOption quizOption = QuizOption.create(this, number, content, isCorrect);
+	public void addQuizOption(String content, Boolean isCorrect) {
+		QuizOption quizOption = QuizOption.create(content, isCorrect, this);
 		quizOptionList.add(quizOption);
 	}
 }

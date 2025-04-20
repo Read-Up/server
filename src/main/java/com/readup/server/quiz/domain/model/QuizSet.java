@@ -1,8 +1,11 @@
 package com.readup.server.quiz.domain.model;
 
-import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.readup.server.common.entity.BaseEntity;
 
@@ -10,41 +13,41 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Table(name = "quiz_option")
+@Table(name = "quiz_set")
 @Getter
 @Entity
 @Builder
 @AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
-public class QuizOption extends BaseEntity {
+public class QuizSet extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
 	@Column(nullable = false)
-	private String content;
+	private Long chapterId;
 
-	@Column(nullable = false)
-	private Boolean isCorrect;
+	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
+	private List<Quiz> quizList;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(nullable = false)
-	private Quiz quiz;
-
-	public static QuizOption create(String content, Boolean isCorrect, Quiz quiz) {
-		return QuizOption.builder()
-			.content(content)
-			.isCorrect(isCorrect)
-			.quiz(quiz)
+	public static QuizSet create(Long chapterId) {
+		return QuizSet.builder()
+			.chapterId(chapterId)
+			.quizList(new ArrayList<>())
 			.build();
+	}
+
+	public Quiz addQuiz(String question, String explanation) {
+		Quiz quiz = Quiz.create(question, explanation, this);
+		quizList.add(quiz);
+		return quiz;
 	}
 }

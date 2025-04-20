@@ -24,21 +24,21 @@ import com.readup.server.book.domain.Chapter;
 import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.common.exception.RepositoryException;
 import com.readup.server.common.exception.ServiceException;
-import com.readup.server.quiz.application.dto.CreateQuizListRequest;
-import com.readup.server.quiz.application.dto.CreateQuizListRequest.CreateQuizRequest;
-import com.readup.server.quiz.application.dto.CreateQuizListRequest.CreateQuizRequest.CreateQuizOptionRequest;
-import com.readup.server.quiz.application.dto.CreateQuizListResponse;
-import com.readup.server.quiz.application.dto.CreateQuizListResponse.CreateQuizResponse;
-import com.readup.server.quiz.stub.QuizJpaRepositoryStub;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
+import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
+import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizResponse;
+import com.readup.server.quiz.stub.QuizSetJpaRepositoryStub;
 
 @ExtendWith(MockitoExtension.class)
-class QuizServiceTest {
+class QuizSetServiceTest {
 
 	@InjectMocks
-	private QuizService sut;
+	private QuizSetService sut;
 
 	@Spy
-	private QuizJpaRepositoryStub quizJpaRepository;
+	private QuizSetJpaRepositoryStub quizSetJpaRepositoryStub;
 
 	@Mock
 	private BookRepository bookRepository;
@@ -59,14 +59,14 @@ class QuizServiceTest {
 
 		@ParameterizedTest
 		@MethodSource("provideSingleAndMultipleQuizRequests")
-		@DisplayName("퀴즈 등록 성공 - 단일 또는 다중")
+		@DisplayName("퀴즈 세트 등록 성공 - 단일 퀴즈 또는 다중 퀴즈")
 		void create_quiz_success_parametrized(List<CreateQuizRequest> quizRequests) {
 			// given
-			CreateQuizListRequest request = new CreateQuizListRequest(bookId, chapterId, quizRequests);
+			CreateQuizSetRequest request = new CreateQuizSetRequest(bookId, chapterId, quizRequests);
 			when(bookRepository.getBookById(bookId)).thenReturn(book);
 
 			// when
-			CreateQuizListResponse response = sut.createQuiz(request);
+			CreateQuizSetResponse response = sut.createQuizSet(request);
 
 			// then
 			assertBasicResponse(response, bookId, chapterId, quizRequests.size());
@@ -78,14 +78,14 @@ class QuizServiceTest {
 					expected.quizOptionRequestList().size());
 			}
 
-			verify(quizJpaRepository, times(1)).saveAll(any());
+			verify(quizSetJpaRepositoryStub, times(1)).save(any());
 		}
 
 		static Stream<List<CreateQuizRequest>> provideSingleAndMultipleQuizRequests() {
-			CreateQuizOptionRequest option1 = new CreateQuizOptionRequest(1, "보기1", false);
-			CreateQuizOptionRequest option2 = new CreateQuizOptionRequest(2, "보기2", true);
-			CreateQuizOptionRequest option3 = new CreateQuizOptionRequest(1, "A", true);
-			CreateQuizOptionRequest option4 = new CreateQuizOptionRequest(2, "B", false);
+			CreateQuizOptionRequest option1 = new CreateQuizOptionRequest("보기1", false);
+			CreateQuizOptionRequest option2 = new CreateQuizOptionRequest("보기2", true);
+			CreateQuizOptionRequest option3 = new CreateQuizOptionRequest("A", true);
+			CreateQuizOptionRequest option4 = new CreateQuizOptionRequest("B", false);
 
 			return Stream.of(
 				List.of(
@@ -102,17 +102,18 @@ class QuizServiceTest {
 			// given
 			Long nonExistingBookId = 999L;
 
-			CreateQuizListRequest mockRequest = mock(CreateQuizListRequest.class);
+			CreateQuizSetRequest mockRequest = mock(CreateQuizSetRequest.class);
 			when(mockRequest.bookId()).thenReturn(nonExistingBookId);
-			when(mockRequest.chapterId()).thenReturn(chapterId);
 
+			// stubbing
 			when(bookRepository.getBookById(nonExistingBookId))
 				.thenThrow(new RepositoryException(BOOK_NOT_FOUND));
 
 			// when & then
-			RepositoryException exception = assertThrows(RepositoryException.class, () -> sut.createQuiz(mockRequest));
+			RepositoryException exception = assertThrows(RepositoryException.class,
+				() -> sut.createQuizSet(mockRequest));
 			assertEquals(BOOK_NOT_FOUND, exception.getErrorCode());
-			verify(quizJpaRepository, never()).saveAll(any());
+			verify(quizSetJpaRepositoryStub, never()).save(any());
 		}
 
 		@Test
@@ -121,19 +122,20 @@ class QuizServiceTest {
 			// given
 			Long nonExistingChapterId = 999L;
 
-			CreateQuizListRequest mockRequest = mock(CreateQuizListRequest.class);
+			CreateQuizSetRequest mockRequest = mock(CreateQuizSetRequest.class);
+
+			// stubbing
 			when(mockRequest.bookId()).thenReturn(bookId);
 			when(mockRequest.chapterId()).thenReturn(nonExistingChapterId);
-
 			when(bookRepository.getBookById(bookId)).thenReturn(book);
 
 			// when & then
-			ServiceException exception = assertThrows(ServiceException.class, () -> sut.createQuiz(mockRequest));
+			ServiceException exception = assertThrows(ServiceException.class, () -> sut.createQuizSet(mockRequest));
 			assertEquals(NOT_FOUND_CHAPTER, exception.getErrorCode());
-			verify(quizJpaRepository, never()).saveAll(any());
+			verify(quizSetJpaRepositoryStub, never()).save(any());
 		}
 
-		private void assertBasicResponse(CreateQuizListResponse response, Long expectedBookId, Long expectedChapterId,
+		private void assertBasicResponse(CreateQuizSetResponse response, Long expectedBookId, Long expectedChapterId,
 			int expectedQuizSize) {
 			assertNotNull(response);
 			assertEquals(expectedBookId, response.bookId());
