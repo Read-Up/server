@@ -1,5 +1,8 @@
 package com.readup.server.user.domain;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -13,6 +16,8 @@ import lombok.Getter;
 @Getter
 @Entity
 @Table(name = "user")
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE user SET deleted_at = NOW() WHERE id = ?")
 public class User extends BaseEntity {
 
 	@Id
