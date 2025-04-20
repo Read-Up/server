@@ -3,7 +3,7 @@ package com.readup.server.util;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
-public class TestUtils {
+public class ClientRegistrationTestUtils {
 
 	public static ClientRegistration createGoogleClientRegistration() {
 

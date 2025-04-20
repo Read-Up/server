@@ -35,7 +35,14 @@ public enum ErrorCode {
 	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다."),
 
 	// Book Registration
-	DUPLICATE_BOOK_REGISTRATION(HttpStatus.CONFLICT, "이미 존재하는 책 등록 요청입니다.");
+	DUPLICATE_BOOK_REGISTRATION(HttpStatus.CONFLICT, "이미 존재하는 책 등록 요청입니다."),
+
+	// Terms
+	TERMS_NOT_FOUND(HttpStatus.NOT_FOUND, "약관이 존재하지 않습니다."),
+
+	// TermsVersion
+	TERMS_VERSION_NOT_FOUND(HttpStatus.NOT_FOUND, "약관의 버전이 존재하지 않습니다.");
+
 
 	private final HttpStatus httpStatus;
 	private final String message;

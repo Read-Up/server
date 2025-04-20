@@ -24,6 +24,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 	private final TokenProvider tokenProvider;
 	private final CookieProvider cookieProvider;
+	private final SocialAccountService socialAccountService;
+	private static final String TERMS_REDIRECT = "/terms";
 
 	@Override
 	public void onAuthenticationSuccess(
@@ -45,6 +47,10 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		clearAuthenticationAttributes(request);
 
-		getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getRedirectUri(request));
+		if (socialAccountService.isNewUser(authentication)) {
+			getRedirectStrategy().sendRedirect(request, response, TERMS_REDIRECT);
+		} else {
+			getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getRedirectUri(request));
+		}
 	}
 }

@@ -15,9 +15,11 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.readup.server.AbstractWebMvcTest;
+import com.readup.server.user.application.UserRegistrationService;
 import com.readup.server.user.generator.RandomNicknameGenerator;
 
 @AutoConfigureRestDocs
@@ -28,6 +30,9 @@ class UserControllerTest extends AbstractWebMvcTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@MockitoBean
+	private UserRegistrationService userRegistrationService;
 
 	@Test
 	void getRandomNickname() throws Exception {
