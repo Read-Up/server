@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/public/external-books")
+@RequestMapping("/public/external-books")
 public class BookInfoController {
 
 	private final BookInfoService bookInfoService;

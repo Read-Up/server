@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserController {
 
-	@GetMapping("/api/public/users/random-nickname")
+	@GetMapping("/public/users/random-nickname")
 	public ApiResponse<String> getRandomNickname() {
 		return successResponse(generate());
 	}

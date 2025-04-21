@@ -46,7 +46,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 	class GetBookInfo {
 
 		private final Long isbn = 9788960773417L;
-		private final String uri = "/api/public/external-books/{isbn}";
+		private final String uri = "/public/external-books/{isbn}";
 
 		@Test
 		@DisplayName("ISBN 기반 책 정보 가져오기 성공")

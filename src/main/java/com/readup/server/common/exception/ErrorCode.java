@@ -25,6 +25,7 @@ public enum ErrorCode {
 
 	// Chapter
 	INVALID_CHAPTER_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 챕터 번호입니다."),
+	NOT_FOUND_CHAPTER(HttpStatus.NOT_FOUND, "챕터를 찾지 못했습니다."),
 
 	// Auth
 	PROPERTY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 프로퍼티를 찾지 못했습니다."),
