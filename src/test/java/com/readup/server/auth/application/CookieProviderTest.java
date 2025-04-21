@@ -14,7 +14,6 @@ class CookieProviderTest {
 	@Test
 	@DisplayName("액세스 토큰 쿠키 생성하기")
 	void testGenerateAccessTokenCookie() {
-
 		String accessToken = "sampleAccessToken";
 		int expiresMS = 30 * 60 * 1000;
 
@@ -40,5 +39,29 @@ class CookieProviderTest {
 		assertEquals("/", refreshTokenCookie.getPath());
 		assertTrue(refreshTokenCookie.isHttpOnly());
 		assertEquals(expiresMS / 1000, refreshTokenCookie.getMaxAge());
+	}
+
+	@Test
+	@DisplayName("액세스 삭제 쿠키 생성하기")
+	void testGenerateDeletedAccessTokenCookie() {
+		Cookie refreshTokenCookie = cookieProvider.generateDeletedAccessTokenCookie();
+
+		assertEquals("access_token", refreshTokenCookie.getName());
+		assertEquals("", refreshTokenCookie.getValue());
+		assertEquals("/", refreshTokenCookie.getPath());
+		assertTrue(refreshTokenCookie.isHttpOnly());
+		assertEquals(0, refreshTokenCookie.getMaxAge());
+	}
+
+	@Test
+	@DisplayName("리프레쉬 삭제 쿠키 생성하기")
+	void testGenerateDeletedRefreshTokenCookie() {
+		Cookie refreshTokenCookie = cookieProvider.generateDeletedRefreshTokenCookie();
+
+		assertEquals("refresh_token", refreshTokenCookie.getName());
+		assertEquals("", refreshTokenCookie.getValue());
+		assertEquals("/", refreshTokenCookie.getPath());
+		assertTrue(refreshTokenCookie.isHttpOnly());
+		assertEquals(0, refreshTokenCookie.getMaxAge());
 	}
 }

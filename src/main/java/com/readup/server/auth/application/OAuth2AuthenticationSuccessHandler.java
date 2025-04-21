@@ -4,17 +4,18 @@ import static com.readup.server.auth.application.TokenProvider.*;
 
 import java.io.IOException;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
 import com.readup.server.auth.dto.AuthTokens;
+import com.readup.server.auth.infrastructure.RedirectUtils;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -23,15 +24,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 	private final TokenProvider tokenProvider;
 	private final CookieProvider cookieProvider;
-	private static final String BASE_URI = "/";
 
 	@Override
 	public void onAuthenticationSuccess(
-		HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws
-		IOException, ServletException {
+		@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) throws
+		IOException {
 
-		HttpSession session = request.getSession(false);
-		String redirectUri = (session != null && session.getAttribute("redirect_uri") != null) ? (String)session.getAttribute("redirect_uri") : BASE_URI;
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 		AuthTokens authTokens = tokenProvider.generateTokens(authentication);
 
@@ -46,6 +45,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		clearAuthenticationAttributes(request);
 
-		getRedirectStrategy().sendRedirect(request, response, redirectUri);
+		getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getRedirectUri(request));
 	}
 }

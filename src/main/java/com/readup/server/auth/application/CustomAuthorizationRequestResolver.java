@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @Component
 public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRequestResolver {
 
-	private static final String AUTHORIZATION_REQUEST_BASE_URI = "/api/oauth2";
+	private static final String AUTHORIZATION_REQUEST_BASE_URI = "/api/public/oauth2";
 	private static final String QUERY_PARAM = "redirect";
 	private final OAuth2AuthorizationRequestResolver defaultResolver;
 

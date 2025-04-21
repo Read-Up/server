@@ -40,8 +40,8 @@ class CustomAuthorizationRequestResolverTest {
 	void test_resolve_google_success(String provider) throws OAuth2AuthenticationException {
 		//given
 		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setRequestURI("/api/oauth2/" + provider);
-		request.setServletPath("/api/oauth2/" + provider);
+		request.setRequestURI("/api/public/oauth2/" + provider);
+		request.setServletPath("/api/public/oauth2/" + provider);
 		request.setParameter("redirect", "http://frontend.com/after-login");
 
 		System.out.println("URI: " + request.getRequestURI());

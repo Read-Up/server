@@ -9,8 +9,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
+import java.util.AbstractCollection;
 import java.util.List;
 
+import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,7 +37,7 @@ import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOp
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(QuizSetController.class)
 @ExtendWith(RestDocumentationExtension.class)
-class QuizSetControllerTest {
+class QuizSetControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean
 	private QuizSetService quizSetService;

@@ -1,4 +1,4 @@
-package com.readup.server.auth.factory;
+package com.readup.server.auth.infrastructure;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,7 +12,6 @@ import com.readup.server.auth.dto.GoogleOAuth2UserInfo;
 import com.readup.server.auth.dto.KakaoOAuth2UserInfo;
 import com.readup.server.auth.dto.NaverOAuth2UserInfo;
 import com.readup.server.auth.dto.OAuth2UserInfo;
-import com.readup.server.auth.infrastructure.OAuth2UserInfoFactory;
 import com.readup.server.common.exception.ServiceException;
 
 class OAuth2UserInfoFactoryTest {

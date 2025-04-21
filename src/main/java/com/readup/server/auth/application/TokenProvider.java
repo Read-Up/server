@@ -12,6 +12,8 @@ import com.readup.server.auth.dto.AuthTokens;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.infrastructure.KeyManager;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 
@@ -95,5 +97,14 @@ public class TokenProvider {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+
+	public Long getUserIdFromToken(String accessToken) {
+		Jws<Claims> claimsJws = Jwts.parser()
+			.verifyWith(keyManager.getAccessTokenKey())
+			.build()
+			.parseSignedClaims(accessToken);
+		Claims claims = claimsJws.getPayload();
+		return Long.parseLong(claims.getSubject());
 	}
 }

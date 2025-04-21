@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +37,7 @@ import com.readup.server.bookregistration.presentation.dto.CreateBookRegistratio
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(BookRegistrationController.class)
 @ExtendWith(RestDocumentationExtension.class)
-class BookRegistrationControllerTest {
+class BookRegistrationControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean
 	private BookRegistrationService bookRegistrationService;

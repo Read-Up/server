@@ -18,6 +18,16 @@ public class CookieProvider {
 		return createCookie(REFRESH_TOKEN_NAME, token, expiresMS);
 	}
 
+	public Cookie generateDeletedAccessTokenCookie() {
+
+		return createCookie(ACCESS_TOKEN_NAME, "", 0);
+	}
+
+	public Cookie generateDeletedRefreshTokenCookie() {
+
+		return createCookie(REFRESH_TOKEN_NAME, "", 0);
+	}
+
 	private Cookie createCookie(String name, String token, int expiresMS) {
 		Cookie cookie = new Cookie(name, token);
 		cookie.setPath("/");

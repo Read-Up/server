@@ -6,9 +6,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 import com.readup.server.auth.application.CustomOAuth2UserService;
+import com.readup.server.auth.application.LoginAuthFilter;
+import com.readup.server.auth.application.LogoutAuthFilter;
 import com.readup.server.auth.application.OAuth2AuthenticationFailureHandler;
 import com.readup.server.auth.application.OAuth2AuthenticationSuccessHandler;
 
@@ -22,6 +25,8 @@ public class SecurityConfig {
 	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 	private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 	private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
+	private final LoginAuthFilter loginAuthFilter;
+	private final LogoutAuthFilter logoutAuthFilter;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +46,8 @@ public class SecurityConfig {
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 				.failureHandler(oAuth2AuthenticationFailureHandler))
+			.addFilterBefore(loginAuthFilter, UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(logoutAuthFilter, UsernamePasswordAuthenticationFilter.class)
 			.build();
 	}
 }
