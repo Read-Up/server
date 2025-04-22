@@ -14,7 +14,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 
-import com.readup.server.util.TestUtils;
+import com.readup.server.util.ClientRegistrationTestUtils;
 
 class CustomAuthorizationRequestResolverTest {
 
@@ -23,9 +23,9 @@ class CustomAuthorizationRequestResolverTest {
 	@BeforeEach
 	void setup() {
 		ClientRegistrationRepository clientRegistrationRepository = mock(ClientRegistrationRepository.class);
-		ClientRegistration googleClientRegistration = TestUtils.createGoogleClientRegistration();
-		ClientRegistration kakaoClientRegistration = TestUtils.createKakaoClientRegistration();
-		ClientRegistration naverClientRegistration = TestUtils.createNaverClientRegistration();
+		ClientRegistration googleClientRegistration = ClientRegistrationTestUtils.createGoogleClientRegistration();
+		ClientRegistration kakaoClientRegistration = ClientRegistrationTestUtils.createKakaoClientRegistration();
+		ClientRegistration naverClientRegistration = ClientRegistrationTestUtils.createNaverClientRegistration();
 
 		when(clientRegistrationRepository.findByRegistrationId("google")).thenReturn(googleClientRegistration);
 		when(clientRegistrationRepository.findByRegistrationId("kakao")).thenReturn(kakaoClientRegistration);

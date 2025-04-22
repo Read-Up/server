@@ -17,12 +17,12 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.dto.OAuth2UserInfo;
 import com.readup.server.auth.infrastructure.OAuth2UserInfoFactory;
-import com.readup.server.util.TestUtils;
+import com.readup.server.util.ClientRegistrationTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 class CustomOAuth2UserServiceTest {
@@ -42,7 +42,7 @@ class CustomOAuth2UserServiceTest {
 		//given
 		OAuth2UserRequest oAuth2UserRequest = mock(OAuth2UserRequest.class);
 
-		when(oAuth2UserRequest.getClientRegistration()).thenReturn(TestUtils.createGoogleClientRegistration());
+		when(oAuth2UserRequest.getClientRegistration()).thenReturn(ClientRegistrationTestUtils.createGoogleClientRegistration());
 
 		OAuth2User fakeOAuth2User = mock(OAuth2User.class);
 		Map<String, Object> attributes = new HashMap<>();
@@ -56,7 +56,7 @@ class CustomOAuth2UserServiceTest {
 
 		when(fakeOAuth2UserInfo.getEmail()).thenReturn("readup@readup.com");
 		when(fakeOAuth2UserInfo.getId()).thenReturn("readup");
-		when(oAuth2UserInfoFactory.getOAuth2UserInfo(eq("google"), eq(attributes))).thenReturn(fakeOAuth2UserInfo);
+		when(oAuth2UserInfoFactory.getOAuth2UserInfo("google", attributes)).thenReturn(fakeOAuth2UserInfo);
 
 		SocialAccount fakeSocialAccount = SocialAccount.builder()
 			.id(1L)

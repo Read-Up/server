@@ -1,7 +1,4 @@
-package com.readup.server.user.domain;
-
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+package com.readup.server.terms.domain;
 
 import com.readup.server.common.entity.BaseEntity;
 
@@ -16,20 +13,21 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Getter
 @Builder
-@Table(name = "user")
+@Table(name = "terms")
 @AllArgsConstructor
 @NoArgsConstructor
-@SQLRestriction("deleted_at IS NULL")
-@SQLDelete(sql = "UPDATE user SET deleted_at = NOW() WHERE id = ?")
-public class User extends BaseEntity {
+public class Terms extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "nickname", nullable = false)
-	private String nickname;
+	@Column(name = "code", length = 50, nullable = false)
+	private String code;
+
+	@Column(name = "title", length = 100, nullable = false)
+	private String title;
 }

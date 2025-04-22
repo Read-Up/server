@@ -2,12 +2,15 @@ package com.readup.server.auth.application;
 
 import static com.readup.server.common.exception.ErrorCode.*;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
-import com.readup.server.auth.infrastructure.SocialAccountRepository;
+import com.readup.server.auth.dto.CustomOAuth2User;
+import com.readup.server.auth.infrastructure.SocialAccountJpaRepository;
 import com.readup.server.common.exception.ServiceException;
+import com.readup.server.user.domain.User;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -17,14 +20,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SocialAccountService {
 
-	private final SocialAccountRepository socialAccountRepository;
+	private final SocialAccountJpaRepository socialAccountJpaRepository;
 
 	public SocialAccount save(CreateSocialAccountRequest createSocialAccountRequest) {
-		return socialAccountRepository.save(toEntity(createSocialAccountRequest));
+		return socialAccountJpaRepository.save(toEntity(createSocialAccountRequest));
 	}
 
 	public SocialAccount findById(Long id) {
-		return socialAccountRepository.findById(id).orElseThrow(() -> new ServiceException(SOCIAL_ACCOUNT_NOT_FOUND));
+		return socialAccountJpaRepository.findById(id).orElseThrow(() -> new ServiceException(SOCIAL_ACCOUNT_NOT_FOUND));
+	}
+
+	public void updateUser(Long socialAccountId, User user) {
+		SocialAccount savedSocialAccount = findById(socialAccountId);
+		savedSocialAccount.updateUserFromSocialAccount(user);
+	}
+
+	public boolean isNewUser(Authentication authentication) {
+		CustomOAuth2User oAuth2User = (CustomOAuth2User)authentication.getPrincipal();
+
+		return findById(Long.parseLong(oAuth2User.getName())).getUser() == null;
 	}
 
 	private SocialAccount toEntity(CreateSocialAccountRequest createSocialAccountRequest) {

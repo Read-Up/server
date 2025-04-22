@@ -39,5 +39,9 @@ out/
 ### application-local ###
 /src/main/resources/application-local.yml
 
+### queryDsl ###
+**/generated-sources/
+**/Q*.java
+
 ### env ###
 *.env

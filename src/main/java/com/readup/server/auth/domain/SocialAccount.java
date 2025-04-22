@@ -45,4 +45,8 @@ public class SocialAccount extends BaseEntity {
 
 	@Column(name = "provider_uid", nullable = false)
 	private String providerUid;
+
+	public void updateUserFromSocialAccount(User user) {
+		this.user = user;
+	}
 }
