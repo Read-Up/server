@@ -1,5 +1,8 @@
 package com.readup.server.auth.domain;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.readup.server.common.entity.BaseEntity;
 import com.readup.server.user.domain.User;
 
@@ -23,6 +26,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "social_account")
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE social_account SET deleted_at = NOW() WHERE id = ?")
 public class SocialAccount extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
