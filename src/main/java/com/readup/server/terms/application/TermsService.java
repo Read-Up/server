@@ -5,6 +5,7 @@ import static com.readup.server.common.exception.ErrorCode.*;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.terms.domain.Terms;
@@ -18,6 +19,7 @@ public class TermsService {
 
 	private final TermsJpaRepository termsJpaRepository;
 
+	@Transactional(readOnly = true)
 	public List<Terms> findAll() {
 		List<Terms> termsList = termsJpaRepository.findAll();
 
@@ -26,5 +28,15 @@ public class TermsService {
 		}
 
 		return termsList;
+	}
+
+	@Transactional(readOnly = true)
+	public Terms findById(Long id) {
+		return termsJpaRepository.findById(id).orElseThrow(() -> new ServiceException(TERMS_NOT_FOUND));
+	}
+
+	@Transactional(readOnly = true)
+	public Terms findByCode(String code) {
+		return termsJpaRepository.findByCode(code).orElseThrow(() -> new ServiceException(TERMS_NOT_FOUND));
 	}
 }

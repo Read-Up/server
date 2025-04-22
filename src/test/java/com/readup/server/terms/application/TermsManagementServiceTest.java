@@ -3,6 +3,7 @@ package com.readup.server.terms.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +40,9 @@ class TermsManagementServiceTest {
 		TermsVersion marketingTermVersion = TermsTestUtils.createMarketingTermsVersion();
 
 		when(termsService.findAll()).thenReturn(termsList);
-		when(termsVersionService.getLatestTermsVersion(1L)).thenReturn(serviceTermVersion);
-		when(termsVersionService.getLatestTermsVersion(2L)).thenReturn(privacyTermVersion);
-		when(termsVersionService.getLatestTermsVersion(3L)).thenReturn(marketingTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(1L), any(LocalDateTime.class))).thenReturn(serviceTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(2L), any(LocalDateTime.class))).thenReturn(privacyTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(3L), any(LocalDateTime.class))).thenReturn(marketingTermVersion);
 
 		List<TermsResponse> result = termsManagementService.getLatestTermsConsentList();
 
@@ -60,7 +61,8 @@ class TermsManagementServiceTest {
 		assertThat(result.get(2).content()).isEqualTo(marketingTermVersion.getContent());
 
 		verify(termsService, times(1)).findAll();
-		verify(termsVersionService, times(1)).getLatestTermsVersion(1L);
-		verify(termsVersionService, times(1)).getLatestTermsVersion(2L);
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(1L), any(LocalDateTime.class));
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(2L), any(LocalDateTime.class));
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(3L), any(LocalDateTime.class));
 	}
 }
