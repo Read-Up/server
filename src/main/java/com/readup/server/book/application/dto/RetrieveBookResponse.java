@@ -1,4 +1,4 @@
-package com.readup.server.book.presentation.dto;
+package com.readup.server.book.application.dto;
 
 import java.util.List;
 

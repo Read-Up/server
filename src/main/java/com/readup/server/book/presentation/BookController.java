@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.application.BookQueryService;
-import com.readup.server.book.presentation.dto.GetBookResponse;
-import com.readup.server.book.presentation.dto.SearchBookRequest;
-import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
+import com.readup.server.book.application.dto.GetBookResponse;
+import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;

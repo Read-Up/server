@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.Chapter;
 import com.readup.server.book.domain.repository.BookRepository;
-import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
 
 import lombok.RequiredArgsConstructor;
 
