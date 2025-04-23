@@ -9,7 +9,7 @@ import com.readup.server.book.domain.Book;
 
 public interface BookJpaRepository extends JpaRepository<Book, Long> {
 
-	boolean existsByIsbnOrTitle(String isbn, String title);
+	boolean existsByIsbn(String isbn);
 
 	@Query("SELECT b FROM Book b LEFT JOIN FETCH b.chapterList c WHERE b.id = :id")
 	Optional<Book> findBookById(Long id);

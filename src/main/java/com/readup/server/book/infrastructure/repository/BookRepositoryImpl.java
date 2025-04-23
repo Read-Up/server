@@ -13,9 +13,9 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.repository.BookRepository;
-import com.readup.server.book.presentation.dto.GetBookResponse;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.RepositoryException;
 
@@ -34,8 +34,8 @@ public class BookRepositoryImpl implements BookRepository {
 	}
 
 	@Override
-	public boolean existsByIsbnOrTitle(String isbn, String title) {
-		return bookJpaRepository.existsByIsbnOrTitle(isbn, title);
+	public boolean existsByIsbn(String isbn) {
+		return bookJpaRepository.existsByIsbn(isbn);
 	}
 
 	@Override
