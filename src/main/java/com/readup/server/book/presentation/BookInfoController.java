@@ -21,7 +21,7 @@ public class BookInfoController {
 	private final BookInfoService bookInfoService;
 
 	@GetMapping("/{isbn}")
-	public ApiResponse<GetExternalBookResponse> getBookInfo(@PathVariable String isbn) {
+	public ApiResponse<RetrieveBookResponse> getBookInfo(@PathVariable String isbn) {
 
 		GetExternalBookResponse response = bookInfoService.getBookInfo(isbn);
 
