@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.readup.server.terms.domain.Terms;
 import com.readup.server.terms.domain.TermsVersion;
+import com.readup.server.terms.dto.UserTermsConsentRequest;
 
 public class TermsTestUtils {
 
@@ -65,5 +66,17 @@ public class TermsTestUtils {
 			.content("마케팅 정보 수신동의 내용")
 			.build();
 
+	}
+
+	public static UserTermsConsentRequest createUserServiceTermsConsentRequest() {
+		return new UserTermsConsentRequest(1L, "SERVICE", true);
+	}
+
+	public static UserTermsConsentRequest createUserMarketingTermsConsentRequest() {
+		return new UserTermsConsentRequest(3L, "MARKETING", true);
+	}
+
+	public static List<UserTermsConsentRequest> createUserTermsConsentList() {
+		return Arrays.asList(createUserServiceTermsConsentRequest(), createUserMarketingTermsConsentRequest());
 	}
 }

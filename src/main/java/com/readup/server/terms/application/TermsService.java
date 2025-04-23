@@ -31,11 +31,6 @@ public class TermsService {
 	}
 
 	@Transactional(readOnly = true)
-	public Terms findById(Long id) {
-		return termsJpaRepository.findById(id).orElseThrow(() -> new ServiceException(TERMS_NOT_FOUND));
-	}
-
-	@Transactional(readOnly = true)
 	public Terms findByCode(String code) {
 		return termsJpaRepository.findByCode(code).orElseThrow(() -> new ServiceException(TERMS_NOT_FOUND));
 	}
