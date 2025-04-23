@@ -11,6 +11,7 @@ public class TermsTestUtils {
 	public static Terms createServiceTerms() {
 		return Terms.builder()
 			.id(1L)
+			.code("SERVICE")
 			.title("서비스 이용약관")
 			.build();
 	}
@@ -18,6 +19,7 @@ public class TermsTestUtils {
 	public static Terms createPrivacyTerms() {
 		return Terms.builder()
 			.id(2L)
+			.code("PRIVACY")
 			.title("개인정보 처리방침")
 			.build();
 	}
@@ -25,6 +27,7 @@ public class TermsTestUtils {
 	public static Terms createMarketingTerms() {
 		return Terms.builder()
 			.id(3L)
+			.code("MARKETING")
 			.title("마케팅 정보 수신동의")
 			.build();
 	}
