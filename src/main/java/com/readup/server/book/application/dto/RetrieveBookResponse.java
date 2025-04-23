@@ -8,7 +8,7 @@ import com.readup.server.book.domain.Chapter;
 import lombok.Builder;
 
 @Builder
-public record GetExternalBookResponse(
+public record RetrieveBookResponse(
 	Long bookId,
 	String bookTitle,
 	String publisher,
@@ -16,8 +16,8 @@ public record GetExternalBookResponse(
 	String isbn,
 	List<String> tableOfContents
 ) {
-	public static GetExternalBookResponse from(Book book) {
-		return GetExternalBookResponse.builder()
+	public static RetrieveBookResponse from(Book book) {
+		return RetrieveBookResponse.builder()
 			.bookId(book.getId())
 			.bookTitle(book.getTitle())
 			.publisher(book.getPublisher())
