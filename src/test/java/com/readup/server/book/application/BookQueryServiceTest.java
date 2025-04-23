@@ -16,9 +16,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 
+import com.readup.server.book.application.dto.GetBookResponse;
+import com.readup.server.book.application.dto.SearchBookRequest;
 import com.readup.server.book.domain.repository.BookRepository;
-import com.readup.server.book.presentation.dto.GetBookResponse;
-import com.readup.server.book.presentation.dto.SearchBookRequest;
 
 @ExtendWith(MockitoExtension.class)
 class BookQueryServiceTest {

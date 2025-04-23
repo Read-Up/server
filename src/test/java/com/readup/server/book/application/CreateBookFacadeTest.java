@@ -16,17 +16,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.readup.server.book.application.client.BookInfoClientFacade;
 import com.readup.server.book.application.client.BookInfoClientRegistry;
+import com.readup.server.book.application.client.ParseChapterClient;
 import com.readup.server.book.application.client.vo.BookInfoVO;
+import com.readup.server.book.application.client.vo.ChapterVO;
+import com.readup.server.book.application.dto.RetrieveBookResponse;
 import com.readup.server.book.domain.Book;
-import com.readup.server.book.domain.repository.BookRepository;
-import com.readup.server.book.presentation.dto.GetExternalBookResponse;
-import com.readup.server.common.exception.ServiceException;
+import com.readup.server.book.domain.service.BookDomainService;
+import com.readup.server.common.exception.DomainException;
+import com.readup.server.common.exception.ErrorCode;
 
 @ExtendWith(MockitoExtension.class)
-class BookInfoServiceTest {
+class CreateBookFacadeTest {
 
 	@InjectMocks
-	private BookInfoService bookInfoService;
+	private CreateBookFacade createBookFacade;
 
 	@Mock
 	private BookInfoClientRegistry bookInfoClientRegistry;
@@ -35,7 +38,10 @@ class BookInfoServiceTest {
 	private BookInfoClientFacade bookInfoClientFacade;
 
 	@Mock
-	private BookRepository bookRepository;
+	private ParseChapterClient parseChapterClient;
+
+	@Mock
+	private BookDomainService bookDomainService;
 
 	@Nested
 	@DisplayName("책 정보 가져오기 테스트")
@@ -52,7 +58,7 @@ class BookInfoServiceTest {
 				.author("이일민")
 				.isbn(isbn)
 				.titleUrl("http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg")
-				.chapterList(List.of())
+				.chapter("1장 소개, 2장 설치와 설정")
 				.build();
 
 			Book savedBook = Book.builder()
@@ -65,19 +71,31 @@ class BookInfoServiceTest {
 				.chapterList(List.of())
 				.build();
 
+			List<ChapterVO> chapterVOList = List.of(
+				ChapterVO.builder()
+					.name("1장 소개")
+					.chapterNumber(1)
+					.build(),
+				ChapterVO.builder()
+					.name("2장 설치와 설정")
+					.chapterNumber(2)
+					.build()
+			);
+
 			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
 			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
-			given(bookRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(false);
-			given(bookRepository.save(any(Book.class))).willReturn(savedBook);
+			given(bookDomainService.save(any(Book.class))).willReturn(savedBook);
+			given(parseChapterClient.parseRawChapter(anyString())).willReturn(chapterVOList);
+			willDoNothing().given(bookDomainService).doesNotExistBookByIsbn(anyString());
 
 			// when
-			GetExternalBookResponse getExternalBookResponse = bookInfoService.getBookInfo(isbn);
+			RetrieveBookResponse retrieveBookResponse = createBookFacade.createBook(isbn);
 
 			// then
-			assertEquals(bookInfoVO.bookTitle(), getExternalBookResponse.bookTitle());
-			assertEquals(bookInfoVO.publisher(), getExternalBookResponse.publisher());
-			assertEquals(bookInfoVO.author(), getExternalBookResponse.author());
-			assertEquals(isbn, getExternalBookResponse.isbn());
+			assertEquals(bookInfoVO.bookTitle(), retrieveBookResponse.bookTitle());
+			assertEquals(bookInfoVO.publisher(), retrieveBookResponse.publisher());
+			assertEquals(bookInfoVO.author(), retrieveBookResponse.author());
+			assertEquals(isbn, retrieveBookResponse.isbn());
 		}
 
 		@Test
@@ -85,21 +103,12 @@ class BookInfoServiceTest {
 		void getBookInfoFailWhenBookAlreadyExits() {
 			// given
 			String isbn = "9788960773417";
-			BookInfoVO bookInfoVO = BookInfoVO.builder()
-				.bookTitle("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
-				.publisher("에이콘출판(주)")
-				.author("이일민")
-				.isbn(isbn)
-				.titleUrl("http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg")
-				.chapterList(List.of())
-				.build();
 
-			given(bookInfoClientRegistry.getDefaultBookInfoClient()).willReturn(bookInfoClientFacade);
-			given(bookInfoClientFacade.getBookInfo(isbn)).willReturn(bookInfoVO);
-			given(bookRepository.existsByIsbnOrTitle(anyString(), anyString())).willReturn(true);
+			willThrow(new DomainException(ErrorCode.DUPLICATE_BOOK)).given(bookDomainService)
+				.doesNotExistBookByIsbn(anyString());
 
 			// when-then
-			assertThrows(ServiceException.class, () -> bookInfoService.getBookInfo(isbn));
+			assertThrows(DomainException.class, () -> createBookFacade.createBook(isbn));
 		}
 	}
 }

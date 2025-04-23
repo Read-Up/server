@@ -14,9 +14,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.repository.BookRepository;
-import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;
 

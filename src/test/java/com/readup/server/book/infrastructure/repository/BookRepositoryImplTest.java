@@ -28,40 +28,6 @@ class BookRepositoryImplTest {
 	private JPAQueryFactory jpaQueryFactory;
 
 	@Nested
-	@DisplayName("ISBN 또는 제목으로 책 존재 여부 확인 테스트")
-	class ExistsByIsbnOrTitleTest {
-		@Test
-		void existsByIsbnOrTitleSuccessTest() {
-			// given
-			String isbn = "1234567890";
-			String title = "Test Book";
-			given(bookJpaRepository.existsByIsbnOrTitle(isbn, title)).willReturn(true);
-
-			// when
-			boolean result = bookRepositoryImpl.existsByIsbnOrTitle(isbn, title);
-
-			// then
-			assertTrue(result);
-			verify(bookJpaRepository).existsByIsbnOrTitle(isbn, title);
-		}
-
-		@Test
-		void existsByIsbnOrTitleFailTest() {
-			// given
-			String isbn = "1234567890";
-			String title = "Test Book";
-			given(bookJpaRepository.existsByIsbnOrTitle(isbn, title)).willReturn(false);
-
-			// when
-			boolean result = bookRepositoryImpl.existsByIsbnOrTitle(isbn, title);
-
-			// then
-			assertFalse(result);
-			verify(bookJpaRepository).existsByIsbnOrTitle(isbn, title);
-		}
-	}
-
-	@Nested
 	@DisplayName("Id로 책 조회 테스트")
 	class GetBookByIdTest {
 		@Test
