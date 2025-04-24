@@ -108,11 +108,63 @@ tasks.named('test') {
     finalizedBy(tasks.jacocoTestReport)
 }
 
+
+def Qdomains = (('A'..'Z').collect { "**/Q${it}*" })
+
+def excludedPatterns = [
+        '**/*Config*',
+        '**/*Dto*',
+        '**/*Request*',
+        '**/*Response*',
+        '**/*Exception*',
+        '**/*Application*',
+        '**/*Properties*',
+        '**/*VO*'
+] + Qdomains
+
 tasks.named('jacocoTestReport') {
     dependsOn test
     reports {
         xml.required.set(true)
         html.required.set(true)
+    }
+
+
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, excludes: excludedPatterns)
+            })
+    )
+    finalizedBy 'jacocoTestCoverageVerification'
+}
+
+jacocoTestCoverageVerification {
+
+    classDirectories.setFrom(
+            files(classDirectories.files.collect { dir ->
+                fileTree(dir: dir).matching {
+                    exclude(excludedPatterns)
+                }
+            })
+    )
+
+    violationRules {
+        rule {
+            element = 'CLASS'
+            enabled = false
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.60
+            }
+        }
     }
 }
 
