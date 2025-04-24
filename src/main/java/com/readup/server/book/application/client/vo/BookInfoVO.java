@@ -1,7 +1,7 @@
 package com.readup.server.book.application.client.vo;
 
 import com.readup.server.book.domain.Book;
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetailResponse;
 
 import lombok.Builder;
 
@@ -15,14 +15,14 @@ public record BookInfoVO(
 	String summary,
 	String chapter
 ) {
-	public static BookInfoVO from(BookDetail bookDetail) {
+	public static BookInfoVO from(BookDetailResponse bookDetailResponse) {
 		return BookInfoVO.builder()
-			.bookTitle(bookDetail.title())
-			.publisher(bookDetail.publisher())
-			.author(bookDetail.author())
-			.isbn(bookDetail.eaIsbn())
-			.titleUrl(bookDetail.titleUrl())
-			.chapter(bookDetail.bookTbCnt())
+			.bookTitle(bookDetailResponse.title())
+			.publisher(bookDetailResponse.publisher())
+			.author(bookDetailResponse.author())
+			.isbn(bookDetailResponse.eaIsbn())
+			.titleUrl(bookDetailResponse.titleUrl())
+			.chapter(bookDetailResponse.bookTbCnt())
 			.build();
 	}
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.readup.server.book.application.client.BookInfoClientFacade;
 import com.readup.server.book.application.client.vo.BookInfoVO;
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetailResponse;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.GetBookNationalLibraryOfKoreaResponse;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.feign.BookInfoNationalLibraryOfKoreaFeignClient;
 import com.readup.server.common.exception.ErrorCode;
@@ -38,10 +38,10 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
 		}
 
-		BookDetail bookDetail = getBookNationalLibraryOfKoreaResponse.getBookDetail()
+		BookDetailResponse bookDetailResponse = getBookNationalLibraryOfKoreaResponse.getBookDetail()
 			.orElseThrow(() -> new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND));
 
-		return BookInfoVO.from(bookDetail);
+		return BookInfoVO.from(bookDetailResponse);
 	}
 
 	@Override
