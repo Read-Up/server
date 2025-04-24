@@ -23,3 +23,7 @@ book-info-client:
   national-library:
     cert-key: ${NATIONAL_LIBRARY_API_KEY}
     service-name: "NationalLibraryOfKorea"
+  aladin:
+    service-name: "Aladin"
+    ttb-key: ${ALADIN_API_KEY}
+
