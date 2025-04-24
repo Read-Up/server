@@ -26,7 +26,7 @@ public class CreateBookFacade {
 		bookDomainService.doesNotExistBookByIsbn(isbn);
 
 		BookInfoVO bookInfoVO = bookInfoClientRegistry.getDefaultBookInfoClient().getBookInfo(isbn);
-		List<ChapterVO> chapterVO = parseChapterClient.parseRawChapter(bookInfoVO.chapter());
+		List<ChapterVO> chapterVO = parseChapterClient.parseRawChapter(bookInfoVO.rawChapter());
 
 		Book book = bookInfoVO.toEntity();
 		book.updateChapterList(chapterVO.stream().map(ChapterVO::toEntity).toList());

@@ -13,7 +13,7 @@ public record BookInfoVO(
 	String isbn,
 	String titleUrl,
 	String summary,
-	String chapter
+	String rawChapter
 ) {
 	public static BookInfoVO from(BookDetailResponse bookDetailResponse) {
 		return BookInfoVO.builder()
@@ -22,7 +22,7 @@ public record BookInfoVO(
 			.author(bookDetailResponse.author())
 			.isbn(bookDetailResponse.eaIsbn())
 			.titleUrl(bookDetailResponse.titleUrl())
-			.chapter(bookDetailResponse.bookTbCnt())
+			.rawChapter(bookDetailResponse.bookTbCnt())
 			.build();
 	}
 

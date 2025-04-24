@@ -58,7 +58,7 @@ class CreateBookFacadeTest {
 				.author("이일민")
 				.isbn(isbn)
 				.titleUrl("http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg")
-				.chapter("1장 소개, 2장 설치와 설정")
+				.rawChapter("1장 소개, 2장 설치와 설정")
 				.build();
 
 			Book savedBook = Book.builder()
