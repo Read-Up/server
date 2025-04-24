@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import io.jsonwebtoken.lang.Objects;
-
 public record NationalLibraryOfKoreaGetBookResponse(
 	@JsonProperty("TOTAL_COUNT")
 	String totalCount,
@@ -18,7 +16,7 @@ public record NationalLibraryOfKoreaGetBookResponse(
 	List<NationalLibraryOfKoreaBookDetailResponse> docs
 ) {
 	public Optional<NationalLibraryOfKoreaBookDetailResponse> getBookDetail() {
-		if (Objects.isEmpty(docs)) {
+		if (docs == null || docs.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.of(docs.getFirst());

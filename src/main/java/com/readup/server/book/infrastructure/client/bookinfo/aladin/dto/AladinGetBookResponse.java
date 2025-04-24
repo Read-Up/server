@@ -3,8 +3,6 @@ package com.readup.server.book.infrastructure.client.bookinfo.aladin.dto;
 import java.util.List;
 import java.util.Optional;
 
-import io.jsonwebtoken.lang.Objects;
-
 public record AladinGetBookResponse(
 	String version,
 	String title,
@@ -20,7 +18,7 @@ public record AladinGetBookResponse(
 	List<AladinItemResponse> item
 ) {
 	public Optional<AladinItemResponse> getAladinItemResponse() {
-		if (Objects.isEmpty(item)) {
+		if (item == null || item.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.of(item.getFirst());
