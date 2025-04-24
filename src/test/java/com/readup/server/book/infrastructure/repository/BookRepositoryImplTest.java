@@ -1,77 +1,124 @@
 package com.readup.server.book.infrastructure.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.domain.Book;
+import com.readup.server.common.config.QuerydslConfig;
 import com.readup.server.common.exception.RepositoryException;
 
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@Sql(
+	executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD,
+	scripts = {"/sql/test-init-book.sql", "/sql/test-init-chapter.sql"}
+)
+@DataJpaTest
+@Import(QuerydslConfig.class)
 class BookRepositoryImplTest {
 
-	@InjectMocks
-	private BookRepositoryImpl bookRepositoryImpl;
-
-	@Mock
+	@Autowired
 	private BookJpaRepository bookJpaRepository;
 
-	@Mock
+	@Autowired
 	private JPAQueryFactory jpaQueryFactory;
 
-	@Nested
-	@DisplayName("Id로 책 조회 테스트")
-	class GetBookByIdTest {
-		@Test
-		void getBookByIdSuccessTest() {
-			// given
-			Long id = 1L;
-			Book book = mock(Book.class);
-			given(bookJpaRepository.findBookById(id)).willReturn(java.util.Optional.of(book));
+	private BookRepositoryImpl bookRepository;
 
-			// when
-			Book result = bookRepositoryImpl.getBookById(id);
-
-			// then
-			assertEquals(book, result);
-			verify(bookJpaRepository).findBookById(id);
+	@BeforeEach
+	public void init() {
+		if (bookRepository == null) {
+			bookRepository = new BookRepositoryImpl(jpaQueryFactory, bookJpaRepository);
 		}
+	}
+
+	private Book saveSampleBook(String title, String isbn) {
+		Book book = Book.builder()
+			.title(title)
+			.author("Author")
+			.publisher("Publisher")
+			.isbn(isbn)
+			.build();
+		return bookRepository.save(book);
+	}
+
+	@Nested
+	@DisplayName("save()")
+	class Save {
 
 		@Test
-		void getBookByIdFailWhenNotFoundTest() {
-			// given
-			Long id = 1L;
-			given(bookJpaRepository.findBookById(id)).willReturn(java.util.Optional.empty());
+		void shouldSaveBookSuccessfully() {
+			Book book = saveSampleBook("Test Title", "1234567890123");
 
-			// when & then
-			assertThrows(RepositoryException.class, () -> bookRepositoryImpl.getBookById(id));
-			verify(bookJpaRepository).findBookById(id);
+			assertNotNull(book.getId());
+			assertTrue(bookRepository.existsByIsbn("1234567890123"));
 		}
 	}
 
 	@Nested
-	@DisplayName("저장 테스트")
-	class SaveTest {
+	@DisplayName("getBookById()")
+	class GetBookById {
+
 		@Test
-		void saveBookSuccessTest() {
-			// given
-			Book book = mock(Book.class);
-			given(bookJpaRepository.save(book)).willReturn(book);
+		void shouldReturnBookWhenExists() {
+			Book saved = saveSampleBook("Test Title", "1234567890123");
+			Book found = bookRepository.getBookById(saved.getId());
 
-			// when
-			Book result = bookRepositoryImpl.save(book);
+			assertNotNull(found);
+			assertEquals("Test Title", found.getTitle());
+		}
 
-			// then
-			assertEquals(book, result);
-			verify(bookJpaRepository).save(book);
+		@Test
+		void shouldThrowExceptionWhenBookNotFound() {
+			assertThrows(RepositoryException.class, () -> bookRepository.getBookById(-1L));
+		}
+	}
+
+	@Nested
+	@DisplayName("existsByIsbn()")
+	class ExistsByIsbn {
+
+		@Test
+		void shouldReturnTrueWhenBookExists() {
+			saveSampleBook("Some Title", "1234567890123");
+			assertTrue(bookRepository.existsByIsbn("1234567890123"));
+		}
+
+		@Test
+		void shouldReturnFalseWhenBookDoesNotExist() {
+			assertFalse(bookRepository.existsByIsbn("1234567890123"));
+		}
+	}
+
+	@Nested
+	@DisplayName("searchBook()")
+	class SearchBook {
+
+		@Test
+		void shouldReturnPageWhenMatchingBooksExist() {
+			saveSampleBook("Java Programming", "1234567890123");
+			saveSampleBook("Spring Programming", "1234567890124");
+
+			Page<GetBookResponse> result = bookRepository.searchBook("Programming", null, PageRequest.of(0, 10));
+			assertFalse(result.getContent().isEmpty());
+		}
+
+		@Test
+		void shouldReturnEmptyPageWhenNoMatch() {
+			Page<GetBookResponse> result = bookRepository.searchBook("No Match", null, PageRequest.of(0, 10));
+			assertTrue(result.getContent().isEmpty());
 		}
 	}
 }
