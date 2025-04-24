@@ -3,11 +3,11 @@ package com.readup.server.book.infrastructure.client.bookinfo.aladin.dto;
 import java.util.List;
 
 public record AladinBookInfoResponse(
-	String subtitle,
+	String subTitle,
 	String originalTitle,
 	int itemPage,
 	String toc,
-	List<String> letsLookimg,
+	List<String> letslookimg,
 	List<AladinAuthorResponse> authors,
 	List<AladinEBookResponse> ebookList
 ) {

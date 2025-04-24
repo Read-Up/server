@@ -21,7 +21,7 @@ public record AladinItemResponse(
 	String categoryName,
 	String publisher,
 	int customerReviewRank,
-	AladinBookInfoResponse bookInfo
+	AladinBookInfoResponse bookinfo
 ) {
 	public BookInfoVO toBookInfoVO() {
 		return BookInfoVO.builder()
@@ -31,7 +31,7 @@ public record AladinItemResponse(
 			.isbn(isbn)
 			.titleUrl(link)
 			.summary(description)
-			.rawChapter(bookInfo.toc())
+			.rawChapter(bookinfo.toc())
 			.build();
 	}
 }
