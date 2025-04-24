@@ -1,6 +1,7 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.readup.server.book.application.client.vo.BookInfoVO;
 
 public record BookDetailResponse(
 	@JsonProperty("PUBLISHER")
@@ -120,4 +121,14 @@ public record BookDetailResponse(
 	@JsonProperty("FORM_DETAIL")
 	String formDetail
 ) {
+	public BookInfoVO toBookInfoVO() {
+		return BookInfoVO.builder()
+			.bookTitle(this.title())
+			.publisher(this.publisher())
+			.author(this.author())
+			.isbn(this.eaIsbn())
+			.titleUrl(this.titleUrl())
+			.rawChapter(this.bookTbCnt())
+			.build();
+	}
 }

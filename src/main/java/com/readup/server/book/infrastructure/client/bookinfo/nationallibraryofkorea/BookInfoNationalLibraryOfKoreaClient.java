@@ -41,7 +41,7 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 		BookDetailResponse bookDetailResponse = getBookNationalLibraryOfKoreaResponse.getBookDetail()
 			.orElseThrow(() -> new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND));
 
-		return BookInfoVO.from(bookDetailResponse);
+		return bookDetailResponse.toBookInfoVO();
 	}
 
 	@Override
