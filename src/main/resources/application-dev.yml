@@ -19,7 +19,7 @@ spring:
     baseline-on-migrate: true
 
 book-info-client:
-  default-service-name: "NationalLibraryOfKorea"
+  default-service-name: "Aladin"
   national-library:
     cert-key: ${NATIONAL_LIBRARY_API_KEY}
     service-name: "NationalLibraryOfKorea"
