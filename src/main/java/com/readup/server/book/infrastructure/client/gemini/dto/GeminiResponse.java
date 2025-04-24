@@ -18,8 +18,7 @@ public record GeminiResponse(
 	}
 
 	public record Candidate(
-		Content content,
-		String finishReason
+		Content content
 	) {
 	}
 
