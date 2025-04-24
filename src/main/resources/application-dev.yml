@@ -27,7 +27,6 @@ book-info-client:
     service-name: "Aladin"
     ttb-key: ${ALADIN_API_KEY}
 
-
 gemini-client:
   api-key: ${GEMINI_API_KEY}
   parse-chapter-prompt-template: |
