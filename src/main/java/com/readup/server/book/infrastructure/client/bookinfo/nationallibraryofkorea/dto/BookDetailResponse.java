@@ -2,7 +2,7 @@ package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofk
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record BookDetail(
+public record BookDetailResponse(
 	@JsonProperty("PUBLISHER")
 	String publisher,
 
