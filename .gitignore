@@ -41,6 +41,7 @@ out/
 
 ### queryDsl ###
 **/generated-sources/
+**/generated/
 **/Q*.java
 
 ### env ###
