@@ -4,13 +4,13 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.GetBookNationalLibraryOfKoreaResponse;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.NationalLibraryOfKoreaGetBookResponse;
 
 @FeignClient(name = "nationallibraryofkorea", url = "https://www.nl.go.kr/seoji", configuration = NationalLibraryFeignErrorDecoder.class)
 public interface BookInfoNationalLibraryOfKoreaFeignClient {
 
 	@GetMapping("/SearchApi.do")
-	GetBookNationalLibraryOfKoreaResponse getBookInfoByIsbn(
+	NationalLibraryOfKoreaGetBookResponse getBookInfoByIsbn(
 		@RequestParam("cert_key") String certKey,
 		@RequestParam("isbn") String isbn,
 		@RequestParam("result_style") String resultStyle,

@@ -3,7 +3,7 @@ package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofk
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.readup.server.book.application.client.vo.BookInfoVO;
 
-public record BookDetailResponse(
+public record NationalLibraryOfKoreaBookDetailResponse(
 	@JsonProperty("PUBLISHER")
 	String publisher,
 
