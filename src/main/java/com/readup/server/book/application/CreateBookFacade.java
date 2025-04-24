@@ -17,13 +17,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CreateBookFacade {
-	private final BookDomainService bookDomainservice;
+	private final BookDomainService bookDomainService;
 	private final BookInfoClientRegistry bookInfoClientRegistry;
 	private final ParseChapterClient parseChapterClient;
 
 	public RetrieveBookResponse createBook(String isbn) {
 
-		bookDomainservice.doesNotExistBookByIsbn(isbn);
+		bookDomainService.doesNotExistBookByIsbn(isbn);
 
 		BookInfoVO bookInfoVO = bookInfoClientRegistry.getDefaultBookInfoClient().getBookInfo(isbn);
 		List<ChapterVO> chapterVO = parseChapterClient.parseRawChapter(bookInfoVO.chapter());
@@ -31,7 +31,7 @@ public class CreateBookFacade {
 		Book book = bookInfoVO.toEntity();
 		book.updateChapterList(chapterVO.stream().map(ChapterVO::toEntity).toList());
 
-		Book savedBook = bookDomainservice.save(book);
+		Book savedBook = bookDomainService.save(book);
 
 		return RetrieveBookResponse.from(savedBook);
 	}
