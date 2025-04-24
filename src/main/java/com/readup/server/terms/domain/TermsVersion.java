@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @Builder
-@Table(name = "terms")
+@Table(name = "terms_version")
 @AllArgsConstructor
 @NoArgsConstructor
 public class TermsVersion extends BaseEntity {
