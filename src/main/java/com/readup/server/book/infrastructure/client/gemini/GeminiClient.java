@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readup.server.book.application.client.ParseChapterClient;
@@ -47,7 +46,7 @@ public class GeminiClient implements ParseChapterClient {
 				new TypeReference<>() {
 				}
 			);
-		} catch (JsonProcessingException e) {
+		} catch (Exception e) {
 			log.error("Error parsing JSON response: {}", e.getMessage());
 			return List.of();
 		}
