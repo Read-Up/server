@@ -11,7 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Map;
 
-import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,11 +34,12 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.SimpleType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.application.BookQueryService;
-import com.readup.server.book.presentation.dto.GetBookResponse;
-import com.readup.server.book.presentation.dto.SearchBookRequest;
-import com.readup.server.book.presentation.dto.UpdateChapterListRequest;
+import com.readup.server.book.application.dto.GetBookResponse;
+import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;

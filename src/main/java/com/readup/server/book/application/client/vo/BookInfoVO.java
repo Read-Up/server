@@ -1,9 +1,7 @@
 package com.readup.server.book.application.client.vo;
 
-import java.util.List;
-
 import com.readup.server.book.domain.Book;
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetail;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetailResponse;
 
 import lombok.Builder;
 
@@ -15,16 +13,16 @@ public record BookInfoVO(
 	String isbn,
 	String titleUrl,
 	String summary,
-	List<ChapterVO> chapterList
+	String rawChapter
 ) {
-	public static BookInfoVO from(BookDetail bookDetail) {
+	public static BookInfoVO from(BookDetailResponse bookDetailResponse) {
 		return BookInfoVO.builder()
-			.bookTitle(bookDetail.title())
-			.publisher(bookDetail.publisher())
-			.author(bookDetail.author())
-			.isbn(bookDetail.eaIsbn())
-			.titleUrl(bookDetail.titleUrl())
-			.chapterList(List.of())
+			.bookTitle(bookDetailResponse.title())
+			.publisher(bookDetailResponse.publisher())
+			.author(bookDetailResponse.author())
+			.isbn(bookDetailResponse.eaIsbn())
+			.titleUrl(bookDetailResponse.titleUrl())
+			.rawChapter(bookDetailResponse.bookTbCnt())
 			.build();
 	}
 
@@ -35,7 +33,6 @@ public record BookInfoVO(
 			.publisher(publisher)
 			.isbn(isbn)
 			.titleUrl(titleUrl)
-			.chapterList(chapterList.stream().map(ChapterVO::toEntity).toList())
 			.build();
 	}
 }

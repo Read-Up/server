@@ -13,9 +13,9 @@ public record GetBookNationalLibraryOfKoreaResponse(
 	String pageNo,
 
 	@JsonProperty("docs")
-	List<BookDetail> docs
+	List<BookDetailResponse> docs
 ) {
-	public Optional<BookDetail> getBookDetail() {
+	public Optional<BookDetailResponse> getBookDetail() {
 		if (docs == null || docs.isEmpty()) {
 			return Optional.empty();
 		}

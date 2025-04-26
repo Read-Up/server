@@ -1,5 +1,6 @@
 package com.readup.server.book.domain;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -58,8 +59,9 @@ public class Book extends BaseEntity {
 	@Column(name = "summary")
 	private String summary;
 
+	@Builder.Default
 	@OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Chapter> chapterList;
+	private List<Chapter> chapterList = new ArrayList<>();
 
 	public void updateChapterList(List<Chapter> chapterList) {
 		List<Chapter> sortedChapterList = chapterList.stream()

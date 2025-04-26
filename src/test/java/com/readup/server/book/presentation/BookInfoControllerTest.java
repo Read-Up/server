@@ -23,8 +23,8 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
 import com.epages.restdocs.apispec.SimpleType;
 import com.readup.server.AbstractWebMvcTest;
-import com.readup.server.book.application.BookInfoService;
-import com.readup.server.book.presentation.dto.GetExternalBookResponse;
+import com.readup.server.book.application.CreateBookFacade;
+import com.readup.server.book.application.dto.RetrieveBookResponse;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.ServiceException;
@@ -39,7 +39,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 	private MockMvc mockMvc;
 
 	@MockitoBean
-	private BookInfoService bookInfoService;
+	private CreateBookFacade createBookFacade;
 
 	@Nested
 	@DisplayName("ISBN 기반 책 정보 가져오기 API 테스트")
@@ -52,14 +52,14 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 		@DisplayName("ISBN 기반 책 정보 가져오기 성공")
 		void getBookInfoSuccess() throws Exception {
 			// given
-			GetExternalBookResponse getExternalBookResponse = GetExternalBookResponse.builder()
+			RetrieveBookResponse retrieveBookResponse = RetrieveBookResponse.builder()
 				.bookTitle("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
 				.publisher("에이콘출판(주)")
 				.author("이일민")
 				.isbn(String.valueOf(isbn))
 				.build();
 
-			given(bookInfoService.getBookInfo(anyString())).willReturn(getExternalBookResponse);
+			given(createBookFacade.createBook(anyString())).willReturn(retrieveBookResponse);
 
 			// when
 			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
@@ -67,10 +67,10 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 			// then
 			resultActions.andExpect(status().isOk())
 				.andExpect(jsonPath("$.success").value(true))
-				.andExpect(jsonPath("$.data.bookTitle").value(getExternalBookResponse.bookTitle()))
-				.andExpect(jsonPath("$.data.publisher").value(getExternalBookResponse.publisher()))
-				.andExpect(jsonPath("$.data.author").value(getExternalBookResponse.author()))
-				.andExpect(jsonPath("$.data.isbn").value(getExternalBookResponse.isbn()))
+				.andExpect(jsonPath("$.data.bookTitle").value(retrieveBookResponse.bookTitle()))
+				.andExpect(jsonPath("$.data.publisher").value(retrieveBookResponse.publisher()))
+				.andExpect(jsonPath("$.data.author").value(retrieveBookResponse.author()))
+				.andExpect(jsonPath("$.data.isbn").value(retrieveBookResponse.isbn()))
 				.andExpect(jsonPath("$.message").value(ApiResponse.DEFAULT_SUCCESS_MESSAGE));
 
 			// docs
@@ -94,7 +94,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 		@DisplayName("ISBN 기반 책 정보 가져오기 실패 - 이미 존재하는 책")
 		void getBookInfoFailWhenBookAlreadyExists() throws Exception {
 			// given
-			given(bookInfoService.getBookInfo(anyString()))
+			given(createBookFacade.createBook(anyString()))
 				.willThrow(new ServiceException(ErrorCode.DUPLICATE_BOOK, "Book already exists"));
 
 			// when
@@ -127,7 +127,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 		@DisplayName("ISBN 기반 책 정보 가져오기 실패 - 존재하지않는 ISBN")
 		void getBookInfoFailWhenBookNotFound() throws Exception {
 			// given
-			given(bookInfoService.getBookInfo(anyString()))
+			given(createBookFacade.createBook(anyString()))
 				.willThrow(new ServiceException(ErrorCode.BOOK_NOT_FOUND));
 
 			// when

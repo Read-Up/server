@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.readup.server.book.application.BookInfoService;
-import com.readup.server.book.presentation.dto.GetExternalBookResponse;
+import com.readup.server.book.application.CreateBookFacade;
+import com.readup.server.book.application.dto.RetrieveBookResponse;
 import com.readup.server.common.dto.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/public/external-books")
 public class BookInfoController {
 
-	private final BookInfoService bookInfoService;
+	private final CreateBookFacade createBookFacade;
 
 	@GetMapping("/{isbn}")
-	public ApiResponse<GetExternalBookResponse> getBookInfo(@PathVariable String isbn) {
+	public ApiResponse<RetrieveBookResponse> getBookInfo(@PathVariable String isbn) {
 
-		GetExternalBookResponse response = bookInfoService.getBookInfo(isbn);
+		RetrieveBookResponse response = createBookFacade.createBook(isbn);
 
 		return successResponse(response);
 	}
