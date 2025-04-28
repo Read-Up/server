@@ -144,6 +144,9 @@ CREATE TABLE `quiz_set`
 (
     `id`                            bigint                      NOT NULL AUTO_INCREMENT,
     `chapter_id`                    bigint                      NOT NULL,
+    `participant_count`             int                         NOT NULL,
+    `correct_answer_average`        double                      NOT NULL,
+    `like_average`                  double                      NOT NULL,
     `created_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `created_by`                    varchar(255)                DEFAULT NULL,
     `updated_at`                    timestamp                   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

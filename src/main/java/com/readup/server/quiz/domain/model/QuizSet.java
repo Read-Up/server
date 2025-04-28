@@ -7,6 +7,9 @@ import static lombok.AccessLevel.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -20,6 +23,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE quiz_set SET deleted_at = NOW() WHERE id = ?")
 @Table(name = "quiz_set")
 @Getter
 @Entity
@@ -35,12 +40,24 @@ public class QuizSet extends BaseEntity {
 	@Column(nullable = false)
 	private Long chapterId;
 
+	@Column(nullable = false)
+	private int participantCount;
+
+	@Column(nullable = false)
+	private double likeAverage;
+
+	@Column(nullable = false)
+	private double correctAnswerAverage;
+
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
 	private List<Quiz> quizList;
 
 	public static QuizSet create(Long chapterId) {
 		return QuizSet.builder()
 			.chapterId(chapterId)
+			.participantCount(0)
+			.likeAverage(0.0)
+			.correctAnswerAverage(0.0)
 			.quizList(new ArrayList<>())
 			.build();
 	}

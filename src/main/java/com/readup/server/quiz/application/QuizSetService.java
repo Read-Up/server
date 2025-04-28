@@ -9,6 +9,7 @@ import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 
@@ -28,6 +29,16 @@ public class QuizSetService {
 		QuizSet savedQuizSet = quizSetRepository.save(request.toEntity());
 
 		return CreateQuizSetResponse.from(request.bookId(), savedQuizSet);
+	}
+
+	@Transactional(readOnly = true)
+	public GetQuizSetResponse getQuizSet(Long bookId, Long chapterId, Long quizSetId) {
+		validateChapter(bookId, chapterId);
+
+		QuizSet quizSet = quizSetRepository.findById(quizSetId)
+			.orElseThrow(() -> new ServiceException(NOT_FOUND_QUIZ_SET));
+
+		return GetQuizSetResponse.from(bookId, quizSet);
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {

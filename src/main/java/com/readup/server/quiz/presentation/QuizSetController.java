@@ -2,14 +2,18 @@ package com.readup.server.quiz.presentation;
 
 import static com.readup.server.common.dto.ApiResponse.*;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.quiz.application.QuizSetService;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,5 +26,11 @@ public class QuizSetController {
 	@PostMapping("/private/quiz-sets")
 	public ApiResponse<CreateQuizSetResponse> createQuizSet(@RequestBody CreateQuizSetRequest request) {
 		return successResponse(quizSetService.createQuizSet(request));
+	}
+
+	@GetMapping("/private/quiz-sets/{quizSetId}")
+	public ApiResponse<GetQuizSetResponse> getQuizSet(@RequestParam Long bookId, @RequestParam Long chapterId,
+		@PathVariable Long quizSetId) {
+		return successResponse(quizSetService.getQuizSet(bookId, chapterId, quizSetId));
 	}
 }

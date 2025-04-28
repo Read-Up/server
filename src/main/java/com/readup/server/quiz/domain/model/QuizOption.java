@@ -4,6 +4,9 @@ import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -18,6 +21,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE quiz_option SET deleted_at = NOW() WHERE id = ?")
 @Table(name = "quiz_option")
 @Getter
 @Entity
