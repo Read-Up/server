@@ -2,6 +2,7 @@ package com.readup.server.quiz.stub;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.readup.server.quiz.domain.model.Quiz;
@@ -18,6 +19,13 @@ public class QuizSetJpaRepositoryStub implements QuizSetRepository {
 		QuizSet quizSetWithId = createQuizSetWithId(quizSet.getChapterId(), quizSet.getQuizList());
 		quizSetList.add(quizSetWithId);
 		return quizSetWithId;
+	}
+
+	@Override
+	public Optional<QuizSet> findById(Long quizSetId) {
+		return quizSetList.stream()
+			.filter(quizSet -> quizSet.getId().equals(quizSetId))
+			.findFirst();
 	}
 
 	private QuizSet createQuizSetWithId(Long chapterId, List<Quiz> quizList) {

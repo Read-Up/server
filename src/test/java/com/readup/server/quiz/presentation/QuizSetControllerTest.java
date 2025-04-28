@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,6 +29,8 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizReq
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOptionResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetResponse.GetQuizOptionResponse;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(QuizSetController.class)
@@ -43,8 +46,8 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 	private ObjectMapper objectMapper;
 
 	@Test
-	@DisplayName("퀴즈 추가 요청")
-	void createQuizSuccessTest() throws Exception {
+	@DisplayName("퀴즈 세트 추가")
+	void createQuizSetSuccessTest() throws Exception {
 		// given
 		final String uri = "/private/quiz-sets";
 		final Long bookId = 1L;
@@ -99,7 +102,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 
 			// docs
 			.andDo(
-				MockMvcRestDocumentationWrapper.document("quiz-create",
+				MockMvcRestDocumentationWrapper.document("create-quiz-set",
 					requestFields(
 						fieldWithPath("bookId").type(NUMBER).description("책 ID"),
 						fieldWithPath("chapterId").type(NUMBER).description("챕터 ID"),
@@ -122,6 +125,69 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 							.description("보기 내용"),
 						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].isCorrect").type(BOOLEAN)
 							.description("보기 정답 여부"),
+						fieldWithPath("message").type(STRING).description("성공 메시지")
+					)
+				)
+			);
+	}
+
+	@Test
+	@DisplayName("퀴즈 세트 상세 조회 성공")
+	void getQuizSetSuccessTest() throws Exception {
+		// given
+		final String uri = "/private/quiz-sets/{quizSetId}";
+		final Long bookId = 1L;
+		final Long chapterId = 1L;
+		final Long quizSetId = 1L;
+
+		final String question = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
+		final String optionContent1 = "int";
+		final String optionContent2 = "long";
+
+		GetQuizSetResponse response = new GetQuizSetResponse(
+			bookId, chapterId, quizSetId, List.of(
+			new GetQuizSetResponse.GetQuizResponse(
+				question, List.of(
+				new GetQuizOptionResponse(optionContent1),
+				new GetQuizOptionResponse(optionContent2)))));
+
+		// stubbing
+		when(quizSetService.getQuizSet(bookId, chapterId, quizSetId)).thenReturn(response);
+
+		// when && then
+		mockMvc.perform(get(uri, quizSetId)
+				.param("bookId", bookId.toString())
+				.param("chapterId", chapterId.toString())
+				.contentType(APPLICATION_JSON))
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.bookId").value(bookId),
+				jsonPath("$.data.chapterId").value(chapterId),
+				jsonPath("$.data.quizSetId").value(quizSetId),
+				jsonPath("$.data.quizResponseList[0].question").value(question),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].content").value(optionContent1),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(optionContent2),
+				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
+			)
+			// docs
+			.andDo(
+				MockMvcRestDocumentationWrapper.document("get-quiz-set",
+					queryParameters(
+						parameterWithName("bookId").description("책 ID"),
+						parameterWithName("chapterId").description("챕터 ID")
+					),
+					pathParameters(
+						parameterWithName("quizSetId").description("퀴즈 세트 ID")
+					),
+					responseFields(
+						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),
+						fieldWithPath("data.chapterId").type(NUMBER).description("챕터 ID"),
+						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
+						fieldWithPath("data.quizResponseList[].question").type(STRING).description("퀴즈 질문"),
+						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].content").type(STRING)
+							.description("보기 내용"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
