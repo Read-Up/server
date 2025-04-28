@@ -11,15 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
-import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,15 +24,14 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.bookregistration.application.BookRegistrationService;
 import com.readup.server.bookregistration.domain.model.RegistrationStatus;
 import com.readup.server.bookregistration.presentation.dto.CreateBookRegistrationRequest;
 import com.readup.server.bookregistration.presentation.dto.CreateBookRegistrationResponse;
 
-@AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(BookRegistrationController.class)
-@ExtendWith(RestDocumentationExtension.class)
 class BookRegistrationControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean

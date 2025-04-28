@@ -9,23 +9,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
-import java.util.AbstractCollection;
 import java.util.List;
 
-import com.readup.server.AbstractWebMvcTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.quiz.application.QuizSetService;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
@@ -33,10 +29,8 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizReq
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOptionResponse;
 
-@AutoConfigureRestDocs
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(QuizSetController.class)
-@ExtendWith(RestDocumentationExtension.class)
 class QuizSetControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean
