@@ -34,8 +34,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.application.BookQueryService;
-import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.DomainException;
@@ -73,8 +73,8 @@ class BookControllerTest extends AbstractWebMvcTest {
 			MultiValueMap<String, String> queryParams =
 				MultiValueMap.fromSingleValue(Map.of("title", "토비"));
 
-			PagedModel<GetBookResponse> pagedModel = new PagedModel<>(
-				new PageImpl<>(List.of(GetBookResponse.builder()
+			PagedModel<SearchBookResponse> pagedModel = new PagedModel<>(
+				new PageImpl<>(List.of(SearchBookResponse.builder()
 					.bookId(1L)
 					.title("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
 					.author("이일민")

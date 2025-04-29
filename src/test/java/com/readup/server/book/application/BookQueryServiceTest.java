@@ -16,8 +16,8 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 
-import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.domain.repository.BookRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,7 +40,7 @@ class BookQueryServiceTest {
 			String title = "testTitle";
 			String isbn = "1234567890";
 			SearchBookRequest searchBookRequest = new SearchBookRequest(title, isbn);
-			GetBookResponse getBookResponse = GetBookResponse.builder()
+			SearchBookResponse searchBookResponse = SearchBookResponse.builder()
 				.bookId(1L)
 				.title(title)
 				.author("testAuthor")
@@ -49,18 +49,18 @@ class BookQueryServiceTest {
 				.build();
 
 			given(bookRepository.searchBook(title, isbn, Pageable.unpaged()))
-				.willReturn(new PageImpl<>(List.of(getBookResponse)));
+				.willReturn(new PageImpl<>(List.of(searchBookResponse)));
 
 			// when
-			PagedModel<GetBookResponse> result = bookQueryService.searchBook(searchBookRequest, Pageable.unpaged());
+			PagedModel<SearchBookResponse> result = bookQueryService.searchBook(searchBookRequest, Pageable.unpaged());
 
 			// then
 			assertNotNull(result);
-			assertEquals(getBookResponse.author(), result.getContent().getFirst().author());
-			assertEquals(getBookResponse.publisher(), result.getContent().getFirst().publisher());
-			assertEquals(getBookResponse.title(), result.getContent().getFirst().title());
-			assertEquals(getBookResponse.titleUrl(), result.getContent().getFirst().titleUrl());
-			assertEquals(getBookResponse.bookId(), result.getContent().getFirst().bookId());
+			assertEquals(searchBookResponse.author(), result.getContent().getFirst().author());
+			assertEquals(searchBookResponse.publisher(), result.getContent().getFirst().publisher());
+			assertEquals(searchBookResponse.title(), result.getContent().getFirst().title());
+			assertEquals(searchBookResponse.titleUrl(), result.getContent().getFirst().titleUrl());
+			assertEquals(searchBookResponse.bookId(), result.getContent().getFirst().bookId());
 			assertEquals(1, result.getContent().size());
 		}
 	}

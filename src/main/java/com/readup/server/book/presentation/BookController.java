@@ -28,10 +28,10 @@ public class BookController {
 	private final BookQueryService bookQueryService;
 
 	@GetMapping
-	public ApiResponse<PagedModel<GetBookResponse>> searchBook(SearchBookRequest searchBookRequest,
+	public ApiResponse<PagedModel<SearchBookResponse>> searchBook(SearchBookRequest searchBookRequest,
 		@PageableDefault Pageable pageable) {
 
-		PagedModel<GetBookResponse> getBookResponsePagedModel =
+		PagedModel<SearchBookResponse> getBookResponsePagedModel =
 			bookQueryService.searchBook(searchBookRequest, pageable);
 
 		return ApiResponse.successResponse(getBookResponsePagedModel);
