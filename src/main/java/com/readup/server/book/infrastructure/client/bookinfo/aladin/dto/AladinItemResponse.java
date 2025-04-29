@@ -28,7 +28,7 @@ public record AladinItemResponse(
 			.bookTitle(title)
 			.publisher(publisher)
 			.author(author)
-			.isbn(isbn)
+			.isbn(isbn13)
 			.titleUrl(link)
 			.summary(description)
 			.rawChapter(bookinfo.toc())
