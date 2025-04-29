@@ -3,8 +3,10 @@ package com.readup.server.terms.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.readup.server.terms.domain.Terms;
 import com.readup.server.terms.domain.TermsVersion;
+import com.readup.server.terms.domain.UserTermsConsent;
 import com.readup.server.terms.dto.TermsResponse;
+import com.readup.server.terms.dto.UserTermsConsentRequest;
+import com.readup.server.user.domain.User;
+import com.readup.server.user.dto.CreateUserRequest;
 import com.readup.server.util.TermsTestUtils;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,8 +32,33 @@ class TermsManagementServiceTest {
 	@Mock
 	private TermsVersionService termsVersionService;
 
+	@Mock
+	private UserTermsConsentService userTermsConsentService;
+
 	@InjectMocks
 	private TermsManagementService termsManagementService;
+
+	private User user;
+	private UserTermsConsentRequest termsConsentRequest;
+	private CreateUserRequest createUserRequest;
+
+	@BeforeEach
+	void setUp() {
+		user = User.builder()
+			.id(1L)
+			.nickname("지적인 도마뱀").build();
+
+		termsConsentRequest = new UserTermsConsentRequest(
+			3L,
+			"MARKETING",
+			true
+		);
+
+		createUserRequest = new CreateUserRequest(
+			List.of(termsConsentRequest),
+			"지적인 도마뱀"
+		);
+	}
 
 	@Test
 	@DisplayName("최신 약관 동의 목록 조회")
@@ -39,9 +70,9 @@ class TermsManagementServiceTest {
 		TermsVersion marketingTermVersion = TermsTestUtils.createMarketingTermsVersion();
 
 		when(termsService.findAll()).thenReturn(termsList);
-		when(termsVersionService.getLatestTermsVersion(1L)).thenReturn(serviceTermVersion);
-		when(termsVersionService.getLatestTermsVersion(2L)).thenReturn(privacyTermVersion);
-		when(termsVersionService.getLatestTermsVersion(3L)).thenReturn(marketingTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(1L), any(LocalDateTime.class))).thenReturn(serviceTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(2L), any(LocalDateTime.class))).thenReturn(privacyTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(3L), any(LocalDateTime.class))).thenReturn(marketingTermVersion);
 
 		List<TermsResponse> result = termsManagementService.getLatestTermsConsentList();
 
@@ -60,7 +91,25 @@ class TermsManagementServiceTest {
 		assertThat(result.get(2).content()).isEqualTo(marketingTermVersion.getContent());
 
 		verify(termsService, times(1)).findAll();
-		verify(termsVersionService, times(1)).getLatestTermsVersion(1L);
-		verify(termsVersionService, times(1)).getLatestTermsVersion(2L);
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(1L), any(LocalDateTime.class));
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(2L), any(LocalDateTime.class));
+		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(3L), any(LocalDateTime.class));
+	}
+
+
+	@Test
+	void createUserTermsConsent_ShouldSaveAllTermsConsents() {
+
+		Terms terms = TermsTestUtils.createMarketingTerms();
+		TermsVersion marketingTermsVersion = TermsTestUtils.createMarketingTermsVersion();
+
+		when(termsService.findByCode("MARKETING")).thenReturn(terms);
+		when(termsVersionService.findById(3L)).thenReturn(marketingTermsVersion);
+
+		termsManagementService.createUserTermsConsent(user, createUserRequest);
+
+		verify(termsService).findByCode("MARKETING");
+		verify(termsVersionService).findById(3L);
+		verify(userTermsConsentService).save(any(UserTermsConsent.class));
 	}
 }
