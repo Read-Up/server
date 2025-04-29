@@ -1,6 +1,7 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -16,7 +17,7 @@ public record NationalLibraryOfKoreaGetBookResponse(
 	List<NationalLibraryOfKoreaBookDetailResponse> docs
 ) {
 	public Optional<NationalLibraryOfKoreaBookDetailResponse> getBookDetail() {
-		if (docs == null || docs.isEmpty()) {
+		if (Objects.equals(totalCount, "0") || docs == null || docs.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.of(docs.getFirst());

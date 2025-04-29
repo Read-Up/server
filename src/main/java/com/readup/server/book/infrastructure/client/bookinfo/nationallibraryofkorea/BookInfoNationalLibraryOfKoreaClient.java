@@ -1,7 +1,5 @@
 package com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea;
 
-import java.util.Objects;
-
 import org.springframework.stereotype.Component;
 
 import com.readup.server.book.application.client.BookInfoClientFacade;
@@ -21,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacade {
 
 	private static final String RESULT_STYLE = "json";
-	private static final String INVALID_TOTAL_COUNT = "0";
 	private static final int PAGE_NO = 1;
 	private static final int PAGE_SIZE = 10;
 	private final NationalLibraryOfKoreaProperties nationalLibraryOfKoreaProperties;
@@ -33,10 +30,6 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 		NationalLibraryOfKoreaGetBookResponse nationalLibraryOfKoreaGetBookResponse =
 			bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
 				nationalLibraryOfKoreaProperties.getCertKey(), isbn, RESULT_STYLE, PAGE_NO, PAGE_SIZE);
-
-		if (Objects.equals(nationalLibraryOfKoreaGetBookResponse.totalCount(), INVALID_TOTAL_COUNT)) {
-			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
-		}
 
 		NationalLibraryOfKoreaBookDetailResponse bookDetailResponse =
 			nationalLibraryOfKoreaGetBookResponse.getBookDetail()
