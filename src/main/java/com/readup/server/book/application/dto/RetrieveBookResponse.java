@@ -14,7 +14,7 @@ public record RetrieveBookResponse(
 	String publisher,
 	String author,
 	String isbn,
-	List<String> chapterList
+	List<ChapterResponse> chapterList
 ) {
 	public static RetrieveBookResponse from(Book book) {
 		return RetrieveBookResponse.builder()
@@ -23,7 +23,7 @@ public record RetrieveBookResponse(
 			.publisher(book.getPublisher())
 			.author(book.getAuthor())
 			.isbn(book.getIsbn())
-			.chapterList(book.getChapterList().stream().map(Chapter::getName).toList())
+			.chapterList(book.getChapterList().stream().map(ChapterResponse::from).toList())
 			.build();
 	}
 
