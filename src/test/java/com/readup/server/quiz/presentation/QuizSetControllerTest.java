@@ -1,5 +1,6 @@
 package com.readup.server.quiz.presentation;
 
+import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.*;
 import static com.readup.server.common.dto.ApiResponse.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.*;
@@ -103,6 +104,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 			// docs
 			.andDo(
 				MockMvcRestDocumentationWrapper.document("create-quiz-set",
+					resourceDetails().tag("QuizSet"),
 					requestFields(
 						fieldWithPath("bookId").type(NUMBER).description("책 ID"),
 						fieldWithPath("chapterId").type(NUMBER).description("챕터 ID"),
@@ -152,12 +154,10 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 				new GetQuizOptionResponse(optionContent2)))));
 
 		// stubbing
-		when(quizSetService.getQuizSet(bookId, chapterId, quizSetId)).thenReturn(response);
+		when(quizSetService.getQuizSet(quizSetId)).thenReturn(response);
 
 		// when && then
 		mockMvc.perform(get(uri, quizSetId)
-				.param("bookId", bookId.toString())
-				.param("chapterId", chapterId.toString())
 				.contentType(APPLICATION_JSON))
 			.andExpectAll(
 				status().isOk(),
@@ -170,16 +170,12 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(optionContent2),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
 			)
+
 			// docs
 			.andDo(
 				MockMvcRestDocumentationWrapper.document("get-quiz-set",
-					queryParameters(
-						parameterWithName("bookId").description("책 ID"),
-						parameterWithName("chapterId").description("챕터 ID")
-					),
-					pathParameters(
-						parameterWithName("quizSetId").description("퀴즈 세트 ID")
-					),
+					resourceDetails().tag("QuizSet"),
+					pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),

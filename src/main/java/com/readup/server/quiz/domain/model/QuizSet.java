@@ -38,6 +38,9 @@ public class QuizSet extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
+	private Long bookId;
+
+	@Column(nullable = false)
 	private Long chapterId;
 
 	@Column(nullable = false)
@@ -52,8 +55,9 @@ public class QuizSet extends BaseEntity {
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
 	private List<Quiz> quizList;
 
-	public static QuizSet create(Long chapterId) {
+	public static QuizSet create(Long bookId, Long chapterId) {
 		return QuizSet.builder()
+			.bookId(bookId)
 			.chapterId(chapterId)
 			.participantCount(0)
 			.likeAverage(0.0)

@@ -54,16 +54,16 @@ class QuizSetServiceTest {
 	private static final Long EXPECTED_BOOK_ID = 1L;
 	private static final Long EXPECTED_CHAPTER_ID = 1L;
 
-	Book book;
-
-	@BeforeEach
-	void setUp() {
-		Chapter chapter = createChapter();
-		book = createBook(chapter);
-	}
-
 	@Nested
 	class CreateQuizSet {
+
+		Book book;
+
+		@BeforeEach
+		void setUp() {
+			Chapter chapter = createChapter();
+			book = createBook(chapter);
+		}
 
 		@ParameterizedTest
 		@MethodSource("provideSingleAndMultipleQuizRequests")
@@ -78,7 +78,7 @@ class QuizSetServiceTest {
 			CreateQuizSetResponse response = sut.createQuizSet(request);
 
 			// then
-			assertBasicResponse(response, EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID, quizRequests.size());
+			assertBasicResponse(response, quizRequests.size());
 
 			for (int i = 0; i < quizRequests.size(); i++) {
 				CreateQuizRequest expected = quizRequests.get(i);
@@ -144,11 +144,10 @@ class QuizSetServiceTest {
 			verify(quizSetJpaRepositoryStub, never()).save(any());
 		}
 
-		private void assertBasicResponse(CreateQuizSetResponse response, Long expectedBookId, Long expectedChapterId,
-			int expectedQuizSize) {
+		private void assertBasicResponse(CreateQuizSetResponse response, int expectedQuizSize) {
 			assertNotNull(response);
-			assertEquals(expectedBookId, response.bookId());
-			assertEquals(expectedChapterId, response.chapterId());
+			assertEquals(EXPECTED_BOOK_ID, response.bookId());
+			assertEquals(EXPECTED_CHAPTER_ID, response.chapterId());
 			assertEquals(expectedQuizSize, response.quizResponseList().size());
 		}
 
@@ -157,6 +156,19 @@ class QuizSetServiceTest {
 			assertEquals(expectedQuestion, actual.question());
 			assertEquals(expectedExplanation, actual.explanation());
 			assertEquals(expectedOptionSize, actual.quizOptionResponseList().size());
+		}
+
+		private Book createBook(Chapter chapter) {
+			return Book.builder()
+				.id(EXPECTED_BOOK_ID)
+				.chapterList(List.of(chapter))
+				.build();
+		}
+
+		private Chapter createChapter() {
+			return Chapter.builder()
+				.id(EXPECTED_CHAPTER_ID)
+				.build();
 		}
 	}
 
@@ -167,7 +179,7 @@ class QuizSetServiceTest {
 
 		@BeforeEach
 		void setUp() {
-			QuizSet savedQuizSet = quizSetJpaRepositoryStub.save(QuizSet.create(EXPECTED_CHAPTER_ID));
+			QuizSet savedQuizSet = quizSetJpaRepositoryStub.save(QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID));
 			savedQuizSetId = savedQuizSet.getId();
 		}
 
@@ -178,11 +190,8 @@ class QuizSetServiceTest {
 			// given
 			QuizSet savedQuizSet = quizSetJpaRepositoryStub.save(quizSet);
 
-			// stubbing
-			when(bookRepository.getBookById(EXPECTED_BOOK_ID)).thenReturn(book);
-
 			// when
-			GetQuizSetResponse response = sut.getQuizSet(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID, savedQuizSet.getId());
+			GetQuizSetResponse response = sut.getQuizSet(savedQuizSet.getId());
 
 			// then
 			Assertions.assertAll(
@@ -208,12 +217,12 @@ class QuizSetServiceTest {
 		}
 
 		static Stream<QuizSet> provideSingleAndMultipleQuizSets() {
-			QuizSet singleQuizSet = QuizSet.create(EXPECTED_CHAPTER_ID);
+			QuizSet singleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID);
 			Quiz singleQuiz = singleQuizSet.addQuiz("질문1", "설명1");
 			singleQuiz.addQuizOption("보기1", true);
 			singleQuiz.addQuizOption("보기2", false);
 
-			QuizSet multipleQuizSet = QuizSet.create(EXPECTED_CHAPTER_ID);
+			QuizSet multipleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID);
 			Quiz quiz1 = multipleQuizSet.addQuiz("질문1", "설명1");
 			quiz1.addQuizOption("A", true);
 			quiz1.addQuizOption("B", false);
@@ -226,68 +235,15 @@ class QuizSetServiceTest {
 		}
 
 		@Test
-		@DisplayName("퀴즈 세트 조회 실패 - 책이 존재하지 않는 경우")
-		void get_quiz_set_fail_book_not_found() {
-			// given
-			final Long nonExistingBookId = 999L;
-
-			// stubbing
-			when(bookRepository.getBookById(nonExistingBookId))
-				.thenThrow(new RepositoryException(BOOK_NOT_FOUND));
-
-			// when & then
-			RepositoryException exception = assertThrows(RepositoryException.class,
-				() -> sut.getQuizSet(nonExistingBookId, EXPECTED_CHAPTER_ID, savedQuizSetId));
-			assertThat(exception.getErrorCode()).isEqualTo(BOOK_NOT_FOUND);
-			verify(bookRepository, times(1)).getBookById(nonExistingBookId);
-			verify(quizSetJpaRepositoryStub, never()).findById(savedQuizSetId);
-		}
-
-		@Test
-		@DisplayName("퀴즈 세트 조회 실패 - 챕터가 존재하지 않는 경우")
-		void get_quiz_set_fail_chapter_not_found() {
-			// given
-			final Long nonExistingChapterId = 999L;
-
-			// stubbing
-			when(bookRepository.getBookById(EXPECTED_BOOK_ID)).thenReturn(book);
-
-			// when & then
-			ServiceException exception = assertThrows(ServiceException.class,
-				() -> sut.getQuizSet(EXPECTED_BOOK_ID, nonExistingChapterId, savedQuizSetId));
-			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_CHAPTER);
-			verify(bookRepository, times(1)).getBookById(EXPECTED_BOOK_ID);
-			verify(quizSetJpaRepositoryStub, never()).findById(savedQuizSetId);
-		}
-
-		@Test
 		@DisplayName("퀴즈 세트 조회 실패 - 퀴즈 세트가 존재하지 않는 경우")
 		void get_quiz_set_fail_quiz_set_not_found() {
 			// given
 			final Long nonExistingQuizSetId = 999L;
 
-			// stubbing
-			when(bookRepository.getBookById(EXPECTED_BOOK_ID)).thenReturn(book);
-
 			// when & then
-			ServiceException exception = assertThrows(ServiceException.class,
-				() -> sut.getQuizSet(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID, nonExistingQuizSetId));
+			ServiceException exception = assertThrows(ServiceException.class, () -> sut.getQuizSet(nonExistingQuizSetId));
 			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_QUIZ_SET);
-			verify(bookRepository, times(1)).getBookById(EXPECTED_BOOK_ID);
 			verify(quizSetJpaRepositoryStub, times(1)).findById(nonExistingQuizSetId);
 		}
-	}
-
-	private Book createBook(Chapter chapter) {
-		return Book.builder()
-			.id(EXPECTED_BOOK_ID)
-			.chapterList(List.of(chapter))
-			.build();
-	}
-
-	private Chapter createChapter() {
-		return Chapter.builder()
-			.id(EXPECTED_CHAPTER_ID)
-			.build();
 	}
 }

@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.readup.server.common.dto.ApiResponse;
@@ -29,8 +28,7 @@ public class QuizSetController {
 	}
 
 	@GetMapping("/private/quiz-sets/{quizSetId}")
-	public ApiResponse<GetQuizSetResponse> getQuizSet(@RequestParam Long bookId, @RequestParam Long chapterId,
-		@PathVariable Long quizSetId) {
-		return successResponse(quizSetService.getQuizSet(bookId, chapterId, quizSetId));
+	public ApiResponse<GetQuizSetResponse> getQuizSet(@PathVariable Long quizSetId) {
+		return successResponse(quizSetService.getQuizSet(quizSetId));
 	}
 }

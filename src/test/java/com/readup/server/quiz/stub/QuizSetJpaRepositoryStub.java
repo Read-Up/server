@@ -16,7 +16,7 @@ public class QuizSetJpaRepositoryStub implements QuizSetRepository {
 
 	@Override
 	public QuizSet save(QuizSet quizSet) {
-		QuizSet quizSetWithId = createQuizSetWithId(quizSet.getChapterId(), quizSet.getQuizList());
+		QuizSet quizSetWithId = createQuizSetWithId(quizSet.getBookId(), quizSet.getChapterId(), quizSet.getQuizList());
 		quizSetList.add(quizSetWithId);
 		return quizSetWithId;
 	}
@@ -28,9 +28,10 @@ public class QuizSetJpaRepositoryStub implements QuizSetRepository {
 			.findFirst();
 	}
 
-	private QuizSet createQuizSetWithId(Long chapterId, List<Quiz> quizList) {
+	private QuizSet createQuizSetWithId(Long bookId, Long chapterId, List<Quiz> quizList) {
 		return QuizSet.builder()
 			.id(idGenerator.getAndIncrement())
+			.bookId(bookId)
 			.chapterId(chapterId)
 			.quizList(quizList)
 			.build();

@@ -9,8 +9,8 @@ import com.readup.server.quiz.domain.model.QuizSet;
 public record GetQuizSetResponse(Long bookId, Long chapterId, Long quizSetId,
 								 List<GetQuizResponse> quizResponseList) {
 
-	public static GetQuizSetResponse from(Long bookId, QuizSet quizSet) {
-		return new GetQuizSetResponse(bookId, quizSet.getChapterId(), quizSet.getId(),
+	public static GetQuizSetResponse from(QuizSet quizSet) {
+		return new GetQuizSetResponse(quizSet.getBookId(), quizSet.getChapterId(), quizSet.getId(),
 			GetQuizResponse.from(quizSet.getQuizList()));
 	}
 
