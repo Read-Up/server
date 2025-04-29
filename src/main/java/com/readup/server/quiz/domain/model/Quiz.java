@@ -8,6 +8,9 @@ import static lombok.AccessLevel.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -22,6 +25,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE quiz SET deleted_at = NOW() WHERE id = ?")
 @Table(name = "quiz")
 @Getter
 @Entity

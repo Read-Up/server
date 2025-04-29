@@ -42,7 +42,11 @@ public enum ErrorCode {
 	TERMS_NOT_FOUND(HttpStatus.NOT_FOUND, "약관이 존재하지 않습니다."),
 
 	// TermsVersion
-	TERMS_VERSION_NOT_FOUND(HttpStatus.NOT_FOUND, "약관의 버전이 존재하지 않습니다.");
+	TERMS_VERSION_NOT_FOUND(HttpStatus.NOT_FOUND, "약관의 버전이 존재하지 않습니다."),
+
+	// Quiz
+	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다.")
+	;
 
 	private final HttpStatus httpStatus;
 	private final String message;
