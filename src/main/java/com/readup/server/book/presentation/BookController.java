@@ -14,6 +14,7 @@ import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.application.BookQueryService;
 import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.application.dto.UpdateChapterListRequest;
 import com.readup.server.common.dto.ApiResponse;
 
@@ -35,6 +36,13 @@ public class BookController {
 			bookQueryService.searchBook(searchBookRequest, pageable);
 
 		return ApiResponse.successResponse(getBookResponsePagedModel);
+	}
+
+	@GetMapping("/{bookId}")
+	public ApiResponse<GetBookResponse> getBookById(@PathVariable Long bookId) {
+		GetBookResponse getBookResponse = bookQueryService.getBookById(bookId);
+
+		return ApiResponse.successResponse(getBookResponse);
 	}
 
 	@PutMapping("/{bookId}/chapters")
