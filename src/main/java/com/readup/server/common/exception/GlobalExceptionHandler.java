@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
-		log.error("[Unexpected Exception] {} - {}", ex, ex.getMessage());
+		log.error("[Unexpected Exception] {}", ex.getMessage(), ex);
 		ErrorResponse errorResponse = new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

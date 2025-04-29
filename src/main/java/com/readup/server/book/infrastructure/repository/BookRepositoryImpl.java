@@ -13,7 +13,7 @@ import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.readup.server.book.application.dto.GetBookResponse;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.domain.Book;
 import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.common.exception.ErrorCode;
@@ -45,15 +45,15 @@ public class BookRepositoryImpl implements BookRepository {
 	}
 
 	@Override
-	public Page<GetBookResponse> searchBook(String title, String isbn, Pageable pageable) {
+	public Page<SearchBookResponse> searchBook(String title, String isbn, Pageable pageable) {
 		List<Book> bookList = getBookListByTitleOrIsbn(title, isbn, pageable);
-		List<GetBookResponse> getBookResponseList = bookList.stream()
-			.map(GetBookResponse::from)
+		List<SearchBookResponse> searchBookResponseList = bookList.stream()
+			.map(SearchBookResponse::from)
 			.toList();
 
 		JPAQuery<Long> countQuery = getCountQueryByTitleOrIsbn(title, isbn);
 
-		return PageableExecutionUtils.getPage(getBookResponseList, pageable, countQuery::fetchOne);
+		return PageableExecutionUtils.getPage(searchBookResponseList, pageable, countQuery::fetchOne);
 	}
 
 	private JPAQuery<Long> getCountQueryByTitleOrIsbn(String title, String isbn) {

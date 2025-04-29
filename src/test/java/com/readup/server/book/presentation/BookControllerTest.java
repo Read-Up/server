@@ -36,7 +36,10 @@ import com.readup.server.book.application.BookCommandService;
 import com.readup.server.book.application.BookQueryService;
 import com.readup.server.book.application.dto.GetBookResponse;
 import com.readup.server.book.application.dto.SearchBookRequest;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.application.dto.UpdateChapterListRequest;
+import com.readup.server.book.domain.Book;
+import com.readup.server.book.domain.Chapter;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;
@@ -73,8 +76,8 @@ class BookControllerTest extends AbstractWebMvcTest {
 			MultiValueMap<String, String> queryParams =
 				MultiValueMap.fromSingleValue(Map.of("title", "토비"));
 
-			PagedModel<GetBookResponse> pagedModel = new PagedModel<>(
-				new PageImpl<>(List.of(GetBookResponse.builder()
+			PagedModel<SearchBookResponse> pagedModel = new PagedModel<>(
+				new PageImpl<>(List.of(SearchBookResponse.builder()
 					.bookId(1L)
 					.title("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
 					.author("이일민")
@@ -133,6 +136,122 @@ class BookControllerTest extends AbstractWebMvcTest {
 							fieldWithPath("data.page.number").description("현재 페이지 번호"),
 							fieldWithPath("data.page.totalElements").description("총 요소 수"),
 							fieldWithPath("data.page.totalPages").description("총 페이지 수")
+						)
+						.build()
+					)
+				)
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("책 상세 정보 조회 테스트")
+	class getBookByBookId {
+		private final String uri = "/public/books/{bookId}";
+		private final Long bookId = 1L;
+
+		@Test
+		@DisplayName("책 상세 정보 조회 성공 테스트")
+		void getBookByBookIdSuccessTest() throws Exception {
+			//given
+			Book book = Book.builder()
+				.id(1L)
+				.isbn("9788960773417")
+				.title("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
+				.author("이일민")
+				.publisher("에이콘출판(주)")
+				.titleUrl("http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg")
+				.chapterList(List.of(
+					Chapter.builder()
+						.id(1L)
+						.chapterOrder(1)
+						.name("1장 소개")
+						.build(),
+					Chapter.builder()
+						.id(2L)
+						.chapterOrder(2)
+						.name("2장 설치와 설정")
+						.build(),
+					Chapter.builder()
+						.id(3L)
+						.chapterOrder(3)
+						.name("3장 스프링의 이해")
+						.build()
+				))
+				.build();
+			given(bookQueryService.getBookById(any(Long.class)))
+				.willReturn(GetBookResponse.from(book));
+
+			//when
+			ResultActions resultActions = mockMvc.perform(get(uri, bookId)
+				.contentType(MediaType.APPLICATION_JSON));
+
+			//then
+			resultActions.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.bookId").value(1L),
+				jsonPath("$.data.title").value("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리"),
+				jsonPath("$.data.author").value("이일민"),
+				jsonPath("$.data.publisher").value("에이콘출판(주)"),
+				jsonPath("$.data.isbn").value("9788960773417"),
+				jsonPath("$.data.titleUrl").value(
+					"http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg"),
+				jsonPath("$.data.chapterList[0].chapterId").value(1L),
+				jsonPath("$.data.chapterList[0].chapterOrder").value(1),
+				jsonPath("$.data.chapterList[0].chapterName").value("1장 소개"),
+				jsonPath("$.data.chapterList[1].chapterId").value(2L),
+				jsonPath("$.data.chapterList[1].chapterOrder").value(2),
+				jsonPath("$.data.chapterList[1].chapterName").value("2장 설치와 설정"),
+				jsonPath("$.data.chapterList[2].chapterId").value(3L),
+				jsonPath("$.data.chapterList[2].chapterOrder").value(3),
+				jsonPath("$.data.chapterList[2].chapterName").value("3장 스프링의 이해"),
+				jsonPath("$.message").value(ApiResponse.DEFAULT_SUCCESS_MESSAGE)
+			);
+
+			//docs
+			resultActions.andDo(
+				MockMvcRestDocumentationWrapper.document("책 상세 조회 성공",
+					preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					resource(ResourceSnippetParameters.builder()
+						.tag("Book")
+						.pathParameters(
+							parameterWithName("bookId").type(SimpleType.NUMBER).description("책 ID")
+						)
+						.build()
+					)
+				)
+			);
+		}
+
+		@Test
+		@DisplayName("책 상세 정보 조회 실패 테스트 - 존재하지 않는 책")
+		void getBookByBookIdFailWhenBookNotExistTest() throws Exception {
+			//given
+			given(bookQueryService.getBookById(any(Long.class)))
+				.willThrow(new DomainException(ErrorCode.BOOK_NOT_FOUND));
+
+			//when
+			ResultActions resultActions = mockMvc.perform(get(uri, bookId)
+				.contentType(MediaType.APPLICATION_JSON));
+
+			//then
+			resultActions.andExpectAll(
+				status().isNotFound(),
+				jsonPath("$.error").value(ErrorCode.BOOK_NOT_FOUND.name()),
+				jsonPath("$.message").value(ErrorCode.BOOK_NOT_FOUND.getMessage())
+			);
+
+			//docs
+			resultActions.andDo(
+				MockMvcRestDocumentationWrapper.document("책 상세 조회 실패 - 존재하지 않는 책",
+					preprocessRequest(prettyPrint()),
+					preprocessResponse(prettyPrint()),
+					resource(ResourceSnippetParameters.builder()
+						.tag("Book")
+						.pathParameters(
+							parameterWithName("bookId").type(SimpleType.NUMBER).description("책 ID")
 						)
 						.build()
 					)

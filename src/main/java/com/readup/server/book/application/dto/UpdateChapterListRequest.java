@@ -18,12 +18,12 @@ public record UpdateChapterListRequest(
 	}
 
 	public record UpdateChapterRequest(
-		@NotNull Integer chapterNumber,
+		@NotNull Integer chapterOrder,
 		@NotBlank String chapterName
 	) {
 		public Chapter toEntity() {
 			return Chapter.builder()
-				.chapterNumber(chapterNumber)
+				.chapterOrder(chapterOrder)
 				.name(chapterName)
 				.build();
 		}

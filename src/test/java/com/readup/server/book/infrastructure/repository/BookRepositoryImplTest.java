@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.readup.server.book.application.dto.GetBookResponse;
+import com.readup.server.book.application.dto.SearchBookResponse;
 import com.readup.server.book.domain.Book;
 import com.readup.server.common.config.QuerydslConfig;
 import com.readup.server.common.exception.RepositoryException;
@@ -111,13 +111,13 @@ class BookRepositoryImplTest {
 			saveSampleBook("Java Programming", "1234567890123");
 			saveSampleBook("Spring Programming", "1234567890124");
 
-			Page<GetBookResponse> result = bookRepository.searchBook("Programming", null, PageRequest.of(0, 10));
+			Page<SearchBookResponse> result = bookRepository.searchBook("Programming", null, PageRequest.of(0, 10));
 			assertFalse(result.getContent().isEmpty());
 		}
 
 		@Test
 		void shouldReturnEmptyPageWhenNoMatch() {
-			Page<GetBookResponse> result = bookRepository.searchBook("No Match", null, PageRequest.of(0, 10));
+			Page<SearchBookResponse> result = bookRepository.searchBook("No Match", null, PageRequest.of(0, 10));
 			assertTrue(result.getContent().isEmpty());
 		}
 	}

@@ -18,7 +18,7 @@ public record AladinGetBookResponse(
 	List<AladinItemResponse> item
 ) {
 	public Optional<AladinItemResponse> getAladinItemResponse() {
-		if (item == null || item.isEmpty()) {
+		if (totalResults == 0 || item == null || item.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.of(item.getFirst());

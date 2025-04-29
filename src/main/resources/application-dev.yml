@@ -33,15 +33,15 @@ book-info-client:
 gemini-client:
   api-key: ${GEMINI_API_KEY}
   parse-chapter-prompt-template: |
-    HTML 형식의 목차 텍스트에서 1차 챕터 제목을 찾아, 다음과 같은 형식으로 변환해줘. number는 순서, name은 챕터 제목이야.
+    HTML 형식의 목차 텍스트에서 1차 챕터 제목을 찾아, 답변은 json 형식으로 변환해줘. order는 순서, name은 챕터 제목이야.
 
     [
       {
-        "chapterNumber": 1,
+        "chapterOrder": 1,
         "name": "1장 오브젝트와 의존관계"
       },
       {
-        "chapterNumber": 2,
+        "chapterOrder": 2,
         "name": "2장 테스트"
       },
       ...

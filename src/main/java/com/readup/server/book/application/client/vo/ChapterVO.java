@@ -7,12 +7,12 @@ import lombok.Builder;
 @Builder
 public record ChapterVO(
 	String name,
-	Integer chapterNumber
+	Integer chapterOrder
 ) {
 	public Chapter toEntity() {
 		return Chapter.builder()
 			.name(name)
-			.chapterNumber(chapterNumber)
+			.chapterOrder(chapterOrder)
 			.build();
 	}
 }
