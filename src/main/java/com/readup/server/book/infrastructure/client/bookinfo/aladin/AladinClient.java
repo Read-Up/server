@@ -47,8 +47,6 @@ public class AladinClient implements BookInfoClientFacade {
 			throw new FeignException(ErrorCode.API_SERVER_ERROR);
 		}
 
-		log.info("Aladin response: {}", aladinGetBookResponse);
-
 		if (Objects.equals(aladinGetBookResponse.totalResults(), INVALID_TOTAL_COUNT)) {
 			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
 		}
