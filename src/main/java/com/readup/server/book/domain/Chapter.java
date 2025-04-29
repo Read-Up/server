@@ -36,8 +36,8 @@ public class Chapter extends BaseEntity {
 	@Column(name = "name", nullable = false)
 	private String name;
 
-	@Column(name = "chapter_number", nullable = false)
-	private Integer chapterOrder;
+	@Column(name = "chapter_order", nullable = false)
+	private int chapterOrder;
 
 	@ManyToOne
 	@JoinColumn(name = "book_id", nullable = false)
