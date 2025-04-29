@@ -6,8 +6,8 @@ import org.springframework.stereotype.Component;
 
 import com.readup.server.book.application.client.BookInfoClientFacade;
 import com.readup.server.book.application.client.vo.BookInfoVO;
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.BookDetailResponse;
-import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.GetBookNationalLibraryOfKoreaResponse;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.NationalLibraryOfKoreaBookDetailResponse;
+import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.NationalLibraryOfKoreaGetBookResponse;
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.feign.BookInfoNationalLibraryOfKoreaFeignClient;
 import com.readup.server.common.exception.ErrorCode;
 import com.readup.server.common.exception.FeignException;
@@ -30,18 +30,19 @@ public class BookInfoNationalLibraryOfKoreaClient implements BookInfoClientFacad
 	@Override
 	public BookInfoVO getBookInfo(String isbn) {
 
-		GetBookNationalLibraryOfKoreaResponse getBookNationalLibraryOfKoreaResponse
-			= bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
-			nationalLibraryOfKoreaProperties.getCertKey(), isbn, RESULT_STYLE, PAGE_NO, PAGE_SIZE);
+		NationalLibraryOfKoreaGetBookResponse nationalLibraryOfKoreaGetBookResponse =
+			bookInfoNationalLibraryOfKoreaFeignClient.getBookInfoByIsbn(
+				nationalLibraryOfKoreaProperties.getCertKey(), isbn, RESULT_STYLE, PAGE_NO, PAGE_SIZE);
 
-		if (Objects.equals(getBookNationalLibraryOfKoreaResponse.totalCount(), INVALID_TOTAL_COUNT)) {
+		if (Objects.equals(nationalLibraryOfKoreaGetBookResponse.totalCount(), INVALID_TOTAL_COUNT)) {
 			throw new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND);
 		}
 
-		BookDetailResponse bookDetailResponse = getBookNationalLibraryOfKoreaResponse.getBookDetail()
-			.orElseThrow(() -> new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND));
+		NationalLibraryOfKoreaBookDetailResponse bookDetailResponse =
+			nationalLibraryOfKoreaGetBookResponse.getBookDetail()
+				.orElseThrow(() -> new FeignException(ErrorCode.EXTERNAL_BOOK_INFO_NOT_FOUND));
 
-		return BookInfoVO.from(bookDetailResponse);
+		return bookDetailResponse.toBookInfoVO();
 	}
 
 	@Override

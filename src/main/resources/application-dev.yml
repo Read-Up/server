@@ -17,12 +17,18 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+    locations:
+      - classpath:db/migration
+      - classpath:db/seed
 
 book-info-client:
-  default-service-name: "NationalLibraryOfKorea"
+  default-service-name: "Aladin"
   national-library:
     cert-key: ${NATIONAL_LIBRARY_API_KEY}
     service-name: "NationalLibraryOfKorea"
+  aladin:
+    service-name: "Aladin"
+    ttb-key: ${ALADIN_API_KEY}
 
 gemini-client:
   api-key: ${GEMINI_API_KEY}
