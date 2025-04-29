@@ -74,11 +74,11 @@ class CreateBookFacadeTest {
 			List<ChapterVO> chapterVOList = List.of(
 				ChapterVO.builder()
 					.name("1장 소개")
-					.chapterNumber(1)
+					.chapterOrder(1)
 					.build(),
 				ChapterVO.builder()
 					.name("2장 설치와 설정")
-					.chapterNumber(2)
+					.chapterOrder(2)
 					.build()
 			);
 

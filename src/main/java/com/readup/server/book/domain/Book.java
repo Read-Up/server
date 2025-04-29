@@ -65,7 +65,7 @@ public class Book extends BaseEntity {
 
 	public void updateChapterList(List<Chapter> chapterList) {
 		List<Chapter> sortedChapterList = chapterList.stream()
-			.sorted(Comparator.comparing(Chapter::getChapterNumber))
+			.sorted(Comparator.comparing(Chapter::getChapterOrder))
 			.toList();
 
 		validateChapterOrder(sortedChapterList);
@@ -79,7 +79,7 @@ public class Book extends BaseEntity {
 		IntStream.range(0, chapters.size())
 			.forEach(i -> {
 				int expected = i + 1;
-				int actual = chapters.get(i).getChapterNumber();
+				int actual = chapters.get(i).getChapterOrder();
 				if (actual != expected) {
 					throw new DomainException(ErrorCode.INVALID_CHAPTER_NUMBER);
 				}

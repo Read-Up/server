@@ -50,7 +50,7 @@ class GeminiClientTest {
 		void shouldReturnChapterListWhenValidJson() throws Exception {
 			// given
 			String rawChapter = "<p>1장 시작</p>";
-			String dummyJson = "```json\n[{\"chapterNumber\":1, \"name\":\"1장 시작\"}]\n```";
+			String dummyJson = "```json\n[{\"chapterOrder\":1, \"name\":\"1장 시작\"}]\n```";
 			GeminiResponse geminiResponse = new GeminiResponse(
 				List.of(
 					new GeminiResponse.Candidate(
@@ -63,7 +63,7 @@ class GeminiClientTest {
 			);
 
 			ChapterVO chapterVO = ChapterVO.builder()
-				.chapterNumber(1)
+				.chapterOrder(1)
 				.name("1장 시작")
 				.build();
 
@@ -78,7 +78,7 @@ class GeminiClientTest {
 
 			// then
 			assertEquals(1, result.size());
-			assertEquals(1, result.getFirst().chapterNumber());
+			assertEquals(1, result.getFirst().chapterOrder());
 			assertEquals("1장 시작", result.getFirst().name());
 		}
 
