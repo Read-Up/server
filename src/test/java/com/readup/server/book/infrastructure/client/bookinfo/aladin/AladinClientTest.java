@@ -58,7 +58,7 @@ class AladinClientTest extends WireMockSupport {
 
 		@Test
 		@DisplayName("알라딘 클라이언트에서 책 정보를 가져오기 실패 테스트 - 존재 하지 않는 책")
-		void getBookInfoFailWhenBookDoseNotExistTest() {
+		void getBookInfoFailWhenBookDoesNotExistTest() {
 			//given
 			String isbn = "1234567890123";
 
