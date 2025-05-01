@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/ItemLookUp.aspx",
+    "queryParameters": {
+      "TTBKey": {
+        "matches": "ttbtestkey20251234567"
+      },
+      "ItemId": {
+        "matches": "1234567890124"
+      },
+      "ItemIdType": {
+        "matches": "ISBN13"
+      },
+      "Output": {
+        "matches": "JS"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "text/plain; charset=utf-8"
+    },
+    "status": 200,
+    "body": "invalid response"
+  }
+}

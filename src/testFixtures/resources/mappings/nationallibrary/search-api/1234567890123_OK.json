@@ -1,0 +1,34 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/SearchApi.do",
+    "queryParameters": {
+      "cert_key": {
+        "matches": "nationalLibraryTestKey"
+      },
+      "result_style": {
+        "matches": "json"
+      },
+      "page_no": {
+        "matches": "1"
+      },
+      "page_size": {
+        "matches": "10"
+      },
+      "isbn": {
+        "matches": "1234567890123"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200,
+    "jsonBody": {
+      "TOTAL_COUNT": "0",
+      "PAGE_NO": "1",
+      "docs": []
+    }
+  }
+}
