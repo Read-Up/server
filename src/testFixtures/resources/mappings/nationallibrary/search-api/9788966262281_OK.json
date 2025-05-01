@@ -1,0 +1,76 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/SearchApi.do",
+    "queryParameters": {
+      "cert_key": {
+        "matches": "nationalLibraryTestKey"
+      },
+      "result_style": {
+        "matches": "json"
+      },
+      "page_no": {
+        "matches": "1"
+      },
+      "page_size": {
+        "matches": "10"
+      },
+      "isbn": {
+        "matches": "9788966262281"
+      }
+    }
+  },
+  "response": {
+    "headers": {
+      "Content-Type": "application/json;charset=UTF-8"
+    },
+    "status": 200,
+    "jsonBody": {
+      "TOTAL_COUNT": "1",
+      "PAGE_NO": "1",
+      "docs": [
+        {
+          "PUBLISHER": "인사이트",
+          "DDC": "005.133",
+          "UPDATE_DATE": "20181108",
+          "EA_ADD_CODE": "93000",
+          "PUBLISHER_URL": "http://blog.insightbook.co.kr/",
+          "AUTHOR": "조슈아 블로크 지음 ;이복연 옮김",
+          "SERIES_TITLE": "",
+          "KDC": "005.133",
+          "EDITION_STMT": "개정판",
+          "BOOK_TB_CNT_URL": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/6952194_6.txt",
+          "BOOK_TB_CNT": "",
+          "BOOK_INTRODUCTION_URL": "https://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/6952194_5.txt",
+          "BOOK_INTRODUCTION": "",
+          "BOOK_SUMMARY_URL": "",
+          "BOOK_SUMMARY": "",
+          "TITLE_URL": "http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/6952194_3.jpg",
+          "SET_ISBN": "",
+          "REAL_PUBLISH_DATE": "",
+          "PRE_PRICE": "36000",
+          "DEPOSIT_YN": "Y",
+          "BOOK_SIZE": "172*225",
+          "EBOOK_YN": "N",
+          "REAL_PRICE": "",
+          "FORM": "종이책",
+          "CONTROL_NO": "CIP2018033070",
+          "SERIES_NO": "",
+          "EA_ISBN": "9788966262281",
+          "INPUT_DATE": "20181015",
+          "SET_EXPRESSION": "",
+          "VOL": "",
+          "CIP_YN": "Y",
+          "SUBJECT": "0",
+          "BIB_YN": "Y",
+          "TITLE": "이펙티브 자바",
+          "PUBLISH_PREDATE": "20181101",
+          "SET_ADD_CODE": "",
+          "PAGE": "xx, 500 p.",
+          "RELATED_ISBN": "",
+          "FORM_DETAIL": "무선제본"
+        }
+      ]
+    }
+  }
+}
