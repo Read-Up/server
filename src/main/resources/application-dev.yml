@@ -24,9 +24,11 @@ spring:
 book-info-client:
   default-service-name: "Aladin"
   national-library:
+    url: "https://www.nl.go.kr/seoji"
     cert-key: ${NATIONAL_LIBRARY_API_KEY}
     service-name: "NationalLibraryOfKorea"
   aladin:
+    url: "http://www.aladin.co.kr/ttb/api"
     service-name: "Aladin"
     ttb-key: ${ALADIN_API_KEY}
 

@@ -12,3 +12,38 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
   flyway:
     enabled: false
+
+  security:
+    oauth2:
+      keys:
+        access-token-key-string: "example-access-token-key-string-long"
+        refresh-token-key-string: "example-refresh-token-key-string-long"
+
+
+book-info-client:
+  default-service-name: "Aladin"
+  national-library:
+    url: "http://localhost:${wiremock.server.port}"
+    cert-key: "nationalLibraryTestKey"
+    service-name: "NationalLibraryOfKorea"
+  aladin:
+    url: "http://localhost:${wiremock.server.port}"
+    service-name: "Aladin"
+    ttb-key: "ttbtestkey20251234567"
+
+gemini-client:
+  api-key: ${GEMINI_API_KEY}
+  parse-chapter-prompt-template: |
+    HTML 형식의 목차 텍스트에서 1차 챕터 제목을 찾아, 답변은 json 형식으로 변환해줘. order는 순서, name은 챕터 제목이야.
+
+    [
+      {
+        "chapterOrder": 1,
+        "name": "1장 오브젝트와 의존관계"
+      },
+      {
+        "chapterOrder": 2,
+        "name": "2장 테스트"
+      },
+      ...
+    ]

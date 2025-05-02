@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.readup.server.book.infrastructure.client.bookinfo.nationallibraryofkorea.dto.NationalLibraryOfKoreaGetBookResponse;
 
-@FeignClient(name = "nationallibraryofkorea", url = "https://www.nl.go.kr/seoji", configuration = NationalLibraryFeignErrorDecoder.class)
+@FeignClient(name = "nationalLibraryOfKoreaClient", url = "${book-info-client.national-library.url}", configuration = NationalLibraryFeignErrorDecoder.class)
 public interface BookInfoNationalLibraryOfKoreaFeignClient {
 
 	@GetMapping("/SearchApi.do")

@@ -30,16 +30,24 @@ public class GeminiClient implements ParseChapterClient {
 			return List.of();
 		}
 
-		GeminiRequest geminiRequest = GeminiRequest.builder()
-			.systemInstruction(geminiClientProperties.getParseChapterPromptTemplate())
-			.contents(rawChapter)
-			.build();
+		GeminiRequest geminiRequest = createGeminiParseRawChapterRequest(rawChapter);
 
 		GeminiResponse geminiResponse = geminiFeignClient.getGeminiResponse(
 			geminiClientProperties.getApiKey(),
 			geminiRequest
 		);
 
+		return parseGeminiResponseToChapterVO(geminiResponse);
+	}
+
+	private GeminiRequest createGeminiParseRawChapterRequest(String rawChapter) {
+		return GeminiRequest.builder()
+			.systemInstruction(geminiClientProperties.getParseChapterPromptTemplate())
+			.contents(rawChapter)
+			.build();
+	}
+
+	private List<ChapterVO> parseGeminiResponseToChapterVO(GeminiResponse geminiResponse) {
 		try {
 			return objectMapper.readValue(
 				geminiResponse.getText().replace("```json", "").replace("```", "").trim(),

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(
-	name = "aladin",
-	url = "http://www.aladin.co.kr/ttb/api"
+	name = "aladinClient",
+	url = "${book-info-client.aladin.url}"
 )
 public interface AladinFeignClient {
 
