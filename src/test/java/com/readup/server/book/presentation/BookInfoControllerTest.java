@@ -126,7 +126,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 				.willThrow(new ServiceException(ErrorCode.BOOK_NOT_FOUND));
 
 			// when
-			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
+			ResultActions resultActions = mockMvc.perform(post(uri, isbn));
 
 			// then
 			resultActions.andExpect(status().isNotFound())
