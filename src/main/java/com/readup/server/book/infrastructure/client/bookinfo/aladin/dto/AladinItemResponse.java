@@ -29,7 +29,7 @@ public record AladinItemResponse(
 			.publisher(publisher)
 			.author(author)
 			.isbn(isbn13)
-			.titleUrl(link)
+			.titleUrl(cover)
 			.summary(description)
 			.rawChapter(bookinfo.toc())
 			.build();
