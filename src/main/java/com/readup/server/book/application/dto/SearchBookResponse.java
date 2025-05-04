@@ -10,6 +10,7 @@ public record SearchBookResponse(
 	String title,
 	String author,
 	String publisher,
+	String isbn,
 	String titleUrl
 ) {
 	public static SearchBookResponse from(
@@ -20,6 +21,7 @@ public record SearchBookResponse(
 			.title(book.getTitle())
 			.author(book.getAuthor())
 			.publisher(book.getPublisher())
+			.isbn(book.getIsbn())
 			.titleUrl(book.getTitleUrl())
 			.build();
 	}

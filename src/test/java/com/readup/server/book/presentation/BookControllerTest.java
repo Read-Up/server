@@ -82,6 +82,7 @@ class BookControllerTest extends AbstractWebMvcTest {
 					.title("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리")
 					.author("이일민")
 					.publisher("에이콘출판(주)")
+					.isbn("9788960773417")
 					.titleUrl("http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg")
 					.build()),
 					Pageable.ofSize(10),
@@ -104,6 +105,7 @@ class BookControllerTest extends AbstractWebMvcTest {
 				jsonPath("$.data.content[0].title").value("토비의 스프링 3.1 Vol. 1 스프링의 이해와 원리"),
 				jsonPath("$.data.content[0].author").value("이일민"),
 				jsonPath("$.data.content[0].publisher").value("에이콘출판(주)"),
+				jsonPath("$.data.content[0].isbn").value("9788960773417"),
 				jsonPath("$.data.content[0].titleUrl").value(
 					"http://www.nl.go.kr/seoji/fu/ecip/dbfiles/CIP_FILES_TBL/2577606_3.jpg"),
 				jsonPath("$.data.page.size").value(10),
@@ -122,7 +124,9 @@ class BookControllerTest extends AbstractWebMvcTest {
 						.tag("Book")
 						.queryParameters(
 							parameterWithName("title").optional().description("책 제목"),
-							parameterWithName("isbn").optional().description("책 ISBN")
+							parameterWithName("isbn").optional().description("책 ISBN"),
+							parameterWithName("page").optional().description("페이지 번호"),
+							parameterWithName("size").optional().description("페이지 사이즈")
 						)
 						.responseFields(
 							fieldWithPath("success").description("성공 여부"),
@@ -131,6 +135,7 @@ class BookControllerTest extends AbstractWebMvcTest {
 							fieldWithPath("data.content[0].title").description("책 제목"),
 							fieldWithPath("data.content[0].author").description("책 저자"),
 							fieldWithPath("data.content[0].publisher").description("책 출판사"),
+							fieldWithPath("data.content[0].isbn").description("책 ISBN"),
 							fieldWithPath("data.content[0].titleUrl").description("책 표지 URL"),
 							fieldWithPath("data.page.size").description("페이지 사이즈"),
 							fieldWithPath("data.page.number").description("현재 페이지 번호"),
