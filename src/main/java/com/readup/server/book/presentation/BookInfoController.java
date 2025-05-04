@@ -2,8 +2,8 @@ package com.readup.server.book.presentation;
 
 import static com.readup.server.common.dto.ApiResponse.*;
 
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +20,7 @@ public class BookInfoController {
 
 	private final CreateBookFacade createBookFacade;
 
-	@GetMapping("/{isbn}")
+	@PostMapping("/{isbn}")
 	public ApiResponse<RetrieveBookResponse> getBookInfo(@PathVariable String isbn) {
 
 		RetrieveBookResponse response = createBookFacade.createBook(isbn);
