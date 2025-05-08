@@ -57,7 +57,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 			given(createBookFacade.createBook(anyString())).willReturn(retrieveBookResponse);
 
 			// when
-			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
+			ResultActions resultActions = mockMvc.perform(post(uri, isbn));
 
 			// then
 			resultActions.andExpect(status().isOk())
@@ -93,7 +93,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 				.willThrow(new ServiceException(ErrorCode.DUPLICATE_BOOK, "Book already exists"));
 
 			// when
-			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
+			ResultActions resultActions = mockMvc.perform(post(uri, isbn));
 
 			// then
 			resultActions.andExpect(status().isConflict())
@@ -126,7 +126,7 @@ class BookInfoControllerTest extends AbstractWebMvcTest {
 				.willThrow(new ServiceException(ErrorCode.BOOK_NOT_FOUND));
 
 			// when
-			ResultActions resultActions = mockMvc.perform(get(uri, isbn));
+			ResultActions resultActions = mockMvc.perform(post(uri, isbn));
 
 			// then
 			resultActions.andExpect(status().isNotFound())
