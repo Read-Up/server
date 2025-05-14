@@ -39,6 +39,9 @@ public class Quiz extends BaseEntity {
 	@GeneratedValue(strategy = IDENTITY)
 	private Long id;
 
+	@Column(nullable = false)
+	private int sequence;
+
 	@Column(nullable = false, length = 150)
 	private String question;
 
@@ -51,8 +54,9 @@ public class Quiz extends BaseEntity {
 	@OneToMany(mappedBy = "quiz", cascade = ALL, orphanRemoval = true)
 	private List<QuizOption> quizOptionList;
 
-	public static Quiz create(String question, String explanation, QuizSet quizSet) {
+	public static Quiz create(int sequence, String question, String explanation, QuizSet quizSet) {
 		return Quiz.builder()
+			.sequence(sequence)
 			.question(question)
 			.explanation(explanation)
 			.quizSet(quizSet)
@@ -61,7 +65,8 @@ public class Quiz extends BaseEntity {
 	}
 
 	public void addQuizOption(String content, Boolean isCorrect) {
-		QuizOption quizOption = QuizOption.create(content, isCorrect, this);
+		int sequence = quizOptionList.size() + 1;
+		QuizOption quizOption = QuizOption.create(sequence, content, isCorrect, this);
 		quizOptionList.add(quizOption);
 	}
 }

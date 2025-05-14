@@ -52,22 +52,35 @@ public class QuizSet extends BaseEntity {
 	@Column(nullable = false)
 	private double correctAnswerAverage;
 
+	@Column(nullable = false)
+	private int estimatedTime;
+
+	@Column(nullable = false)
+	private int totalQuizCount;
+
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
 	private List<Quiz> quizList;
 
-	public static QuizSet create(Long bookId, Long chapterId) {
+	public static QuizSet create(Long bookId, Long chapterId, int totalQuizCount) {
 		return QuizSet.builder()
 			.bookId(bookId)
 			.chapterId(chapterId)
 			.participantCount(0)
 			.likeAverage(0.0)
 			.correctAnswerAverage(0.0)
+			.estimatedTime(calculateEstimatedTime(totalQuizCount))
+			.totalQuizCount(totalQuizCount)
 			.quizList(new ArrayList<>())
 			.build();
 	}
 
+	private static int calculateEstimatedTime(int totalQuizCount) {
+		return totalQuizCount * 2;
+	}
+
 	public Quiz addQuiz(String question, String explanation) {
-		Quiz quiz = Quiz.create(question, explanation, this);
+		int sequence = quizList.size() + 1;
+		Quiz quiz = Quiz.create(sequence, question, explanation, this);
 		quizList.add(quiz);
 		return quiz;
 	}
