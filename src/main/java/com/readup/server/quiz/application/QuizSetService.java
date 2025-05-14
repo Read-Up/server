@@ -32,11 +32,11 @@ public class QuizSetService {
 	}
 
 	@Transactional(readOnly = true)
-	public GetQuizSetResponse getQuizSet(Long quizSetId) {
+	public GetQuizSetResponse getQuizSet(Long quizSetId, int startQuizSequence) {
 		QuizSet quizSet = quizSetRepository.findById(quizSetId)
 			.orElseThrow(() -> new ServiceException(NOT_FOUND_QUIZ_SET));
 
-		return GetQuizSetResponse.from(quizSet);
+		return GetQuizSetResponse.from(quizSet, startQuizSequence);
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {

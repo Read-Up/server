@@ -10,7 +10,7 @@ public record CreateQuizSetRequest(
 	List<CreateQuizRequest> quizRequestList) {
 
 	public QuizSet toEntity() {
-		QuizSet quizSet = QuizSet.create(bookId, chapterId);
+		QuizSet quizSet = QuizSet.create(bookId, chapterId, quizRequestList.size());
 
 		quizRequestList.forEach(qr -> {
 			Quiz quiz = quizSet.addQuiz(qr.question, qr.explanation);
