@@ -25,11 +25,12 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 	private final TokenProvider tokenProvider;
 	private final CookieProvider cookieProvider;
 	private final SocialAccountService socialAccountService;
-	private static final String TERMS_REDIRECT = "/terms";
 
 	@Override
 	public void onAuthenticationSuccess(
-		@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull Authentication authentication) throws
+		@NonNull HttpServletRequest request,
+		@NonNull HttpServletResponse response,
+		@NonNull Authentication authentication) throws
 		IOException {
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -48,9 +49,9 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 		clearAuthenticationAttributes(request);
 
 		if (socialAccountService.isNewUser(authentication)) {
-			getRedirectStrategy().sendRedirect(request, response, TERMS_REDIRECT);
+			getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getSignUpUri());
 		} else {
-			getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getRedirectUri(request));
+			getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getRedirectUriFromOAuthState(request));
 		}
 	}
 }
