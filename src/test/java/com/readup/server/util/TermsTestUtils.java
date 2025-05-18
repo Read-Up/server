@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.readup.server.terms.domain.Terms;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.domain.TermsVersion;
 import com.readup.server.terms.dto.UserTermsConsentRequest;
 
@@ -12,7 +13,7 @@ public class TermsTestUtils {
 	public static Terms createServiceTerms() {
 		return Terms.builder()
 			.id(1L)
-			.code("SERVICE")
+			.code(TermsCode.SERVICE)
 			.title("서비스 이용약관")
 			.build();
 	}
@@ -20,7 +21,7 @@ public class TermsTestUtils {
 	public static Terms createPrivacyTerms() {
 		return Terms.builder()
 			.id(2L)
-			.code("PRIVACY")
+			.code(TermsCode.PRIVACY)
 			.title("개인정보 처리방침")
 			.build();
 	}
@@ -28,7 +29,7 @@ public class TermsTestUtils {
 	public static Terms createMarketingTerms() {
 		return Terms.builder()
 			.id(3L)
-			.code("MARKETING")
+			.code(TermsCode.MARKETING)
 			.title("마케팅 정보 수신동의")
 			.build();
 	}
@@ -49,6 +50,7 @@ public class TermsTestUtils {
 			.content("서비스 이용약관 내용")
 			.build();
 	}
+
 	public static TermsVersion createPrivacyTermsVersion() {
 		return TermsVersion.builder()
 			.id(2L)
@@ -69,11 +71,11 @@ public class TermsTestUtils {
 	}
 
 	public static UserTermsConsentRequest createUserServiceTermsConsentRequest() {
-		return new UserTermsConsentRequest(1L, "SERVICE", true);
+		return new UserTermsConsentRequest(1L, TermsCode.SERVICE, true);
 	}
 
 	public static UserTermsConsentRequest createUserMarketingTermsConsentRequest() {
-		return new UserTermsConsentRequest(3L, "MARKETING", true);
+		return new UserTermsConsentRequest(3L, TermsCode.PRIVACY, true);
 	}
 
 	public static List<UserTermsConsentRequest> createUserTermsConsentList() {

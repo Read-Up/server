@@ -4,6 +4,8 @@ import com.readup.server.common.entity.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,7 +28,8 @@ public class Terms extends BaseEntity {
 	private Long id;
 
 	@Column(name = "code", length = 50, nullable = false)
-	private String code;
+	@Enumerated(EnumType.STRING)
+	private TermsCode code;
 
 	@Column(name = "title", length = 100, nullable = false)
 	private String title;
