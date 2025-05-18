@@ -68,6 +68,6 @@ public class LogoutAuthFilter extends OncePerRequestFilter {
 
 		SecurityContextHolder.clearContext();
 
-		response.sendRedirect(RedirectUtils.getRedirectUri(request));
+		response.sendRedirect(RedirectUtils.getRedirectUriFromParameter(request));
 	}
 }
