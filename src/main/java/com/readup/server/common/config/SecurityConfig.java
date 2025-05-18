@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomOidcUserService customOidcUserService;
 	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 	private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 	private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
@@ -49,7 +50,10 @@ public class SecurityConfig {
 				.authorizationEndpoint(endpoint -> endpoint
 					.authorizationRequestResolver(customAuthorizationRequestResolver))
 				.redirectionEndpoint(endpoint -> endpoint.baseUri("/api/public/login/oauth2/code/*"))
-				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+				.userInfoEndpoint(userInfo -> userInfo
+					.userService(customOAuth2UserService)
+					.oidcUserService(customOidcUserService)
+				)
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 				.failureHandler(oAuth2AuthenticationFailureHandler))
 			.addFilterBefore(loginAuthFilter, UsernamePasswordAuthenticationFilter.class)
