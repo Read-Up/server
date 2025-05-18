@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.RedirectStrategy;
 
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.AuthTokens;
 import com.readup.server.auth.infrastructure.RedirectUtils;
 
@@ -89,14 +90,14 @@ class OAuth2AuthenticationSuccessHandlerTest {
 			verify(securityContext).setAuthentication(authentication);
 			verify(response).addCookie(accessTokenCookie);
 			verify(response).addCookie(refreshTokenCookie);
-			verify(redirectStrategy).sendRedirect(request, response, "/terms");
+			verify(redirectStrategy).sendRedirect(request, response, RedirectUtils.getSignUpUri());
 		}
 	}
 
 	@Test
-	@DisplayName("기존 사용자 인증 성공 시 쿠키와 함께 리다이렉트 - 세션 null")
+	@DisplayName("기존 사용자 인증 성공 시 쿠키와 함께 리다이렉트 - 리다이렉트 null")
 	void testHandleAuthenticationSuccess_session_null() throws IOException {
-		when(request.getSession(false)).thenReturn(null);
+		when(request.getParameter("state")).thenReturn(null);
 
 		AuthTokens authTokens = AuthTokens.of("accessToken", "refreshToken");
 		when(tokenProvider.generateTokens(authentication)).thenReturn(authTokens);
@@ -104,19 +105,20 @@ class OAuth2AuthenticationSuccessHandlerTest {
 		Cookie accessTokenCookie = new Cookie("accessToken", authTokens.accessToken());
 		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokens.refreshToken());
 
-		doReturn(accessTokenCookie).when(cookieProvider).generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
-		doReturn(refreshTokenCookie).when(cookieProvider).generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
+		doReturn(accessTokenCookie).when(cookieProvider)
+			.generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
+		doReturn(refreshTokenCookie).when(cookieProvider)
+			.generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
 
 		oAuth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-		verify(redirectStrategy).sendRedirect(request, response, "/");
+		verify(redirectStrategy).sendRedirect(request, response, "http://localhost:3001");
 	}
 
 	@Test
 	@DisplayName("기존 사용자 인증 성공 시 쿠키와 함께 리다이렉트 - URI null")
 	void testHandleAuthenticationSuccess_redirect_null() throws IOException {
 		when(request.getSession(false)).thenReturn(session);
-		when(session.getAttribute("redirect_uri")).thenReturn(null);
 
 		AuthTokens authTokens = AuthTokens.of("accessToken", "refreshToken");
 		when(tokenProvider.generateTokens(authentication)).thenReturn(authTokens);
@@ -124,21 +126,23 @@ class OAuth2AuthenticationSuccessHandlerTest {
 		Cookie accessTokenCookie = new Cookie("accessToken", authTokens.accessToken());
 		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokens.refreshToken());
 
-		doReturn(accessTokenCookie).when(cookieProvider).generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
-		doReturn(refreshTokenCookie).when(cookieProvider).generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
+		doReturn(accessTokenCookie).when(cookieProvider)
+			.generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
+		doReturn(refreshTokenCookie).when(cookieProvider)
+			.generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
 
 		oAuth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-		verify(redirectStrategy).sendRedirect(request, response, "/");
+		verify(redirectStrategy).sendRedirect(request, response, "http://localhost:3001");
 	}
 
 	@Test
 	@DisplayName("기존 사용자 인증 성공 시 쿠키와 함께 리다이렉트 URI not null")
 	void testHandleAuthenticationSuccess_redirect_notNull() throws IOException {
-		String redirectUri = "/success";
+		String redirectUri = "?/success";
 
 		when(request.getSession(false)).thenReturn(session);
-		when(session.getAttribute("redirect_uri")).thenReturn(redirectUri);
+		when(request.getParameter("state")).thenReturn(redirectUri);
 
 		AuthTokens authTokens = AuthTokens.of("accessToken", "refreshToken");
 		when(tokenProvider.generateTokens(authentication)).thenReturn(authTokens);
@@ -146,8 +150,10 @@ class OAuth2AuthenticationSuccessHandlerTest {
 		Cookie accessTokenCookie = new Cookie("accessToken", authTokens.accessToken());
 		Cookie refreshTokenCookie = new Cookie("refreshToken", authTokens.refreshToken());
 
-		doReturn(accessTokenCookie).when(cookieProvider).generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
-		doReturn(refreshTokenCookie).when(cookieProvider).generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
+		doReturn(accessTokenCookie).when(cookieProvider)
+			.generateAccessTokenCookie(authTokens.accessToken(), TokenProvider.ACCESS_EXPIRY_MS);
+		doReturn(refreshTokenCookie).when(cookieProvider)
+			.generateRefreshTokenCookie(authTokens.refreshToken(), TokenProvider.REFRESH_EXPIRY_MS);
 
 		oAuth2AuthenticationSuccessHandler.onAuthenticationSuccess(request, response, authentication);
 		verify(redirectStrategy).sendRedirect(request, response, "/success");

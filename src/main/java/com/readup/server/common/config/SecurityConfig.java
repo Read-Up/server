@@ -15,6 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 import com.readup.server.auth.application.CustomOAuth2UserService;
+import com.readup.server.auth.application.CustomOidcUserService;
 import com.readup.server.auth.application.LoginAuthFilter;
 import com.readup.server.auth.application.LogoutAuthFilter;
 import com.readup.server.auth.application.OAuth2AuthenticationFailureHandler;

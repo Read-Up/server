@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.AuthTokens;
 import com.readup.server.auth.infrastructure.RedirectUtils;
 

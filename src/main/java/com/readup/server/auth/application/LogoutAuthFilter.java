@@ -2,9 +2,6 @@ package com.readup.server.auth.application;
 
 import java.io.IOException;
 
-import com.readup.server.common.exception.ErrorCode;
-import com.readup.server.common.exception.ServiceException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -13,6 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.readup.server.auth.infrastructure.RedirectUtils;
+import com.readup.server.common.exception.ErrorCode;
+import com.readup.server.common.exception.ServiceException;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,15 +19,15 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class LogoutAuthFilter extends OncePerRequestFilter {
+	private static final RequestMatcher LOGOUT_REQUEST_MATCHER = new AntPathRequestMatcher("/api/public/logout");
 	private final RefreshTokenService refreshTokenService;
 	private final CookieProvider cookieProvider;
-
-	private static final RequestMatcher LOGOUT_REQUEST_MATCHER = new AntPathRequestMatcher("/api/public/logout");
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
