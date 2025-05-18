@@ -44,4 +44,8 @@ public class UserTermsConsent {
 
 	@Column(name = "is_consent", nullable = false)
 	private Boolean isConsent;
+
+	public void updateUser(User user) {
+		this.user = user;
+	}
 }

@@ -11,7 +11,6 @@ import com.readup.server.terms.domain.TermsVersion;
 import com.readup.server.terms.domain.UserTermsConsent;
 import com.readup.server.terms.dto.TermsResponse;
 import com.readup.server.terms.dto.UserTermsConsentRequest;
-import com.readup.server.user.domain.User;
 import com.readup.server.user.dto.CreateUserRequest;
 
 import lombok.RequiredArgsConstructor;
@@ -33,17 +32,15 @@ public class TermsManagementService {
 	}
 
 	@Transactional
-	public void createUserTermsConsent(User user, CreateUserRequest createUserRequest) {
-		createUserRequest.termsConsentRequestList().forEach(termsConsentRequest -> {
-			userTermsConsentService.save(toEntity(user, termsConsentRequest));
-		});
+	public List<UserTermsConsent> createUserTermsConsent(CreateUserRequest createUserRequest) {
+		return createUserRequest.termsConsentRequestList().stream()
+			.map(this::toEntity).toList();
 	}
 
-	private UserTermsConsent toEntity(User user, UserTermsConsentRequest userTermsConsentRequest) {
+	private UserTermsConsent toEntity(UserTermsConsentRequest userTermsConsentRequest) {
 		Terms terms = termsService.findByCode(userTermsConsentRequest.code());
 		TermsVersion termsVersion = termsVersionService.findById(userTermsConsentRequest.termsVersionId());
 		return UserTermsConsent.builder()
-			.user(user)
 			.isConsent(userTermsConsentRequest.isConsent())
 			.termsVersion(termsVersion)
 			.terms(terms)

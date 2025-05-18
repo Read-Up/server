@@ -1,14 +1,14 @@
-package com.readup.server.auth.application;
+package com.readup.server.auth.domain;
 
 import static com.readup.server.common.exception.ErrorCode.*;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.infrastructure.SocialAccountJpaRepository;
+import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.user.domain.User;
 
@@ -57,5 +57,10 @@ public class SocialAccountService {
 			.provider(createSocialAccountRequest.provider())
 			.providerUid(createSocialAccountRequest.providerUid())
 			.build();
+	}
+
+	public SocialAccount getById(Long socialAccountId) {
+		return socialAccountJpaRepository.findById(socialAccountId)
+			.orElseThrow(() -> new DomainException(SOCIAL_ACCOUNT_NOT_FOUND));
 	}
 }
