@@ -22,12 +22,22 @@ public class SocialAccountService {
 
 	private final SocialAccountJpaRepository socialAccountJpaRepository;
 
+	public SocialAccount saveOrGet(CreateSocialAccountRequest createSocialAccountRequest) {
+		return socialAccountJpaRepository
+			.findByProviderAndProviderUid(
+				createSocialAccountRequest.provider(),
+				createSocialAccountRequest.providerUid()
+			)
+			.orElseGet(() -> save(createSocialAccountRequest));
+	}
+
 	public SocialAccount save(CreateSocialAccountRequest createSocialAccountRequest) {
 		return socialAccountJpaRepository.save(toEntity(createSocialAccountRequest));
 	}
 
 	public SocialAccount findById(Long id) {
-		return socialAccountJpaRepository.findById(id).orElseThrow(() -> new ServiceException(SOCIAL_ACCOUNT_NOT_FOUND));
+		return socialAccountJpaRepository.findById(id)
+			.orElseThrow(() -> new ServiceException(SOCIAL_ACCOUNT_NOT_FOUND));
 	}
 
 	public void updateUser(Long socialAccountId, User user) {

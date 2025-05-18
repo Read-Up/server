@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.infrastructure.SocialAccountJpaRepository;
@@ -48,13 +49,13 @@ class SocialAccountServiceTest {
 
 	@Test
 	@DisplayName(value = "social account 저장하기")
-	void saveTest_success() {
+	void saveOrGetTest_success() {
 
 		CreateSocialAccountRequest createSocialAccountRequest = CreateSocialAccountRequest.of(
 			"readup@readup.com", "google", "readup"
 		);
 
-		SocialAccount result = socialAccountService.save(createSocialAccountRequest);
+		SocialAccount result = socialAccountService.saveOrGet(createSocialAccountRequest);
 		assertNotNull(result);
 		assertEquals(socialAccount.getProvider(), result.getProvider());
 		assertEquals(socialAccount.getProviderUid(), result.getProviderUid());

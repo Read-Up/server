@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.dto.OAuth2UserInfo;
@@ -37,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		OAuth2UserInfo oAuth2UserInfo = oAuth2UserInfoFactory.getOAuth2UserInfo(registrationId,
 			oAuth2User.getAttributes());
 
-		SocialAccount socialAccount = socialAccountService.save(
+		SocialAccount socialAccount = socialAccountService.saveOrGet(
 			CreateSocialAccountRequest.of(oAuth2UserInfo.getEmail(), registrationId, oAuth2UserInfo.getId()));
 
 		return CustomOAuth2User.from(socialAccount, oAuth2User.getAttributes());
