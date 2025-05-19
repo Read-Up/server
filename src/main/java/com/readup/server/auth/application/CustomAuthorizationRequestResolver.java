@@ -38,7 +38,6 @@ public class CustomAuthorizationRequestResolver implements OAuth2AuthorizationRe
 		OAuth2AuthorizationRequest authorizationRequest) {
 
 		String redirectUri = String.valueOf(request.getParameter(QUERY_PARAM));
-		request.getSession().setAttribute(QUERY_PARAM, redirectUri);
 
 		if (authorizationRequest == null) {
 			return null;
