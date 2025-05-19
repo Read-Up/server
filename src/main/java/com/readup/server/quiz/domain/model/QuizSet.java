@@ -52,6 +52,12 @@ public class QuizSet extends BaseEntity {
 	@Column(nullable = false)
 	private double correctAnswerAverage;
 
+	@Column(nullable = false)
+	private int estimatedTime;
+
+	@Column(nullable = false)
+	private int totalQuizCount;
+
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
 	private List<Quiz> quizList;
 
@@ -67,8 +73,17 @@ public class QuizSet extends BaseEntity {
 	}
 
 	public Quiz addQuiz(String question, String explanation) {
-		Quiz quiz = Quiz.create(question, explanation, this);
+		int sequence = quizList.size() + 1;
+		Quiz quiz = Quiz.create(sequence, question, explanation, this);
 		quizList.add(quiz);
 		return quiz;
+	}
+
+	public void updateTotalQuizCount() {
+		this.totalQuizCount = this.quizList.size();
+	}
+
+	public void updateEstimatedTime(int estimatedTime) {
+		this.estimatedTime = estimatedTime;
 	}
 }
