@@ -1,32 +1,42 @@
 package com.readup.server.auth.infrastructure;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 
+@Component
 public class RedirectUtils {
 
-	private static final String BASE_URI = "http://localhost:3001";
 	private static final String STATE_PARAM = "state";
 	private static final String REDIRECT_PARAM = "redirect";
 	private static final String DELIMITER = "\\?";
-	private static final String SIGN_UP_URI = "/signup";
+	private static String baseUri;
+	private static String signUpUri;
+
+	@Value("${redirect.base-uri}")
+	private String baseUriProp;
+	@Value("${redirect.sign-up-uri}")
+	private String signUpUriProp;
 
 	private RedirectUtils() {
 	}
 
 	public static String getSignUpUri() {
-		return BASE_URI + SIGN_UP_URI;
+		return baseUri + signUpUri;
 	}
 
 	public static String getRedirectUriFromOAuthState(HttpServletRequest request) {
 		String state = request.getParameter(STATE_PARAM);
 
 		if (state == null || !state.contains("?")) {
-			return BASE_URI;
+			return baseUri;
 		}
 
 		String[] parts = state.split(DELIMITER, 2);
 		if (parts.length < 2 || parts[1].isBlank()) {
-			return BASE_URI;
+			return baseUri;
 		}
 
 		return parts[1];
@@ -36,9 +46,16 @@ public class RedirectUtils {
 		String redirectUri = request.getParameter(REDIRECT_PARAM);
 
 		if (redirectUri == null || redirectUri.isBlank()) {
-			return BASE_URI;
+			return baseUri;
 		}
-		
+
 		return request.getParameter(REDIRECT_PARAM);
+	}
+
+	@PostConstruct
+	@SuppressWarnings("java:S2696")
+	private void init() {
+		baseUri = baseUriProp;
+		signUpUri = signUpUriProp;
 	}
 }
