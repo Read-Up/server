@@ -1,6 +1,7 @@
 package com.readup.server.quiz.application;
 
 import static com.readup.server.common.exception.ErrorCode.*;
+import static com.readup.server.quiz.application.QuizSetTimeCalculator.*;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ public class QuizSetService {
 	public CreateQuizSetResponse createQuizSet(CreateQuizSetRequest request) {
 		validateChapter(request.bookId(), request.chapterId());
 
-		QuizSet savedQuizSet = quizSetRepository.save(request.toEntity());
+		QuizSet quizSet = configureQuizSet(request.toEntity(), request.quizRequestList().size());
+		QuizSet savedQuizSet = quizSetRepository.save(quizSet);
 
 		return CreateQuizSetResponse.from(request.bookId(), savedQuizSet);
 	}
@@ -37,6 +39,12 @@ public class QuizSetService {
 			.orElseThrow(() -> new ServiceException(NOT_FOUND_QUIZ_SET));
 
 		return GetQuizSetResponse.from(quizSet, startQuizSequence);
+	}
+
+	private QuizSet configureQuizSet(QuizSet quizSet, int totalQuizCount) {
+		quizSet.updateTotalQuizCount();
+		quizSet.updateEstimatedTime(calculate(totalQuizCount));
+		return quizSet;
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {

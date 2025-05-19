@@ -211,12 +211,12 @@ class QuizSetServiceTest {
 		}
 
 		static Stream<QuizSet> provideSingleAndMultipleQuizSets() {
-			QuizSet singleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID, 1);
+			QuizSet singleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID);
 			Quiz singleQuiz = singleQuizSet.addQuiz("질문1", "설명1");
 			singleQuiz.addQuizOption("보기1", true);
 			singleQuiz.addQuizOption("보기2", false);
 
-			QuizSet multipleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID, 2);
+			QuizSet multipleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID);
 			Quiz quiz1 = multipleQuizSet.addQuiz("질문1", "설명1");
 			quiz1.addQuizOption("A", true);
 			quiz1.addQuizOption("B", false);

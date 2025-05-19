@@ -61,21 +61,15 @@ public class QuizSet extends BaseEntity {
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
 	private List<Quiz> quizList;
 
-	public static QuizSet create(Long bookId, Long chapterId, int totalQuizCount) {
+	public static QuizSet create(Long bookId, Long chapterId) {
 		return QuizSet.builder()
 			.bookId(bookId)
 			.chapterId(chapterId)
 			.participantCount(0)
 			.likeAverage(0.0)
 			.correctAnswerAverage(0.0)
-			.estimatedTime(calculateEstimatedTime(totalQuizCount))
-			.totalQuizCount(totalQuizCount)
 			.quizList(new ArrayList<>())
 			.build();
-	}
-
-	private static int calculateEstimatedTime(int totalQuizCount) {
-		return totalQuizCount * 2;
 	}
 
 	public Quiz addQuiz(String question, String explanation) {
@@ -83,5 +77,13 @@ public class QuizSet extends BaseEntity {
 		Quiz quiz = Quiz.create(sequence, question, explanation, this);
 		quizList.add(quiz);
 		return quiz;
+	}
+
+	public void updateTotalQuizCount() {
+		this.totalQuizCount = this.quizList.size();
+	}
+
+	public void updateEstimatedTime(int estimatedTime) {
+		this.estimatedTime = estimatedTime;
 	}
 }
