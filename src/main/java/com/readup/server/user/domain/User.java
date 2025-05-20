@@ -47,6 +47,13 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserTermsConsent> userTermsConsentList;
 
+	public static User of(String nickname, SocialAccount socialAccount) {
+		return User.builder()
+			.nickname(nickname)
+			.socialAccount(socialAccount)
+			.build();
+	}
+
 	public void updateUserTermsConsentList(List<UserTermsConsent> userTermsConsentList) {
 		userTermsConsentList.forEach(userTermsConsent -> userTermsConsent.updateUser(this));
 		this.userTermsConsentList = userTermsConsentList;

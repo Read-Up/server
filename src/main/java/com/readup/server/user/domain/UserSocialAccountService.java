@@ -17,11 +17,7 @@ public class UserSocialAccountService {
 		userService.existsBySocialAccountId(socialAccountId);
 		SocialAccount socialAccount = socialAccountService.getById(socialAccountId);
 
-		User user = User.builder()
-			.nickname(nickname)
-			.build();
-
-		user.updateSocialAccount(socialAccount);
+		User user = User.of(nickname, socialAccount);
 
 		return userService.save(user);
 	}
