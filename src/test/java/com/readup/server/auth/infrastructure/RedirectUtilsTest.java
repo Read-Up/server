@@ -6,15 +6,20 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ActiveProfiles;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
+@ActiveProfiles("test")
 class RedirectUtilsTest {
 
-	private static final String BASE_URI = "http://localhost:3001";
-	private static final String REDIRECT_URI_ATTRIBUTE = "redirect";
 	private static final String TEST_REDIRECT_URI = "/login/success";
+	private static final String REDIRECT_URI_ATTRIBUTE = "redirect";
+
+	@Value("${redirect.base-uri}")
+	private String baseUri;
 
 	@Test
 	@DisplayName("세션이 null일때 /반환")
@@ -24,7 +29,7 @@ class RedirectUtilsTest {
 
 		String result = RedirectUtils.getRedirectUriFromOAuthState(mockRequest);
 
-		assertEquals(BASE_URI, result);
+		assertEquals(baseUri, result);
 	}
 
 	@Test
@@ -38,7 +43,7 @@ class RedirectUtilsTest {
 
 		String result = RedirectUtils.getRedirectUriFromOAuthState(mockRequest);
 
-		assertEquals(BASE_URI, result);
+		assertEquals(baseUri, result);
 	}
 
 	@Test
