@@ -1,7 +1,7 @@
 package com.readup.server.auth.application;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 import java.io.IOException;
 
@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 
+import com.readup.server.auth.infrastructure.RedirectUtils;
 import com.readup.server.common.exception.ServiceException;
 
 import jakarta.servlet.FilterChain;
@@ -87,6 +88,7 @@ class LogoutAuthFilterTest {
 	void shouldProcessLogoutRequestAndClearContext() throws ServletException, IOException {
 		request.setServletPath("/api/public/logout");
 		request.setMethod("GET");
+		given(RedirectUtils.getRedirectUriFromParameter(request)).willReturn("http://localhost:3001");
 
 		logoutAuthFilter.doFilterInternal(request, response, filterChain);
 
@@ -103,6 +105,7 @@ class LogoutAuthFilterTest {
 	void shouldRemoveRefreshTokenWhenPresent() throws ServletException, IOException {
 		request.setServletPath("/api/public/logout");
 		request.setMethod("GET");
+		given(RedirectUtils.getRedirectUriFromParameter(request)).willReturn("http://localhost:3001");
 
 		logoutAuthFilter.doFilterInternal(request, response, filterChain);
 
