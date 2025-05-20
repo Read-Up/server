@@ -20,7 +20,7 @@ import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.infrastructure.SocialAccountJpaRepository;
-import com.readup.server.common.exception.ServiceException;
+import com.readup.server.common.exception.DomainException;
 import com.readup.server.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,9 +80,7 @@ class SocialAccountServiceTest {
 	void findByIdExceptionTest() {
 		when(socialAccountJpaRepository.findById(1L)).thenReturn(Optional.empty());
 
-		ServiceException exception = assertThrows(ServiceException.class, () -> {
-			socialAccountService.findById(1L);
-		});
+		DomainException exception = assertThrows(DomainException.class, () -> socialAccountService.findById(1L));
 
 		assertEquals(SOCIAL_ACCOUNT_NOT_FOUND, exception.getErrorCode());
 		verify(socialAccountJpaRepository, times(1)).findById(1L);
