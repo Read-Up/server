@@ -33,6 +33,9 @@ public enum ErrorCode {
 	PROVIDER_NOT_FOUND(HttpStatus.NOT_FOUND, "oauth 프로바이더를 찾지 못했습니다."),
 	UNAUTHORIZED_USER(HttpStatus.UNAUTHORIZED, "로그인되지 않은 사용자입니다."),
 
+	// User
+	ALREADY_REGISTERED_USER(HttpStatus.CONFLICT, "이미 가입된 정보가 있습니다."),
+
 	// Account
 	SOCIAL_ACCOUNT_NOT_FOUND(HttpStatus.NOT_FOUND, "Social account를 찾을 수 없습니다."),
 
@@ -46,8 +49,7 @@ public enum ErrorCode {
 	TERMS_VERSION_NOT_FOUND(HttpStatus.NOT_FOUND, "약관의 버전이 존재하지 않습니다."),
 
 	// Quiz
-	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다.")
-	;
+	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String message;

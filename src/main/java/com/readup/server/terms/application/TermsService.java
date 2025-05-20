@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.terms.domain.Terms;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.infrastructure.TermsJpaRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,7 @@ public class TermsService {
 	}
 
 	@Transactional(readOnly = true)
-	public Terms findByCode(String code) {
+	public Terms findByCode(TermsCode code) {
 		return termsJpaRepository.findByCode(code).orElseThrow(() -> new ServiceException(TERMS_NOT_FOUND));
 	}
 }

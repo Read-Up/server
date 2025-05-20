@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.readup.server.terms.domain.Terms;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.domain.TermsVersion;
-import com.readup.server.terms.domain.UserTermsConsent;
 import com.readup.server.terms.dto.TermsResponse;
 import com.readup.server.terms.dto.UserTermsConsentRequest;
 import com.readup.server.user.domain.User;
@@ -50,7 +50,7 @@ class TermsManagementServiceTest {
 
 		termsConsentRequest = new UserTermsConsentRequest(
 			3L,
-			"MARKETING",
+			TermsCode.MARKETING,
 			true
 		);
 
@@ -70,9 +70,12 @@ class TermsManagementServiceTest {
 		TermsVersion marketingTermVersion = TermsTestUtils.createMarketingTermsVersion();
 
 		when(termsService.findAll()).thenReturn(termsList);
-		when(termsVersionService.getLatestTermsVersion(eq(1L), any(LocalDateTime.class))).thenReturn(serviceTermVersion);
-		when(termsVersionService.getLatestTermsVersion(eq(2L), any(LocalDateTime.class))).thenReturn(privacyTermVersion);
-		when(termsVersionService.getLatestTermsVersion(eq(3L), any(LocalDateTime.class))).thenReturn(marketingTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(1L), any(LocalDateTime.class))).thenReturn(
+			serviceTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(2L), any(LocalDateTime.class))).thenReturn(
+			privacyTermVersion);
+		when(termsVersionService.getLatestTermsVersion(eq(3L), any(LocalDateTime.class))).thenReturn(
+			marketingTermVersion);
 
 		List<TermsResponse> result = termsManagementService.getLatestTermsConsentList();
 
@@ -96,20 +99,18 @@ class TermsManagementServiceTest {
 		verify(termsVersionService, times(1)).getLatestTermsVersion(eq(3L), any(LocalDateTime.class));
 	}
 
-
 	@Test
-	void createUserTermsConsent_ShouldSaveAllTermsConsents() {
+	void createUserTermsConsent_ShouldCreateAllTermsConsents() {
 
 		Terms terms = TermsTestUtils.createMarketingTerms();
 		TermsVersion marketingTermsVersion = TermsTestUtils.createMarketingTermsVersion();
 
-		when(termsService.findByCode("MARKETING")).thenReturn(terms);
+		when(termsService.findByCode(TermsCode.MARKETING)).thenReturn(terms);
 		when(termsVersionService.findById(3L)).thenReturn(marketingTermsVersion);
 
-		termsManagementService.createUserTermsConsent(user, createUserRequest);
+		termsManagementService.createUserTermsConsent(createUserRequest);
 
-		verify(termsService).findByCode("MARKETING");
+		verify(termsService).findByCode(TermsCode.MARKETING);
 		verify(termsVersionService).findById(3L);
-		verify(userTermsConsentService).save(any(UserTermsConsent.class));
 	}
 }

@@ -8,7 +8,9 @@ import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 
 import com.readup.server.auth.domain.SocialAccount;
 
@@ -17,7 +19,16 @@ public record CustomOAuth2User(
 	String email,
 	Map<String, Object> attributes,
 	List<GrantedAuthority> authorities
-) implements OAuth2User {
+) implements OidcUser {
+
+	public static CustomOAuth2User from(SocialAccount socialAccount, Map<String, Object> attributes) {
+		return new CustomOAuth2User(
+			socialAccount.getId(),
+			socialAccount.getEmail(),
+			attributes,
+			List.of(new SimpleGrantedAuthority(ROLE_USER.name()))
+		);
+	}
 
 	@Override
 	public String getName() {
@@ -34,12 +45,18 @@ public record CustomOAuth2User(
 		return authorities;
 	}
 
-	public static CustomOAuth2User from(SocialAccount socialAccount, Map<String, Object> attributes) {
-		return new CustomOAuth2User(
-			socialAccount.getId(),
-			socialAccount.getEmail(),
-			attributes,
-			List.of(new SimpleGrantedAuthority(ROLE_USER.name()))
-		);
+	@Override
+	public Map<String, Object> getClaims() {
+		return Map.of();
+	}
+
+	@Override
+	public OidcUserInfo getUserInfo() {
+		return null;
+	}
+
+	@Override
+	public OidcIdToken getIdToken() {
+		return null;
 	}
 }

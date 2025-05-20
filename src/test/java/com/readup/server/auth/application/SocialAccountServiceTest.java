@@ -16,10 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.infrastructure.SocialAccountJpaRepository;
-import com.readup.server.common.exception.ServiceException;
+import com.readup.server.common.exception.DomainException;
 import com.readup.server.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,13 +49,13 @@ class SocialAccountServiceTest {
 
 	@Test
 	@DisplayName(value = "social account 저장하기")
-	void saveTest_success() {
+	void saveOrGetTest_success() {
 
 		CreateSocialAccountRequest createSocialAccountRequest = CreateSocialAccountRequest.of(
 			"readup@readup.com", "google", "readup"
 		);
 
-		SocialAccount result = socialAccountService.save(createSocialAccountRequest);
+		SocialAccount result = socialAccountService.saveOrGet(createSocialAccountRequest);
 		assertNotNull(result);
 		assertEquals(socialAccount.getProvider(), result.getProvider());
 		assertEquals(socialAccount.getProviderUid(), result.getProviderUid());
@@ -79,9 +80,7 @@ class SocialAccountServiceTest {
 	void findByIdExceptionTest() {
 		when(socialAccountJpaRepository.findById(1L)).thenReturn(Optional.empty());
 
-		ServiceException exception = assertThrows(ServiceException.class, () -> {
-			socialAccountService.findById(1L);
-		});
+		DomainException exception = assertThrows(DomainException.class, () -> socialAccountService.findById(1L));
 
 		assertEquals(SOCIAL_ACCOUNT_NOT_FOUND, exception.getErrorCode());
 		verify(socialAccountJpaRepository, times(1)).findById(1L);

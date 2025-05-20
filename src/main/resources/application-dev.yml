@@ -48,3 +48,7 @@ gemini-client:
       },
       ...
     ]
+
+redirect:
+  base-uri: "http://localhost:3001"
+  sign-up-uri: "/signup"

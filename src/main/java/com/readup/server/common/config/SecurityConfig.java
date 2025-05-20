@@ -15,6 +15,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 import com.readup.server.auth.application.CustomOAuth2UserService;
+import com.readup.server.auth.application.CustomOidcUserService;
 import com.readup.server.auth.application.LoginAuthFilter;
 import com.readup.server.auth.application.LogoutAuthFilter;
 import com.readup.server.auth.application.OAuth2AuthenticationFailureHandler;
@@ -27,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
 	private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomOidcUserService customOidcUserService;
 	private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 	private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 	private final CustomAuthorizationRequestResolver customAuthorizationRequestResolver;
@@ -48,8 +50,11 @@ public class SecurityConfig {
 			.oauth2Login(oauth2 -> oauth2
 				.authorizationEndpoint(endpoint -> endpoint
 					.authorizationRequestResolver(customAuthorizationRequestResolver))
-				.redirectionEndpoint(endpoint -> endpoint.baseUri("/oauth2/code/*"))
-				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+				.redirectionEndpoint(endpoint -> endpoint.baseUri("/api/public/login/oauth2/code/*"))
+				.userInfoEndpoint(userInfo -> userInfo
+					.userService(customOAuth2UserService)
+					.oidcUserService(customOidcUserService)
+				)
 				.successHandler(oAuth2AuthenticationSuccessHandler)
 				.failureHandler(oAuth2AuthenticationFailureHandler))
 			.addFilterBefore(loginAuthFilter, UsernamePasswordAuthenticationFilter.class)
@@ -62,7 +67,6 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-		configuration.setAllowedHeaders(Arrays.asList("http://localhost:3000", "http://localhost:3001"));
 		configuration.setAllowCredentials(true);
 		configuration.setAllowedHeaders(
 			Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin")
