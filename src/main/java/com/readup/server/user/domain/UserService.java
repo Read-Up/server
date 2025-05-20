@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;
-import com.readup.server.user.infrastructure.UserJpaRepository;
+import com.readup.server.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final UserJpaRepository userJpaRepository;
+	private final UserRepository userRepository;
 
 	public User save(User user) {
-		return userJpaRepository.save(user);
+		return userRepository.save(user);
 	}
 
 	public void existsBySocialAccountId(Long socialAccountId) {
-		if (userJpaRepository.existsBySocialAccount_Id(socialAccountId)) {
+		if (userRepository.existsBySocialAccountId(socialAccountId)) {
 			throw new DomainException(ErrorCode.ALREADY_REGISTERED_USER);
 		}
 	}
