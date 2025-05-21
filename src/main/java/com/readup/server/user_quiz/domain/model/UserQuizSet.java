@@ -39,19 +39,19 @@ public class UserQuizSet extends BaseEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "quiz_set_id", nullable = false)
 	private Long quizSetId;
 
-	@Column(nullable = false)
+	@Column(name = "is_evaluated", nullable = false)
 	private Boolean isEvaluated;
 
-	@Column(nullable = false)
+	@Column(name = "quiz_sequence", nullable = false)
 	private int quizSequence;
 
-	@Column
+	@Column(name = "correct_answer_average")
 	private Double correctAnswerAverage;
 
-	@Column
+	@Column(name = "like_score")
 	private Integer likeScore;
 
 	@OneToMany(mappedBy = "userQuizSet", cascade = ALL, orphanRemoval = true)
