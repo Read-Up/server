@@ -14,7 +14,8 @@ CREATE TABLE `user_quiz_set`
     `updated_at`                timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `updated_by`                bigint             DEFAULT NULL,
     `deleted_at`                timestamp          DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_quiz_set_id_created_by` (`quiz_set_id`, `created_by`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
@@ -32,6 +33,7 @@ CREATE TABLE `user_quiz`
     `updated_by`        bigint                  DEFAULT NULL,
     `deleted_at`        timestamp               DEFAULT NULL,
     PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_quiz_id_created_by` (`quiz_id`, `created_by`),
     KEY `fk_user_quiz_user_quiz_set_id` (`user_quiz_set_id`),
     FOREIGN KEY `fk_user_quiz_user_quiz_set_id` (`user_quiz_set_id`) REFERENCES `user_quiz_set` (`id`)
 ) ENGINE = InnoDB
