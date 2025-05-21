@@ -54,7 +54,7 @@ class UserQuizSetServiceTest {
 		void setUp() {
 			authUser = createAuthUser();
 			quizSet = createQuizSet();
-			existingUserQuizSet = createExistingUserQuizSet(quizSet.getQuizList());
+			existingUserQuizSet = createExistingUserQuizSet(quizSet.getQuizList().stream().map(Quiz::getId).toList());
 			reset(userQuizSetJpaRepositoryStub);
 		}
 
@@ -145,9 +145,8 @@ class UserQuizSetServiceTest {
 			return newQuizSet;
 		}
 
-		private UserQuizSet createExistingUserQuizSet(List<Quiz> quizList) {
-			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
-			quizList.forEach(quiz -> userQuizSet.addUserQuiz(quiz.getId()));
+		private UserQuizSet createExistingUserQuizSet(List<Long> quizIdList) {
+			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID, quizIdList);
 			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
 			return userQuizSetJpaRepositoryStub.save(userQuizSet);
 		}

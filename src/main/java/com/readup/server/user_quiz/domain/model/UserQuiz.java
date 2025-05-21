@@ -17,18 +17,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "user_quiz", uniqueConstraints = @UniqueConstraint(columnNames = {"quiz_id", "created_by"}))
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user_quiz SET deleted_at = NOW() WHERE id = ?")
-@AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
 public class UserQuiz extends BaseEntity {
 
@@ -50,11 +46,12 @@ public class UserQuiz extends BaseEntity {
 	@JoinColumn(name = "user_quiz_set_id", nullable = false)
 	private UserQuizSet userQuizSet;
 
+	private UserQuiz(Long quizId, UserQuizSet userQuizSet) {
+		this.quizId = quizId;
+		this.userQuizSet = userQuizSet;
+	}
+
 	public static UserQuiz create(Long quizId, UserQuizSet userQuizSet) {
-		return UserQuiz.builder()
-			.quizId(quizId)
-			.attemptCount(0)
-			.userQuizSet(userQuizSet)
-			.build();
+		return new UserQuiz(quizId, userQuizSet);
 	}
 }

@@ -2,6 +2,7 @@ package com.readup.server.user_quiz.domain.model;
 
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.*;
+import static java.lang.Boolean.*;
 import static lombok.AccessLevel.*;
 
 import java.util.ArrayList;
@@ -19,18 +20,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Builder
 @Table(name = "user_quiz_set", uniqueConstraints = @UniqueConstraint(columnNames = {"quiz_set_id", "created_by"}))
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user_quiz_set SET deleted_at = NOW() WHERE id = ?")
-@AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
 public class UserQuizSet extends BaseEntity {
 
@@ -55,19 +52,32 @@ public class UserQuizSet extends BaseEntity {
 	private Integer likeScore;
 
 	@OneToMany(mappedBy = "userQuizSet", cascade = ALL, orphanRemoval = true)
-	private List<UserQuiz> userQuizList;
+	private List<UserQuiz> userQuizList = new ArrayList<>();
 
-	public static UserQuizSet create(Long quizSetId) {
-		return UserQuizSet.builder()
-			.quizSetId(quizSetId)
-			.isEvaluated(false)
-			.quizSequence(1)
-			.userQuizList(new ArrayList<>())
-			.build();
+	private UserQuizSet(Long quizSetId) {
+		this.quizSetId = quizSetId;
+		this.isEvaluated = FALSE;
+		this.quizSequence = 1;
 	}
 
-	public void addUserQuiz(Long quizId) {
+	public static UserQuizSet create(Long quizSetId, List<Long> quizIdList) {
+		UserQuizSet userQuizSet = new UserQuizSet(quizSetId);
+		userQuizSet.addUserQuizzes(quizIdList);
+		return userQuizSet;
+	}
+
+	private void addUserQuizzes(List<Long> quizIdList) {
+		if (hasQuizIds(quizIdList)) {
+			quizIdList.forEach(this::addUserQuiz);
+		}
+	}
+
+	private void addUserQuiz(Long quizId) {
 		UserQuiz userQuiz = UserQuiz.create(quizId, this);
 		userQuizList.add(userQuiz);
+	}
+
+	private boolean hasQuizIds(List<Long> quizIdList) {
+		return quizIdList != null && !quizIdList.isEmpty();
 	}
 }

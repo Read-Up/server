@@ -38,8 +38,8 @@ public class UserQuizSetService {
 	}
 
 	private UserQuizSet createNewUserQuizSet(Long quizSetId, List<Quiz> quizList) {
-		UserQuizSet newUserQuizSet = UserQuizSet.create(quizSetId);
-		quizList.forEach(quiz -> newUserQuizSet.addUserQuiz(quiz.getId()));
+		List<Long> quizIdList = quizList.stream().map(Quiz::getId).toList();
+		UserQuizSet newUserQuizSet = UserQuizSet.create(quizSetId, quizIdList);
 		return userQuizSetRepository.save(newUserQuizSet);
 	}
 

@@ -34,13 +34,8 @@ public class UserQuizSetJpaRepositoryStub implements UserQuizSetRepository {
 	}
 
 	private UserQuizSet createUserQuizSetWithId(UserQuizSet userQuizSet) {
-		UserQuizSet userQuizSetWithId = UserQuizSet.builder()
-			.id(idGenerator.getAndIncrement())
-			.quizSetId(userQuizSet.getQuizSetId())
-			.isEvaluated(userQuizSet.getIsEvaluated())
-			.quizSequence(userQuizSet.getQuizSequence())
-			.userQuizList(userQuizSet.getUserQuizList())
-			.build();
+		UserQuizSet userQuizSetWithId = UserQuizSet.create(userQuizSet.getQuizSetId(), null);
+		ReflectionTestUtils.setField(userQuizSetWithId, "id", idGenerator.getAndIncrement());
 		ReflectionTestUtils.setField(userQuizSetWithId, "createdBy", userQuizSet.getCreatedBy());
 		return userQuizSetWithId;
 	}
