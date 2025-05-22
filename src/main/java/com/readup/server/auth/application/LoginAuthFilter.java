@@ -16,9 +16,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.AuthTokens;
 import com.readup.server.auth.dto.CustomOAuth2User;
-import com.readup.server.auth.infrastructure.RedirectUtils;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -31,11 +31,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginAuthFilter extends OncePerRequestFilter {
 
-	private final TokenProvider tokenProvider;
-	private final CookieProvider cookieProvider;
-	private final RefreshTokenService refreshTokenService;
-	private final SocialAccountService socialAccountService;
-
 	private static final Set<String> VALID_COOKIE_NAMES = Set.of("access_token", "refresh_token");
 	private static final Set<String> EXCLUDED_PATHS = Set.of(
 		"/api/docs",
@@ -44,6 +39,10 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 		"/api/springdoc/",
 		"/api/public"
 	);
+	private final TokenProvider tokenProvider;
+	private final CookieProvider cookieProvider;
+	private final RefreshTokenService refreshTokenService;
+	private final SocialAccountService socialAccountService;
 
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
@@ -67,7 +66,8 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 			}
 		}
 
-		if (!accessTokenIsValid && StringUtils.hasText(refreshToken) && tokenProvider.validateRefreshToken(refreshToken)) {
+		if (!accessTokenIsValid && StringUtils.hasText(refreshToken)
+			&& tokenProvider.validateRefreshToken(refreshToken)) {
 			String tokenUserId = refreshTokenService.getUserIdByRefreshToken(refreshToken);
 
 			if (tokenUserId != null) {
@@ -84,8 +84,6 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 		if (accessTokenIsValid) {
 			OAuth2AuthenticationToken authentication = createAuthentication(userId);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
-			response.sendRedirect(RedirectUtils.getRedirectUri(request));
 		}
 
 		filterChain.doFilter(request, response);
@@ -98,7 +96,6 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 		response.addCookie(refreshCookie);
 	}
 
-
 	private OAuth2AuthenticationToken createAuthentication(Long userId) {
 		SocialAccount socialAccount = socialAccountService.findById(userId);
 		CustomOAuth2User user = CustomOAuth2User.from(socialAccount, Map.of());
@@ -109,7 +106,8 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 
 	private AuthTokens extractTokenFromCookies(Cookie[] cookies) {
 
-		if (cookies == null || cookies.length == 0) return AuthTokens.builder().build();
+		if (cookies == null || cookies.length == 0)
+			return AuthTokens.builder().build();
 
 		Map<String, String> map = Arrays.stream(cookies)
 			.filter(cookie -> VALID_COOKIE_NAMES.contains(cookie.getName()))

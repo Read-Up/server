@@ -1,11 +1,12 @@
 package com.readup.server.terms.dto;
 
 import com.readup.server.terms.domain.Terms;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.domain.TermsVersion;
 
 public record TermsResponse(
 	Long termsVersionId,
-	String code,
+	TermsCode code,
 	String title,
 	String content
 ) {

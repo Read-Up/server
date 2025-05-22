@@ -21,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.terms.application.TermsManagementService;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.dto.TermsResponse;
 
 @WebMvcTest(TermsController.class)
@@ -39,40 +40,40 @@ class TermsControllerTest extends AbstractWebMvcTest {
 
 		final String uri = "/public/terms";
 
-		TermsResponse terms1 = new TermsResponse(1L, "SERVICE", "서비스 이용약관", "제 1조");
-		TermsResponse terms2 = new TermsResponse(2L, "PERSONAL", "개인정보 처리방침", "제 1조");
+		TermsResponse terms1 = new TermsResponse(1L, TermsCode.SERVICE, "서비스 이용약관", "제 1조");
+		TermsResponse terms2 = new TermsResponse(2L, TermsCode.PRIVACY, "개인정보 처리방침", "제 1조");
 		List<TermsResponse> termsList = Arrays.asList(terms1, terms2);
 
 		when(termsManagementService.getLatestTermsConsentList()).thenReturn(termsList);
 
 		mockMvc.perform(get(uri)
 				.contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.success").value(true))
-				.andExpect(jsonPath("$.data").isArray())
-				.andExpect(jsonPath("$.data.length()").value(2))
-				.andExpect(jsonPath("$.message").value("Request succeeded."))
-				.andExpect(jsonPath("$.data[0].termsVersionId").value(1L))
-				.andExpect(jsonPath("$.data[0].code").value("SERVICE"))
-				.andExpect(jsonPath("$.data[0].title").value("서비스 이용약관"))
-				.andExpect(jsonPath("$.data[0].content").value("제 1조"))
-				.andExpect(jsonPath("$.data[1].termsVersionId").value(2L))
-				.andExpect(jsonPath("$.data[1].code").value("PERSONAL"))
-				.andExpect(jsonPath("$.data[1].title").value("개인정보 처리방침"))
-				.andExpect(jsonPath("$.data[1].content").value("제 1조"))
-				.andDo(document("get-terms-list",
-					preprocessRequest(prettyPrint()),
-					preprocessResponse(prettyPrint()),
-					responseFields(
-						fieldWithPath("success").description("API 요청 성공 여부"),
-						fieldWithPath("data").description("약관 목록 데이터"),
-						fieldWithPath("message").description("Request succeeded."),
-						fieldWithPath("data[].termsVersionId").description("약관 버전 ID"),
-						fieldWithPath("data[].code").description("약관 code"),
-						fieldWithPath("data[].title").description("약관 제목"),
-						fieldWithPath("data[].content").description("약관 내용")
-					)
-		));
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.success").value(true))
+			.andExpect(jsonPath("$.data").isArray())
+			.andExpect(jsonPath("$.data.length()").value(2))
+			.andExpect(jsonPath("$.message").value("Request succeeded."))
+			.andExpect(jsonPath("$.data[0].termsVersionId").value(1L))
+			.andExpect(jsonPath("$.data[0].code").value("SERVICE"))
+			.andExpect(jsonPath("$.data[0].title").value("서비스 이용약관"))
+			.andExpect(jsonPath("$.data[0].content").value("제 1조"))
+			.andExpect(jsonPath("$.data[1].termsVersionId").value(2L))
+			.andExpect(jsonPath("$.data[1].code").value("PRIVACY"))
+			.andExpect(jsonPath("$.data[1].title").value("개인정보 처리방침"))
+			.andExpect(jsonPath("$.data[1].content").value("제 1조"))
+			.andDo(document("get-terms-list",
+				preprocessRequest(prettyPrint()),
+				preprocessResponse(prettyPrint()),
+				responseFields(
+					fieldWithPath("success").description("API 요청 성공 여부"),
+					fieldWithPath("data").description("약관 목록 데이터"),
+					fieldWithPath("message").description("Request succeeded."),
+					fieldWithPath("data[].termsVersionId").description("약관 버전 ID"),
+					fieldWithPath("data[].code").description("약관 code"),
+					fieldWithPath("data[].title").description("약관 제목"),
+					fieldWithPath("data[].content").description("약관 내용")
+				)
+			));
 
 		verify(termsManagementService, times(1)).getLatestTermsConsentList();
 	}

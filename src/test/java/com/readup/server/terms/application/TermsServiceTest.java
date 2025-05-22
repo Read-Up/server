@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.terms.domain.Terms;
+import com.readup.server.terms.domain.TermsCode;
 import com.readup.server.terms.infrastructure.TermsJpaRepository;
 import com.readup.server.util.TermsTestUtils;
 
@@ -74,27 +75,27 @@ class TermsServiceTest {
 	@DisplayName("코드로 약관 조회")
 	void testFindByCode() {
 		Terms expectedTerm = TermsTestUtils.createServiceTerms();
-		when(termsJpaRepository.findByCode("SERVICE")).thenReturn(Optional.ofNullable(expectedTerm));
+		when(termsJpaRepository.findByCode(TermsCode.SERVICE)).thenReturn(Optional.ofNullable(expectedTerm));
 
-		Terms serviceTerms = termsService.findByCode("SERVICE");
+		Terms serviceTerms = termsService.findByCode(TermsCode.SERVICE);
 
 		assertThat(serviceTerms).isNotNull();
 		assertThat(serviceTerms.getId()).isEqualTo(expectedTerm.getId());
 		assertThat(serviceTerms.getCode()).isEqualTo(expectedTerm.getCode());
 		assertThat(serviceTerms.getTitle()).isEqualTo(expectedTerm.getTitle());
 
-		verify(termsJpaRepository, times(1)).findByCode("SERVICE");
+		verify(termsJpaRepository, times(1)).findByCode(TermsCode.SERVICE);
 	}
 
 	@Test
 	@DisplayName("코드없는 경우 예외발생")
 	void findByCode_ThrowsException() {
-		when(termsJpaRepository.findByCode("SERVICE")).thenReturn(Optional.empty());
+		when(termsJpaRepository.findByCode(TermsCode.SERVICE)).thenReturn(Optional.empty());
 
-		assertThatThrownBy(() -> termsService.findByCode("SERVICE"))
+		assertThatThrownBy(() -> termsService.findByCode(TermsCode.SERVICE))
 			.isInstanceOf(ServiceException.class)
 			.hasFieldOrPropertyWithValue("errorCode", TERMS_NOT_FOUND);
 
-		verify(termsJpaRepository, times(1)).findByCode("SERVICE");
+		verify(termsJpaRepository, times(1)).findByCode(TermsCode.SERVICE);
 	}
 }

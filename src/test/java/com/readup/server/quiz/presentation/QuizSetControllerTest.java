@@ -7,6 +7,7 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
+import static org.springframework.restdocs.snippet.Attributes.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,6 +34,7 @@ import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOptionResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse.GetQuizOptionResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetResponse.GetQuizResponse;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(QuizSetController.class)
@@ -54,29 +57,41 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final Long bookId = 1L;
 		final Long chapterId = 1L;
 		final Long quizSetId = 1L;
-		final LocalDateTime createAt = LocalDateTime.of(2025, 4, 16, 10, 0);
+		final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0, 0);
 
-		final String question = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
-		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
+		final int totalQuizCount = 1;
+		final int time = 2;
+		final int estimatedTime = totalQuizCount * time;
 
-		final String optionContent1 = "int";
-		final boolean optionCorrect1 = true;
-		final String optionContent2 = "long";
-		final boolean optionCorrect2 = false;
+		final Long quizId = 1L;
+		final int quizSequence = 1;
+		final String quizQuestion = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
+		final String quizExplanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
+
+		final Long quizOptionId1 = 1L;
+		final int quizOptionSequence1 = 1;
+		final String quizOptionContent1 = "int";
+		final boolean quizOptionCorrect1 = true;
+		final Long quizOptionId2 = 2L;
+		final int quizOptionSequence2 = 2;
+		final String quizOptionContent2 = "long";
+		final boolean quizOptionCorrect2 = false;
 
 		CreateQuizSetRequest request = new CreateQuizSetRequest(
 			bookId, chapterId, List.of(new CreateQuizRequest(
-			question, explanation, List.of(
-			new CreateQuizOptionRequest(optionContent1, optionCorrect1),
-			new CreateQuizOptionRequest(optionContent2, optionCorrect2))))
+			quizQuestion, quizExplanation, List.of(
+			new CreateQuizOptionRequest(quizOptionContent1, quizOptionCorrect1),
+			new CreateQuizOptionRequest(quizOptionContent2, quizOptionCorrect2))))
 		);
 
 		CreateQuizSetResponse response = new CreateQuizSetResponse(
-			bookId, chapterId, quizSetId, createAt, List.of(
+			bookId, chapterId, quizSetId, estimatedTime, totalQuizCount, createdAt, List.of(
 			new CreateQuizSetResponse.CreateQuizResponse(
-				question, explanation, List.of(
-				new CreateQuizOptionResponse(optionContent1, optionCorrect1),
-				new CreateQuizOptionResponse(optionContent2, optionCorrect2))))
+				quizId, quizSequence, quizQuestion, quizExplanation, List.of(
+				new CreateQuizOptionResponse(quizOptionId1, quizOptionSequence1, quizOptionContent1,
+					quizOptionCorrect1),
+				new CreateQuizOptionResponse(quizOptionId2, quizOptionSequence2, quizOptionContent2,
+					quizOptionCorrect2))))
 		);
 
 		// stubbing
@@ -93,12 +108,20 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 				jsonPath("$.data.bookId").value(bookId),
 				jsonPath("$.data.chapterId").value(chapterId),
 				jsonPath("$.data.quizSetId").value(quizSetId),
-				jsonPath("$.data.quizResponseList[0].question").value(question),
-				jsonPath("$.data.quizResponseList[0].explanation").value(explanation),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].content").value(optionContent1),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].isCorrect").value(optionCorrect1),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(optionContent2),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].isCorrect").value(optionCorrect2),
+				jsonPath("$.data.estimatedTime").value(estimatedTime),
+				jsonPath("$.data.quizResponseList[0].quizId").value(quizId),
+				jsonPath("$.data.quizResponseList[0].sequence").value(quizSequence),
+				jsonPath("$.data.quizResponseList[0].question").value(quizQuestion),
+				jsonPath("$.data.quizResponseList[0].explanation").value(quizExplanation),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].quizOptionId").value(quizOptionId1),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].sequence").value(quizOptionSequence1),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].content").value(quizOptionContent1),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].isCorrect").value(quizOptionCorrect1),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].quizOptionId").value(quizOptionId2),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].sequence").value(quizOptionSequence2),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(quizOptionContent2),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(quizOptionContent2),
+				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].isCorrect").value(quizOptionCorrect2),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
 
 			// docs
@@ -120,73 +143,145 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),
 						fieldWithPath("data.chapterId").type(NUMBER).description("챕터 ID"),
 						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
-						fieldWithPath("data.createAt").type(STRING).description("퀴즈 세트 생성 일시"),
+						fieldWithPath("data.estimatedTime").type(NUMBER).description("퀴즈 세트 예상 소요 시각"),
+						fieldWithPath("data.totalQuizCount").type(NUMBER).description("퀴즈 세트 내 퀴즈 총 개수"),
+						fieldWithPath("data.createdAt").type(STRING).description("퀴즈 세트 생성 일시"),
+						fieldWithPath("data.quizResponseList[].quizId").type(NUMBER).description("퀴즈 ID"),
+						fieldWithPath("data.quizResponseList[].sequence").type(NUMBER).description("퀴즈 순서"),
 						fieldWithPath("data.quizResponseList[].question").type(STRING).description("퀴즈 질문"),
 						fieldWithPath("data.quizResponseList[].explanation").type(STRING).description("퀴즈 해설"),
+						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].quizOptionId").type(NUMBER)
+							.description("퀴즈 보기 ID"),
+						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].sequence").type(NUMBER)
+							.description("퀴즈 보기 순서"),
 						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].content").type(STRING)
-							.description("보기 내용"),
+							.description("퀴즈 보기 내용"),
 						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].isCorrect").type(BOOLEAN)
-							.description("보기 정답 여부"),
+							.description("퀴즈 보기 정답 여부"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
 			);
 	}
 
-	@Test
-	@DisplayName("퀴즈 세트 상세 조회 성공")
-	void getQuizSetSuccessTest() throws Exception {
-		// given
-		final String uri = "/private/quiz-sets/{quizSetId}";
-		final Long bookId = 1L;
-		final Long chapterId = 1L;
-		final Long quizSetId = 1L;
+	@Nested
+	@DisplayName("퀴즈 세트 상세 조회")
+	class GetQuizSetTest {
 
-		final String question = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
-		final String optionContent1 = "int";
-		final String optionContent2 = "long";
+		private final String uri = "/private/quiz-sets/{quizSetId}";
+		private final Long bookId = 1L;
+		private final Long chapterId = 1L;
+		private final Long quizSetId = 1L;
+		private final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0);
 
-		GetQuizSetResponse response = new GetQuizSetResponse(
-			bookId, chapterId, quizSetId, List.of(
-			new GetQuizSetResponse.GetQuizResponse(
-				question, List.of(
-				new GetQuizOptionResponse(optionContent1),
-				new GetQuizOptionResponse(optionContent2)))));
+		private final Long quizId = 1L;
+		private final int quizSequence = 1;
+		private final String quizQuestion = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
 
-		// stubbing
-		when(quizSetService.getQuizSet(quizSetId)).thenReturn(response);
+		private final Long quizOptionId1 = 1L;
+		private final int quizOptionSequence1 = 1;
+		private final String quizOptionContent1 = "int";
+		private final Long quizOptionId2 = 2L;
+		private final int quizOptionSequence2 = 2;
+		private final String quizOptionContent2 = "long";
 
-		// when && then
-		mockMvc.perform(get(uri, quizSetId)
-				.contentType(APPLICATION_JSON))
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.success").value(true),
-				jsonPath("$.data.bookId").value(bookId),
-				jsonPath("$.data.chapterId").value(chapterId),
-				jsonPath("$.data.quizSetId").value(quizSetId),
-				jsonPath("$.data.quizResponseList[0].question").value(question),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].content").value(optionContent1),
-				jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(optionContent2),
-				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
-			)
+		private GetQuizSetResponse createMockResponse() {
+			return new GetQuizSetResponse(
+				bookId, chapterId, quizSetId, createdAt, List.of(
+				new GetQuizResponse(quizId, quizSequence, quizQuestion, List.of(
+					new GetQuizOptionResponse(quizOptionId1, quizOptionSequence1, quizOptionContent1),
+					new GetQuizOptionResponse(quizOptionId2, quizOptionSequence2, quizOptionContent2)))));
+		}
 
-			// docs
-			.andDo(
-				MockMvcRestDocumentationWrapper.document("get-quiz-set",
-					resourceDetails().tag("QuizSet"),
-					pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
-					responseFields(
-						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
-						fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),
-						fieldWithPath("data.chapterId").type(NUMBER).description("챕터 ID"),
-						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
-						fieldWithPath("data.quizResponseList[].question").type(STRING).description("퀴즈 질문"),
-						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].content").type(STRING)
-							.description("보기 내용"),
-						fieldWithPath("message").type(STRING).description("성공 메시지")
-					)
+		@Test
+		@DisplayName("성공 - 유효한 시작 퀴즈 번호")
+		void getQuizSetSuccessTest() throws Exception {
+			// given
+			final int validStartQuizSequence = 2;
+			GetQuizSetResponse response = createMockResponse();
+
+			// stubbing
+			when(quizSetService.getQuizSet(quizSetId, validStartQuizSequence)).thenReturn(response);
+
+			// when && then
+			mockMvc.perform(get(uri, quizSetId).param("startQuizSequence", String.valueOf(validStartQuizSequence))
+					.contentType(APPLICATION_JSON))
+				.andExpectAll(
+					status().isOk(),
+					jsonPath("$.success").value(true),
+					jsonPath("$.data.bookId").value(bookId),
+					jsonPath("$.data.chapterId").value(chapterId),
+					jsonPath("$.data.quizSetId").value(quizSetId),
+					jsonPath("$.data.quizResponseList[0].quizId").value(quizId),
+					jsonPath("$.data.quizResponseList[0].sequence").value(quizSequence),
+					jsonPath("$.data.quizResponseList[0].question").value(quizQuestion),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].quizOptionId").value(quizOptionId1),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].sequence").value(
+						quizOptionSequence1),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[0].content").value(quizOptionContent1),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].quizOptionId").value(quizOptionId2),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].sequence").value(
+						quizOptionSequence2),
+					jsonPath("$.data.quizResponseList[0].quizOptionResponseList[1].content").value(quizOptionContent2),
+					jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
 				)
-			);
+
+				// docs
+				.andDo(
+					MockMvcRestDocumentationWrapper.document("get-quiz-set",
+						resourceDetails().tag("QuizSet"),
+						pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
+						queryParameters(parameterWithName("startQuizSequence").description("시작 퀴즈 번호").optional()
+							.attributes(key("constraints").value("퀴즈 시작 번호 최소값: 1"))),
+						responseFields(
+							fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+							fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),
+							fieldWithPath("data.chapterId").type(NUMBER).description("챕터 ID"),
+							fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
+							fieldWithPath("data.createdAt").type(STRING).description("퀴즈 세트 생성 일시"),
+							fieldWithPath("data.quizResponseList[].quizId").type(NUMBER).description("퀴즈 ID"),
+							fieldWithPath("data.quizResponseList[].sequence").type(NUMBER).description("퀴즈 순서"),
+							fieldWithPath("data.quizResponseList[].question").type(STRING).description("퀴즈 질문"),
+							fieldWithPath("data.quizResponseList[].quizOptionResponseList[].quizOptionId").type(NUMBER)
+								.description("퀴즈 보기 ID"),
+							fieldWithPath("data.quizResponseList[].quizOptionResponseList[].sequence").type(NUMBER)
+								.description("퀴즈 보기 순서"),
+							fieldWithPath("data.quizResponseList[].quizOptionResponseList[].content").type(STRING)
+								.description("퀴즈 보기 내용"),
+							fieldWithPath("message").type(STRING).description("성공 메시지")
+						)
+					)
+				);
+		}
+
+		@Test
+		@DisplayName("실패 - 시작 퀴즈 번호 유효성 검증 실패")
+		void getQuizSetValidationFailTest() throws Exception {
+			// given
+			final int invalidStartQuizSequence = 0;
+
+			// when && then
+			mockMvc.perform(get(uri, quizSetId).param("startQuizSequence", String.valueOf(invalidStartQuizSequence))
+					.contentType(APPLICATION_JSON))
+				.andExpect(status().isBadRequest());
+		}
+
+		@Test
+		@DisplayName("성공 - (시작 퀴즈 번호가 없을 경우) 기본값 사용")
+		void getQuizSetWithDefaultParamTest() throws Exception {
+			// given
+			final int defaultStartQuizSequence = 1;
+			GetQuizSetResponse response = createMockResponse();
+
+			// stubbing
+			when(quizSetService.getQuizSet(quizSetId, defaultStartQuizSequence)).thenReturn(response);
+
+			// when && then
+			mockMvc.perform(get(uri, quizSetId)
+					.contentType(APPLICATION_JSON))
+				.andExpectAll(
+					status().isOk(),
+					jsonPath("$.success").value(true));
+		}
 	}
 }

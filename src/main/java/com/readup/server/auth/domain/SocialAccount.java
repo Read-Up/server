@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +26,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "social_account")
+@Table(
+	name = "social_account",
+	uniqueConstraints = {
+		@UniqueConstraint(name = "uk_provider_providerUid", columnNames = {"provider", "provider_uid"})
+	})
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE social_account SET deleted_at = NOW() WHERE id = ?")
 public class SocialAccount extends BaseEntity {
@@ -34,7 +39,7 @@ public class SocialAccount extends BaseEntity {
 	private Long id;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id", nullable = true)
+	@JoinColumn(name = "user_id", nullable = true, unique = true)
 	private User user;
 
 	@Column(name = "email", nullable = false)

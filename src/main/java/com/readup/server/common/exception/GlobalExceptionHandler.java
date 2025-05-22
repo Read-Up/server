@@ -1,9 +1,13 @@
 package com.readup.server.common.exception;
 
+import static com.readup.server.common.exception.ErrorCode.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import com.readup.server.common.dto.ErrorResponse;
 
@@ -38,6 +42,18 @@ public class GlobalExceptionHandler {
 		return buildErrorResponse(ex, ex.getErrorCode(), "FeignException");
 	}
 
+	@ExceptionHandler(HandlerMethodValidationException.class)
+	public ResponseEntity<ErrorResponse> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
+		String errorMessage = ex.getAllErrors().getFirst().getDefaultMessage();
+		return buildErrorResponse(INVALID_PARAMETER, "HandlerMethodValidationException", errorMessage);
+	}
+
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+		String errorMessage = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
+		return buildErrorResponse(INVALID_PARAMETER, "MethodArgumentNotValidException", errorMessage);
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex) {
 		log.error("[Unexpected Exception] {}", ex.getMessage(), ex);
@@ -46,9 +62,13 @@ public class GlobalExceptionHandler {
 	}
 
 	private ResponseEntity<ErrorResponse> buildErrorResponse(Exception ex, ErrorCode errorCode, String exceptionType) {
-		log.error("[{}] {} - {}", exceptionType, errorCode, ex.getMessage());
-		ErrorResponse errorResponse = new ErrorResponse(errorCode, ex.getMessage());
-		return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
+		return buildErrorResponse(errorCode, exceptionType, ex.getMessage());
 	}
 
+	private ResponseEntity<ErrorResponse> buildErrorResponse(ErrorCode errorCode, String exceptionType,
+		String message) {
+		log.error("[{}] {} - {}", exceptionType, errorCode, message);
+		ErrorResponse errorResponse = new ErrorResponse(errorCode, message);
+		return new ResponseEntity<>(errorResponse, errorCode.getHttpStatus());
+	}
 }

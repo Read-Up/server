@@ -18,6 +18,7 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.CreateSocialAccountRequest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.auth.dto.OAuth2UserInfo;
@@ -42,7 +43,8 @@ class CustomOAuth2UserServiceTest {
 		//given
 		OAuth2UserRequest oAuth2UserRequest = mock(OAuth2UserRequest.class);
 
-		when(oAuth2UserRequest.getClientRegistration()).thenReturn(ClientRegistrationTestUtils.createGoogleClientRegistration());
+		when(oAuth2UserRequest.getClientRegistration()).thenReturn(
+			ClientRegistrationTestUtils.createKakaoClientRegistration());
 
 		OAuth2User fakeOAuth2User = mock(OAuth2User.class);
 		Map<String, Object> attributes = new HashMap<>();
@@ -56,26 +58,26 @@ class CustomOAuth2UserServiceTest {
 
 		when(fakeOAuth2UserInfo.getEmail()).thenReturn("readup@readup.com");
 		when(fakeOAuth2UserInfo.getId()).thenReturn("readup");
-		when(oAuth2UserInfoFactory.getOAuth2UserInfo("google", attributes)).thenReturn(fakeOAuth2UserInfo);
+		when(oAuth2UserInfoFactory.getOAuth2UserInfo("kakao", attributes)).thenReturn(fakeOAuth2UserInfo);
 
 		SocialAccount fakeSocialAccount = SocialAccount.builder()
 			.id(1L)
 			.email("readup@readup.com")
-			.provider("google")
+			.provider("kakao")
 			.build();
-		when(socialAccountService.save(any(CreateSocialAccountRequest.class))).thenReturn(fakeSocialAccount);
+		when(socialAccountService.saveOrGet(any(CreateSocialAccountRequest.class))).thenReturn(fakeSocialAccount);
 
 		//when
 		OAuth2User result = customOAuth2UserService.loadUser(oAuth2UserRequest);
 
 		//then
-		assertTrue(result instanceof CustomOAuth2User, "CustomOAuth2User 가 반환");
+		assertInstanceOf(CustomOAuth2User.class, result, "CustomOAuth2User 가 반환");
 
 		CustomOAuth2User customOAuth2User = (CustomOAuth2User)result;
 
 		assertEquals("1", customOAuth2User.getName());
 		assertEquals(attributes, customOAuth2User.getAttributes());
 
-		verify(socialAccountService).save(any(CreateSocialAccountRequest.class));
+		verify(socialAccountService).saveOrGet(any(CreateSocialAccountRequest.class));
 	}
 }
