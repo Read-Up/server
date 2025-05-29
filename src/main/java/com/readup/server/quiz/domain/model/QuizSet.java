@@ -11,6 +11,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +19,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,55 +28,69 @@ import lombok.NoArgsConstructor;
 @Table(name = "quiz_set")
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
 public class QuizSet extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id")
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "book_id", nullable = false)
 	private Long bookId;
 
-	@Column(nullable = false)
+	@Column(name = "chapter_id", nullable = false)
 	private Long chapterId;
 
-	@Column(nullable = false)
+	@Column(name = "participant_count", nullable = false)
 	private int participantCount;
 
-	@Column(nullable = false)
+	@Column(name = "like_average", nullable = false)
 	private double likeAverage;
 
-	@Column(nullable = false)
+	@Column(name = "correct_answer_average", nullable = false)
 	private double correctAnswerAverage;
 
-	@Column(nullable = false)
+	@Column(name = "estimated_time", nullable = false)
 	private int estimatedTime;
 
-	@Column(nullable = false)
+	@Column(name = "total_quiz_count", nullable = false)
 	private int totalQuizCount;
 
 	@OneToMany(mappedBy = "quizSet", cascade = ALL, orphanRemoval = true)
-	private List<Quiz> quizList;
+	private List<Quiz> quizList = new ArrayList<>();
 
-	public static QuizSet create(Long bookId, Long chapterId) {
+	@Builder(access = PRIVATE)
+	private QuizSet(Long bookId, Long chapterId) {
+		this.bookId = bookId;
+		this.chapterId = chapterId;
+	}
+
+	public static QuizSet create(Long bookId, Long chapterId, List<CreateQuizRequest> createQuizRequestList) {
 		return QuizSet.builder()
 			.bookId(bookId)
 			.chapterId(chapterId)
-			.participantCount(0)
-			.likeAverage(0.0)
-			.correctAnswerAverage(0.0)
-			.quizList(new ArrayList<>())
-			.build();
+			.build()
+			.addQuizzes(createQuizRequestList);
 	}
 
-	public Quiz addQuiz(String question, String explanation) {
-		int sequence = quizList.size() + 1;
-		Quiz quiz = Quiz.create(sequence, question, explanation, this);
+	private QuizSet addQuizzes(List<CreateQuizRequest> createQuizRequestList) {
+		if (hasQuizRequests(createQuizRequestList)) {
+			createQuizRequestList.forEach(
+				cqr -> this.addQuiz(cqr.question(), cqr.explanation(), cqr.quizOptionRequestList()));
+		}
+		return this;
+	}
+
+	private void addQuiz(String question, String explanation,
+		List<CreateQuizRequest.CreateQuizOptionRequest> createQuizOptionRequestList) {
+		int nextSequence = quizList.size() + 1;
+		Quiz quiz = Quiz.create(nextSequence, question, explanation, this, createQuizOptionRequestList);
 		quizList.add(quiz);
-		return quiz;
+	}
+
+	private boolean hasQuizRequests(List<CreateQuizRequest> createQuizRequestList) {
+		return createQuizRequestList != null && !createQuizRequestList.isEmpty();
 	}
 
 	public void updateTotalQuizCount() {

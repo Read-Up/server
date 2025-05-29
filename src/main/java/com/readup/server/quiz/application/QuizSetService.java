@@ -35,9 +35,7 @@ public class QuizSetService {
 
 	@Transactional(readOnly = true)
 	public GetQuizSetResponse getQuizSet(Long quizSetId, int startQuizSequence) {
-		QuizSet quizSet = quizSetRepository.findById(quizSetId)
-			.orElseThrow(() -> new ServiceException(NOT_FOUND_QUIZ_SET));
-
+		QuizSet quizSet = quizSetRepository.getQuizSetById(quizSetId);
 		return GetQuizSetResponse.from(quizSet, startQuizSequence);
 	}
 

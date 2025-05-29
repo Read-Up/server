@@ -48,8 +48,14 @@ public enum ErrorCode {
 	// TermsVersion
 	TERMS_VERSION_NOT_FOUND(HttpStatus.NOT_FOUND, "약관의 버전이 존재하지 않습니다."),
 
-	// Quiz
-	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다.");
+	// Quiz Set
+	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다."),
+	NOT_FOUND_QUIZ(HttpStatus.NOT_FOUND, "퀴즈를 찾지 못했습니다."),
+
+	// User Quiz Set
+	NOT_FOUND_USER_QUIZ_SET(HttpStatus.NOT_FOUND, "유저 퀴즈 세트를 찾지 못했습니다."),
+	NOT_FOUND_USER_QUIZ(HttpStatus.NOT_FOUND, "유저 퀴즈를 찾지 못했습니다.")
+	;
 
 	private final HttpStatus httpStatus;
 	private final String message;

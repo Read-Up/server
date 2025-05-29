@@ -2,7 +2,6 @@ package com.readup.server.quiz.application.dto;
 
 import java.util.List;
 
-import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizSet;
 
 public record CreateQuizSetRequest(
@@ -10,14 +9,7 @@ public record CreateQuizSetRequest(
 	List<CreateQuizRequest> quizRequestList) {
 
 	public QuizSet toEntity() {
-		QuizSet quizSet = QuizSet.create(bookId, chapterId);
-
-		quizRequestList.forEach(qr -> {
-			Quiz quiz = quizSet.addQuiz(qr.question, qr.explanation);
-			qr.quizOptionRequestList.forEach(qor -> quiz.addQuizOption(qor.content, qor.isCorrect));
-		});
-
-		return quizSet;
+		return QuizSet.create(bookId, chapterId, quizRequestList);
 	}
 
 	public record CreateQuizRequest(

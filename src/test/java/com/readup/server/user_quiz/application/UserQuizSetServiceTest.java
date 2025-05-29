@@ -19,7 +19,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.readup.server.common.exception.ServiceException;
+import com.readup.server.common.exception.RepositoryException;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
+import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
@@ -62,7 +64,7 @@ class UserQuizSetServiceTest {
 		@DisplayName("사용자 퀴즈 세트 조회 성공 - 사용자 기존 퀴즈 세트 존재")
 		void get_user_quiz_set_success_existing_user_quiz_set() {
 			// stubbing
-			when(quizSetRepository.findById(EXPECTED_QUIZ_SET_ID)).thenReturn(Optional.of(quizSet));
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(quizSet);
 			when(userQuizSetJpaRepositoryStub.findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID, EXPECTED_USER_ID))
 				.thenReturn(Optional.of(existingUserQuizSet));
 
@@ -75,7 +77,7 @@ class UserQuizSetServiceTest {
 			assertThat(response.quizSequence()).isEqualTo(existingUserQuizSet.getQuizSequence());
 			assertThat(response.isEvaluated()).isEqualTo(existingUserQuizSet.getIsEvaluated());
 
-			verify(quizSetRepository, times(1)).findById(EXPECTED_QUIZ_SET_ID);
+			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
 			verify(userQuizSetJpaRepositoryStub, times(1)).findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID,
 				EXPECTED_USER_ID);
 			verify(userQuizSetJpaRepositoryStub, never()).save(any());
@@ -88,7 +90,7 @@ class UserQuizSetServiceTest {
 			final int initQuizSequence = 1;
 
 			// stubbing
-			when(quizSetRepository.findById(EXPECTED_QUIZ_SET_ID)).thenReturn(Optional.of(quizSet));
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(quizSet);
 			when(userQuizSetJpaRepositoryStub.findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID, EXPECTED_USER_ID))
 				.thenReturn(Optional.empty());
 
@@ -101,7 +103,7 @@ class UserQuizSetServiceTest {
 			assertThat(response.quizSequence()).isEqualTo(initQuizSequence);
 			assertThat(response.isEvaluated()).isFalse();
 
-			verify(quizSetRepository, times(1)).findById(EXPECTED_QUIZ_SET_ID);
+			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
 			verify(userQuizSetJpaRepositoryStub, times(1))
 				.findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID, EXPECTED_USER_ID);
 			verify(userQuizSetJpaRepositoryStub, times(1)).save(any());
@@ -114,15 +116,16 @@ class UserQuizSetServiceTest {
 			final Long nonExistingQuizSetId = 999L;
 
 			// stubbing
-			when(quizSetRepository.findById(nonExistingQuizSetId)).thenReturn(Optional.empty());
+			when(quizSetRepository.getQuizSetById(nonExistingQuizSetId))
+				.thenThrow(new RepositoryException(NOT_FOUND_QUIZ_SET));
 
 			// when & then
-			ServiceException exception = assertThrows(ServiceException.class,
+			RepositoryException exception = assertThrows(RepositoryException.class,
 				() -> sut.getUserQuizSet(nonExistingQuizSetId, authUser));
 
 			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_QUIZ_SET);
 
-			verify(quizSetRepository, times(1)).findById(nonExistingQuizSetId);
+			verify(quizSetRepository, times(1)).getQuizSetById(nonExistingQuizSetId);
 			verify(userQuizSetJpaRepositoryStub, never()).findByQuizSetIdAndCreatedBy(anyLong(), anyLong());
 			verify(userQuizSetJpaRepositoryStub, never()).save(any());
 		}
@@ -132,17 +135,16 @@ class UserQuizSetServiceTest {
 		}
 
 		private QuizSet createQuizSet() {
-			QuizSet newQuizSet = QuizSet.create(1L, 1L);
-
-			Quiz quiz1 = newQuizSet.addQuiz("질문1", "설명1");
-			quiz1.addQuizOption("보기1", true);
-			quiz1.addQuizOption("보기2", false);
-
-			Quiz quiz2 = newQuizSet.addQuiz("질문2", "설명2");
-			quiz2.addQuizOption("A", true);
-			quiz2.addQuizOption("B", false);
-
-			return newQuizSet;
+			List<CreateQuizRequest> quizRequests = List.of(
+				new CreateQuizRequest(
+					"질문1", "설명1", List.of(
+					new CreateQuizOptionRequest("보기1", true),
+					new CreateQuizOptionRequest("보기2", false))),
+				new CreateQuizRequest(
+					"질문2", "설명2", List.of(
+					new CreateQuizOptionRequest("A", true),
+					new CreateQuizOptionRequest("B", false))));
+			return QuizSet.create(1L, 1L, quizRequests);
 		}
 
 		private UserQuizSet createExistingUserQuizSet(List<Long> quizIdList) {
