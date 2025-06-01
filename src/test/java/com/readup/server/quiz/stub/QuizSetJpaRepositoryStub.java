@@ -9,8 +9,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.readup.server.common.exception.RepositoryException;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 
@@ -35,22 +33,8 @@ public class QuizSetJpaRepositoryStub implements QuizSetRepository {
 	}
 
 	private QuizSet createQuizSetWithId(QuizSet quizSet) {
-		QuizSet quizSetWithId = QuizSet.create(
-			quizSet.getBookId(),
-			quizSet.getChapterId(),
-			quizSet.getQuizList().stream()
-				.map(quiz -> new CreateQuizRequest(
-					quiz.getQuestion(),
-					quiz.getExplanation(),
-					quiz.getQuizOptionList().stream()
-						.map(option -> new CreateQuizOptionRequest(option.getContent(), option.getIsCorrect()))
-						.toList()
-				))
-				.toList()
-		);
-
-		ReflectionTestUtils.setField(quizSetWithId, "id", idGenerator.getAndIncrement());
-		ReflectionTestUtils.setField(quizSetWithId, "createdBy", quizSet.getCreatedBy());
-		return quizSetWithId;
+		ReflectionTestUtils.setField(quizSet, "id", idGenerator.getAndIncrement());
+		ReflectionTestUtils.setField(quizSet, "createdBy", quizSet.getCreatedBy());
+		return quizSet;
 	}
 }

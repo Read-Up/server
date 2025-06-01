@@ -54,4 +54,9 @@ public class UserQuiz extends BaseEntity {
 	public static UserQuiz create(Long quizId, UserQuizSet userQuizSet) {
 		return new UserQuiz(quizId, userQuizSet);
 	}
+
+	public void submitUserQuiz(Boolean isCorrect) {
+		this.attemptCount++;
+		this.isCorrect = isCorrect;
+	}
 }

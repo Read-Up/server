@@ -8,4 +8,6 @@ public interface UserQuizSetRepository {
 	UserQuizSet save(UserQuizSet userQuizSet);
 
 	Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long userId);
+
+	UserQuizSet getUserQuizSetWithUserQuizById(Long quizSetId, Long quizId, Long userId);
 }

@@ -7,6 +7,8 @@ import static lombok.AccessLevel.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
@@ -90,5 +92,13 @@ public class Quiz extends BaseEntity {
 
 	private boolean hasQuizOptionRequests(List<CreateQuizOptionRequest> createQuizOptionRequestList) {
 		return createQuizOptionRequestList != null && !createQuizOptionRequestList.isEmpty();
+	}
+
+	public boolean isAnswerCorrect(Set<Integer> selectedQuizOptionSequences) {
+		Set<Integer> correctQuizOptionSequences = quizOptionList.stream()
+			.filter(QuizOption::getIsCorrect)
+			.map(QuizOption::getSequence)
+			.collect(Collectors.toUnmodifiableSet());
+		return correctQuizOptionSequences.equals(selectedQuizOptionSequences);
 	}
 }
