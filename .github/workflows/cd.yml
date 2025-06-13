@@ -18,15 +18,6 @@ jobs:
       && contains('main development', github.event.workflow_run.head_branch)
     runs-on: ubuntu-latest
     steps:
-      - name: SSH into EC2 and deploy
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USERNAME }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/${{ secrets.EC2_USERNAME }}
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/readup-server
-            docker compose down
-            docker compose up -d
-            docker system prune -f
+      - name: Deploy to Coolify
+        run: |
+          curl --request GET '${{ secrets.COOLIFY_WEBHOOK }}' --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
