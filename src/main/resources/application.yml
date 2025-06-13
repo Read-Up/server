@@ -67,6 +67,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
+      repositories:
+        enabled: false
 
 springdoc:
   swagger-ui:
