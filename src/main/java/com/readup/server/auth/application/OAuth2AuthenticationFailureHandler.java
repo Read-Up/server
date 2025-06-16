@@ -6,6 +6,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
 
+import com.readup.server.auth.infrastructure.RedirectUtils;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
-	private static final String ERROR_URI = "/login?error=true";
 	private static final String OAUTH_ERROR_TYPE = "OAUTH";
 
 	@Override
@@ -26,6 +27,6 @@ public class OAuth2AuthenticationFailureHandler extends SimpleUrlAuthenticationF
 
 		log.error("Error_Type: {},Description: {}", OAUTH_ERROR_TYPE, exception.getMessage());
 
-		getRedirectStrategy().sendRedirect(request, response, ERROR_URI);
+		getRedirectStrategy().sendRedirect(request, response, RedirectUtils.getSignInFailUri());
 	}
 }
