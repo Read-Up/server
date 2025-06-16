@@ -13,10 +13,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.RedirectStrategy;
+import org.springframework.test.context.ActiveProfiles;
+
+import com.readup.server.auth.infrastructure.RedirectUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@ActiveProfiles("test")
 @ExtendWith(MockitoExtension.class)
 class OAuth2AuthenticationFailureHandlerTest {
 
@@ -45,6 +49,6 @@ class OAuth2AuthenticationFailureHandlerTest {
 
 		oAuth2AuthenticationFailureHandler.onAuthenticationFailure(request, response, exception);
 
-		verify(redirectStrategy).sendRedirect(request, response, "/login?error=true");
+		verify(redirectStrategy).sendRedirect(request, response, RedirectUtils.getSignInFailUri());
 	}
 }
