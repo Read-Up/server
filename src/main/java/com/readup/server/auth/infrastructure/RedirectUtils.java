@@ -14,17 +14,24 @@ public class RedirectUtils {
 	private static final String DELIMITER = "\\?";
 	private static String baseUri;
 	private static String signUpUri;
+	private static String signInFailUri;
 
 	@Value("${redirect.base-uri}")
 	private String baseUriProp;
 	@Value("${redirect.sign-up-uri}")
 	private String signUpUriProp;
+	@Value("${redirect.sign-in-fail-uri}")
+	private String signInFailUriProp;
 
 	private RedirectUtils() {
 	}
 
 	public static String getSignUpUri() {
 		return baseUri + signUpUri;
+	}
+
+	public static String getSignInFailUri() {
+		return baseUri + signInFailUri;
 	}
 
 	public static String getRedirectUriFromOAuthState(HttpServletRequest request) {
@@ -57,5 +64,6 @@ public class RedirectUtils {
 	private void init() {
 		baseUri = baseUriProp;
 		signUpUri = signUpUriProp;
+		signInFailUri = signInFailUriProp;
 	}
 }
