@@ -36,6 +36,9 @@ public class QuizOption extends BaseEntity {
 	private Long id;
 
 	@Column(nullable = false)
+	private int sequence;
+
+	@Column(nullable = false)
 	private String content;
 
 	@Column(nullable = false)
@@ -45,8 +48,9 @@ public class QuizOption extends BaseEntity {
 	@JoinColumn(nullable = false)
 	private Quiz quiz;
 
-	public static QuizOption create(String content, Boolean isCorrect, Quiz quiz) {
+	public static QuizOption create(int sequence, String content, Boolean isCorrect, Quiz quiz) {
 		return QuizOption.builder()
+			.sequence(sequence)
 			.content(content)
 			.isCorrect(isCorrect)
 			.quiz(quiz)

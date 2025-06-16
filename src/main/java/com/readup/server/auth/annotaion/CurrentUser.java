@@ -9,6 +9,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @Target({ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AuthenticationPrincipal(expression = "#authentication.principal instanceof T(com.readup.server.auth.dto.CustomOAuth2User) ? @userRegistrationService.getUserFromSocialAccount(#authentication.principal.getName()) : null")
+@AuthenticationPrincipal(expression = "#root instanceof T(com.readup.server.auth.dto.CustomOAuth2User) ? @userRegistrationService.getUserFromSocialAccount(#root.getName()) : null")
 public @interface CurrentUser {
 }

@@ -14,7 +14,7 @@ import com.readup.server.user.domain.UserService;
 import com.readup.server.user.domain.UserSocialAccountService;
 import com.readup.server.user.dto.CreateUserRequest;
 import com.readup.server.user.dto.CreateUserResponse;
-import com.readup.server.user.dto.CurrentUser;
+import com.readup.server.user.dto.AuthUser;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +29,10 @@ public class UserRegistrationService {
 	private final SocialAccountService socialAccountService;
 	private final TermsManagementService termsManagementService;
 
-	public CurrentUser getUserFromSocialAccount(Long socialAccountId) {
+	@Transactional(readOnly = true)
+	public AuthUser getUserFromSocialAccount(Long socialAccountId) {
 		SocialAccount socialAccount = socialAccountService.findById(socialAccountId);
-		return CurrentUser.from(socialAccount.getUser());
+		return AuthUser.from(socialAccount.getUser());
 	}
 
 	@Transactional

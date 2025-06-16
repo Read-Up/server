@@ -9,6 +9,7 @@ on:
     branches:
       - main
       - development
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -24,7 +25,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ec2-user
+            cd /home/${{ secrets.EC2_USERNAME }}
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/readup-server
             docker compose down
             docker compose up -d
