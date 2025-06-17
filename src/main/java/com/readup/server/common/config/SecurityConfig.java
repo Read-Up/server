@@ -13,6 +13,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.readup.server.auth.application.CustomAccessDeniedHandler;
+import com.readup.server.auth.application.CustomAuthenticationEntryPoint;
 import com.readup.server.auth.application.CustomAuthorizationRequestResolver;
 import com.readup.server.auth.application.CustomOAuth2UserService;
 import com.readup.server.auth.application.CustomOidcUserService;
@@ -41,7 +43,7 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.csrf(AbstractHttpConfigurer::disable)
 			.formLogin(AbstractHttpConfigurer::disable)
-			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.NEVER))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/docs", "/swagger-ui/**", "/api-docs/**", "/springdoc/**").permitAll()
 				.requestMatchers("/public/**").permitAll()
@@ -59,6 +61,10 @@ public class SecurityConfig {
 				.failureHandler(oAuth2AuthenticationFailureHandler))
 			.addFilterBefore(loginAuthFilter, UsernamePasswordAuthenticationFilter.class)
 			.addFilterBefore(logoutAuthFilter, UsernamePasswordAuthenticationFilter.class)
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint(new CustomAuthenticationEntryPoint())
+				.accessDeniedHandler(new CustomAccessDeniedHandler())
+			)
 			.build();
 	}
 
