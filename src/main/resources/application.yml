@@ -67,6 +67,14 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
+      repositories:
+        enabled: false
+
+server:
+  forward-headers-strategy: framework
+
+server:
+  forward-headers-strategy: framework
 
 springdoc:
   swagger-ui:
