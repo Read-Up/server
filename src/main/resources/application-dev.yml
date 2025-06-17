@@ -53,3 +53,6 @@ redirect:
   base-uri: "http://localhost:3001"
   sign-up-uri: "/signup"
   sign-in-fail-uri: "/signin?error=true"
+
+server:
+  forward-headers-strategy: framework
