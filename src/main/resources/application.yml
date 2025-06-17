@@ -73,6 +73,9 @@ spring:
 server:
   forward-headers-strategy: framework
 
+server:
+  forward-headers-strategy: framework
+
 springdoc:
   swagger-ui:
     enabled: true
