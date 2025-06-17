@@ -19,7 +19,6 @@ spring:
         access-token-key-string: "example-access-token-key-string-long"
         refresh-token-key-string: "example-refresh-token-key-string-long"
 
-
 book-info-client:
   default-service-name: "Aladin"
   national-library:
