@@ -22,4 +22,9 @@ public class TestTokenController {
 
 		return ApiResponse.successResponse(testTokenService.getTestToken(), "Test tokens generated successfully");
 	}
+
+	@GetMapping("/version")
+	public ApiResponse<String> getVersion() {
+		return ApiResponse.successResponse("1.0.0", "Version retrieved successfully");
+	}
 }
