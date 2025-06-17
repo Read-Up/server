@@ -32,7 +32,7 @@ public class CookieProvider {
 		Cookie cookie = new Cookie(name, token);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
-		cookie.setDomain(".read-up.kr");
+		cookie.setDomain("read-up.kr");
 		cookie.setMaxAge(expiresMS / 1000);
 
 		return cookie;
