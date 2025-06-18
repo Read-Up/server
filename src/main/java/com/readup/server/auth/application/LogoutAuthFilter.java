@@ -2,6 +2,8 @@ package com.readup.server.auth.application;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -60,10 +62,11 @@ public class LogoutAuthFilter extends OncePerRequestFilter {
 			refreshTokenService.removeRefreshToken(refreshToken);
 		}
 
-		Cookie deletedAccessCookie = cookieProvider.generateDeletedAccessTokenCookie();
-		Cookie deletedRefreshCookie = cookieProvider.generateDeletedRefreshTokenCookie();
-		response.addCookie(deletedAccessCookie);
-		response.addCookie(deletedRefreshCookie);
+		ResponseCookie accessCookie = cookieProvider.generateDeletedAccessTokenCookie();
+		ResponseCookie refreshCookie = cookieProvider.generateDeletedRefreshTokenCookie();
+
+		response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+		response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
 		SecurityContextHolder.clearContext();
 
