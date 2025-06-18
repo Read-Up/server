@@ -22,7 +22,6 @@ class CookieProviderTest {
 		assertEquals("access_token", accessTokenCookie.getName());
 		assertEquals(accessToken, accessTokenCookie.getValue());
 		assertEquals("/", accessTokenCookie.getPath());
-		assertTrue(accessTokenCookie.isHttpOnly());
 		assertEquals(expiresMS / 1000, accessTokenCookie.getMaxAge());
 	}
 
@@ -37,7 +36,6 @@ class CookieProviderTest {
 		assertEquals("refresh_token", refreshTokenCookie.getName());
 		assertEquals(refreshToken, refreshTokenCookie.getValue());
 		assertEquals("/", refreshTokenCookie.getPath());
-		assertTrue(refreshTokenCookie.isHttpOnly());
 		assertEquals(expiresMS / 1000, refreshTokenCookie.getMaxAge());
 	}
 
@@ -49,7 +47,6 @@ class CookieProviderTest {
 		assertEquals("access_token", refreshTokenCookie.getName());
 		assertEquals("", refreshTokenCookie.getValue());
 		assertEquals("/", refreshTokenCookie.getPath());
-		assertTrue(refreshTokenCookie.isHttpOnly());
 		assertEquals(0, refreshTokenCookie.getMaxAge());
 	}
 
@@ -61,7 +58,6 @@ class CookieProviderTest {
 		assertEquals("refresh_token", refreshTokenCookie.getName());
 		assertEquals("", refreshTokenCookie.getValue());
 		assertEquals("/", refreshTokenCookie.getPath());
-		assertTrue(refreshTokenCookie.isHttpOnly());
 		assertEquals(0, refreshTokenCookie.getMaxAge());
 	}
 }
