@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -32,13 +34,8 @@ import lombok.RequiredArgsConstructor;
 public class LoginAuthFilter extends OncePerRequestFilter {
 
 	private static final Set<String> VALID_COOKIE_NAMES = Set.of("access_token", "refresh_token");
-	private static final Set<String> EXCLUDED_PATHS = Set.of(
-		"/api/docs",
-		"/api/swagger-ui/",
-		"/api/api-docs/",
-		"/api/springdoc/",
-		"/api/public"
-	);
+	private static final Set<String> EXCLUDED_PATHS = Set.of("/api/docs", "/api/swagger-ui/", "/api/api-docs/",
+		"/api/springdoc/", "/api/public");
 	private final TokenProvider tokenProvider;
 	private final CookieProvider cookieProvider;
 	private final RefreshTokenService refreshTokenService;
@@ -66,8 +63,8 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 			}
 		}
 
-		if (!accessTokenIsValid && StringUtils.hasText(refreshToken)
-			&& tokenProvider.validateRefreshToken(refreshToken)) {
+		if (!accessTokenIsValid && StringUtils.hasText(refreshToken) && tokenProvider.validateRefreshToken(
+			refreshToken)) {
 			String tokenUserId = refreshTokenService.getUserIdByRefreshToken(refreshToken);
 
 			if (tokenUserId != null) {
@@ -90,18 +87,19 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 	}
 
 	private void addTokenCookies(HttpServletResponse response, AuthTokens tokens) {
-		Cookie accessCookie = cookieProvider.generateAccessTokenCookie(tokens.accessToken(), ACCESS_EXPIRY_MS);
-		Cookie refreshCookie = cookieProvider.generateRefreshTokenCookie(tokens.refreshToken(), REFRESH_EXPIRY_MS);
-		response.addCookie(accessCookie);
-		response.addCookie(refreshCookie);
+		ResponseCookie accessCookie = cookieProvider.generateAccessTokenCookie(tokens.accessToken(), ACCESS_EXPIRY_MS);
+		ResponseCookie refreshCookie = cookieProvider.generateRefreshTokenCookie(tokens.refreshToken(),
+			REFRESH_EXPIRY_MS);
+
+		response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+		response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 	}
 
 	private OAuth2AuthenticationToken createAuthentication(Long userId) {
 		SocialAccount socialAccount = socialAccountService.findById(userId);
 		CustomOAuth2User user = CustomOAuth2User.from(socialAccount, Map.of());
 
-		return new OAuth2AuthenticationToken(
-			user, user.authorities(), socialAccount.getProvider());
+		return new OAuth2AuthenticationToken(user, user.authorities(), socialAccount.getProvider());
 	}
 
 	private AuthTokens extractTokenFromCookies(Cookie[] cookies) {

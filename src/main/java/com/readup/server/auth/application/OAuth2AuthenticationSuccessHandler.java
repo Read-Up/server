@@ -4,6 +4,8 @@ import static com.readup.server.auth.application.TokenProvider.*;
 
 import java.io.IOException;
 
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +16,6 @@ import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.auth.dto.AuthTokens;
 import com.readup.server.auth.infrastructure.RedirectUtils;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -38,15 +39,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
 		AuthTokens authTokens = tokenProvider.generateTokens(authentication);
 
-		Cookie accessCookie =
-			cookieProvider.generateAccessTokenCookie(authTokens.accessToken(), ACCESS_EXPIRY_MS);
+		ResponseCookie accessCookie = cookieProvider.generateAccessTokenCookie(authTokens.accessToken(),
+			ACCESS_EXPIRY_MS);
+		ResponseCookie refreshCookie = cookieProvider.generateRefreshTokenCookie(authTokens.refreshToken(),
+			REFRESH_EXPIRY_MS);
 
-		Cookie refreshCookie =
-			cookieProvider.generateRefreshTokenCookie(authTokens.refreshToken(), REFRESH_EXPIRY_MS);
-
-		response.addCookie(accessCookie);
-		response.addCookie(refreshCookie);
-
+		response.addHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+		response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 		clearAuthenticationAttributes(request);
 
 		if (socialAccountService.isNewUser(authentication)) {
