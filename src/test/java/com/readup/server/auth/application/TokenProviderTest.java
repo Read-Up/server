@@ -65,7 +65,8 @@ class TokenProviderTest {
 		assertNotNull(authTokens.accessToken());
 		assertNotNull(authTokens.refreshToken());
 
-		verify(refreshTokenService, times(1)).storeRefreshToken("readup", authTokens.refreshToken(), tokenProvider.REFRESH_EXPIRY_MS);
+		verify(refreshTokenService, times(1)).storeRefreshToken("readup", authTokens.refreshToken(),
+			TokenProvider.REFRESH_EXPIRY_MS);
 	}
 
 	@Test
