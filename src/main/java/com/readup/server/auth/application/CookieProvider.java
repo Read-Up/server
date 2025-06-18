@@ -31,7 +31,7 @@ public class CookieProvider {
 	private Cookie createCookie(String name, String token, int expiresMS) {
 		Cookie cookie = new Cookie(name, token);
 		cookie.setPath("/");
-		cookie.setHttpOnly(true);
+		cookie.setHttpOnly(false);
 		cookie.setDomain("read-up.kr");
 		cookie.setMaxAge(expiresMS / 1000);
 
