@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,8 @@ import com.readup.server.auth.annotaion.CurrentUser;
 import com.readup.server.user.dto.AuthUser;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
+import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 
 @Import(UserQuizSetControllerTest.CustomAnnotationTestConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -58,7 +61,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 	@DisplayName("사용자 퀴즈 세트 조회")
 	void getUserQuizSetSuccessTest() throws Exception {
 		// given
-		final String uri = "/private/user-quiz-set";
+		final String uri = "/private/quiz-sets/{quizSetId}/my-progress";
 		final Long quizSetId = 1L;
 		final Long userQuizSetId = 1L;
 		final int quizSequence = 2;
@@ -70,9 +73,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		when(userQuizSetService.getUserQuizSet(quizSetId, authUser)).thenReturn(response);
 
 		// when && then
-		mockMvc.perform(get(uri)
-				.param("quizSetId", String.valueOf(quizSetId))
-				.contentType(APPLICATION_JSON))
+		mockMvc.perform(get(uri, quizSetId).contentType(APPLICATION_JSON))
 
 			.andExpectAll(
 				status().isOk(),
@@ -86,14 +87,65 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 			.andDo(
 				MockMvcRestDocumentationWrapper.document("get-user-quiz-set",
 					resourceDetails().tag("UserQuizSet"),
-
-					queryParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
+					pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
 
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("사용자 퀴즈 세트 ID"),
 						fieldWithPath("data.quizSequence").type(NUMBER).description("현재 진행 중인 퀴즈 순서"),
 						fieldWithPath("data.isEvaluated").type(BOOLEAN).description("평가 완료 여부"),
+						fieldWithPath("message").type(STRING).description("성공 메시지")
+					)
+				)
+			);
+	}
+
+	@Test
+	@DisplayName("사용자 퀴즈 답안 제출 - 정답")
+	void submitUserQuizAnswerCorrectTest() throws Exception {
+		// given
+		final String uri = "/private/quiz-sets/{quizSetId}/quizzes/{quizId}/answer";
+		final Long quizSetId = 1L;
+		final Long quizId = 1L;
+		final Set<Integer> selectedOptions = Set.of(1);
+		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
+
+		AuthUser authUser = new AuthUser(USER_ID, NICKNAME);
+		SubmitUserQuizRequest request = new SubmitUserQuizRequest(selectedOptions);
+		SubmitUserQuizResponse response = new SubmitUserQuizResponse(true, explanation);
+
+		// stubbing
+		when(userQuizSetService.submitUserQuizAnswer(quizSetId, quizId, request, authUser))
+			.thenReturn(response);
+
+		// when && then
+		mockMvc.perform(post(uri, quizSetId, quizId)
+				.contentType(APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.isCorrect").value(true),
+				jsonPath("$.data.explanation").value(explanation),
+				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
+
+			// docs
+			.andDo(
+				MockMvcRestDocumentationWrapper.document("submit-user-quiz-answer",
+					resourceDetails().tag("UserQuizSet"),
+					pathParameters(
+						parameterWithName("quizSetId").description("퀴즈 세트 ID"),
+						parameterWithName("quizId").description("퀴즈 ID")
+					),
+					requestFields(
+						fieldWithPath("selectedQuizOptionSequences").type(ARRAY)
+							.description("선택한 퀴즈 옵션 순서 목록")
+					),
+					responseFields(
+						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.isCorrect").type(BOOLEAN).description("정답 여부"),
+						fieldWithPath("data.explanation").type(STRING).description("정답 설명 (정답일 경우에만 제공 오답인 경우 null)"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
@@ -123,6 +175,5 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 			};
 		}
 	}
-
 }
 

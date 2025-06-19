@@ -16,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,27 +25,34 @@ import lombok.NoArgsConstructor;
 @Table(name = "quiz_option")
 @Getter
 @Entity
-@Builder
-@AllArgsConstructor(access = PRIVATE)
 @NoArgsConstructor(access = PROTECTED)
 public class QuizOption extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)
+	@Column(name = "id")
 	private Long id;
 
-	@Column(nullable = false)
+	@Column(name = "sequence", nullable = false)
 	private int sequence;
 
-	@Column(nullable = false)
+	@Column(name = "content", nullable = false)
 	private String content;
 
-	@Column(nullable = false)
+	@Column(name = "is_correct", nullable = false)
 	private Boolean isCorrect;
 
 	@ManyToOne(fetch = LAZY)
-	@JoinColumn(nullable = false)
+	@JoinColumn(name = "quiz_id", nullable = false)
 	private Quiz quiz;
+
+	@Builder(access = PRIVATE)
+	private QuizOption(int sequence, String content, Boolean isCorrect, Quiz quiz) {
+		this.sequence = sequence;
+		this.content = content;
+		this.isCorrect = isCorrect;
+		this.quiz = quiz;
+	}
 
 	public static QuizOption create(int sequence, String content, Boolean isCorrect, Quiz quiz) {
 		return QuizOption.builder()
