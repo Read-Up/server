@@ -15,7 +15,6 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,7 +30,7 @@ public class QuizSetController {
 
 	@GetMapping("/private/quiz-sets/{quizSetId}")
 	public ApiResponse<GetQuizSetResponse> getQuizSet(@PathVariable Long quizSetId,
-		@RequestParam(defaultValue = "1") @Min(value = 1, message = "퀴즈 시작 번호는 1부터 시작합니다.") int startQuizSequence) {
-		return successResponse(quizSetService.getQuizSet(quizSetId, startQuizSequence));
+		@RequestParam(defaultValue = "0") Long lastQuizId) {
+		return successResponse(quizSetService.getQuizSet(quizSetId, lastQuizId));
 	}
 }

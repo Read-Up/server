@@ -42,8 +42,8 @@ public class UserQuizSet extends BaseEntity {
 	@Column(name = "is_evaluated", nullable = false)
 	private Boolean isEvaluated;
 
-	@Column(name = "quiz_sequence", nullable = false)
-	private int quizSequence;
+	@Column(name = "last_quiz_id")
+	private Long lastQuizId;
 
 	@Column(name = "correct_answer_average")
 	private Double correctAnswerAverage;
@@ -57,27 +57,16 @@ public class UserQuizSet extends BaseEntity {
 	private UserQuizSet(Long quizSetId) {
 		this.quizSetId = quizSetId;
 		this.isEvaluated = FALSE;
-		this.quizSequence = 1;
 	}
 
-	public static UserQuizSet create(Long quizSetId, List<Long> quizIdList) {
-		UserQuizSet userQuizSet = new UserQuizSet(quizSetId);
-		userQuizSet.addUserQuizzes(quizIdList);
-		return userQuizSet;
+	public static UserQuizSet create(Long quizSetId) {
+		return new UserQuizSet(quizSetId);
 	}
 
-	private void addUserQuizzes(List<Long> quizIdList) {
-		if (hasQuizIds(quizIdList)) {
-			quizIdList.forEach(this::addUserQuiz);
+	public void addUserQuizList(List<UserQuiz> userQuizList) {
+		if (userQuizList == null || userQuizList.isEmpty()) {
+			return;
 		}
-	}
-
-	private void addUserQuiz(Long quizId) {
-		UserQuiz userQuiz = UserQuiz.create(quizId, this);
-		userQuizList.add(userQuiz);
-	}
-
-	private boolean hasQuizIds(List<Long> quizIdList) {
-		return quizIdList != null && !quizIdList.isEmpty();
+		this.userQuizList.addAll(userQuizList);
 	}
 }

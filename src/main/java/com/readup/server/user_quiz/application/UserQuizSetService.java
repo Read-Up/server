@@ -30,7 +30,7 @@ public class UserQuizSetService {
 	@Transactional
 	public GetUserQuizSetResponse getUserQuizSet(Long quizSetId, AuthUser user) {
 		QuizSet quizSet = quizSetRepository.getQuizSetById(quizSetId);
-		UserQuizSet userQuizSet = getOrCreateUserQuizSet(quizSetId, user.id(), quizSet.getQuizList());
+		UserQuizSet userQuizSet = getOrCreateUserQuizSet(quizSetId, user.id(), getQuizIdList(quizSet));
 		return GetUserQuizSetResponse.from(userQuizSet);
 	}
 
@@ -39,11 +39,14 @@ public class UserQuizSetService {
 		AuthUser user) {
 		Quiz quiz = quizQueryRepository.getQuizWithQuizOptionById(quizSetId, quizId);
 		UserQuiz userQuiz = getUserQuiz(quizSetId, quizId, user);
-
-		boolean isAnswerCorrect = quiz.isAnswerCorrect(request.selectedQuizOptionSequences());
-		userQuiz.submitUserQuiz(isAnswerCorrect);
-
+		boolean isAnswerCorrect = userQuiz.submitAnswer(quiz, request.selectedQuizOptionIds());
 		return SubmitUserQuizResponse.of(isAnswerCorrect, quiz.getExplanation());
+	}
+
+	private List<Long> getQuizIdList(QuizSet quizSet) {
+		return quizSet.getQuizList().stream()
+			.map(Quiz::getId)
+			.toList();
 	}
 
 	private UserQuiz getUserQuiz(Long quizSetId, Long quizId, AuthUser user) {
@@ -51,14 +54,20 @@ public class UserQuizSetService {
 			.getUserQuizList().getFirst();
 	}
 
-	private UserQuizSet getOrCreateUserQuizSet(Long quizSetId, Long userId, List<Quiz> quizList) {
+	private UserQuizSet getOrCreateUserQuizSet(Long quizSetId, Long userId, List<Long> quizIdList) {
 		return userQuizSetRepository.findByQuizSetIdAndCreatedBy(quizSetId, userId)
-			.orElseGet(() -> createNewUserQuizSet(quizSetId, quizList));
+			.orElseGet(() -> createNewUserQuizSet(quizSetId, quizIdList));
 	}
 
-	private UserQuizSet createNewUserQuizSet(Long quizSetId, List<Quiz> quizList) {
-		List<Long> quizIdList = quizList.stream().map(Quiz::getId).toList();
-		UserQuizSet newUserQuizSet = UserQuizSet.create(quizSetId, quizIdList);
+	private UserQuizSet createNewUserQuizSet(Long quizSetId, List<Long> quizIdList) {
+		UserQuizSet newUserQuizSet = UserQuizSet.create(quizSetId);
+		newUserQuizSet.addUserQuizList(createUserQuizList(quizIdList, newUserQuizSet));
 		return userQuizSetRepository.save(newUserQuizSet);
+	}
+
+	private List<UserQuiz> createUserQuizList(List<Long> quizIdList, UserQuizSet newUserQuizSet) {
+		return quizIdList.stream()
+			.map(qi -> UserQuiz.create(qi, newUserQuizSet))
+			.toList();
 	}
 }

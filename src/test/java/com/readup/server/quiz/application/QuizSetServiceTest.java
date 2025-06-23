@@ -180,12 +180,16 @@ class QuizSetServiceTest {
 		@DisplayName("퀴즈 세트 조회 성공 - 단일 퀴즈 또는 다중 퀴즈")
 		void get_quiz_set_success(QuizSet quizSet) {
 			// given
-			final int quizSequence = 2;
+			final Long lastQuizId = 1L;
 			QuizSet savedQuizSet = quizSetJpaRepositoryStub.save(quizSet);
-			final int responseQuizCount = Integer.max(savedQuizSet.getQuizList().size() - quizSequence + 1, 0);
+			List<Quiz> filteredQuiz = savedQuizSet.getQuizList()
+				.stream()
+				.filter(quiz -> quiz.getId() > lastQuizId)
+				.toList();
+			final int responseQuizCount = filteredQuiz.size();
 
 			// when
-			GetQuizSetResponse response = sut.getQuizSet(savedQuizSet.getId(), quizSequence);
+			GetQuizSetResponse response = sut.getQuizSet(savedQuizSet.getId(), lastQuizId);
 
 			// then
 			Assertions.assertAll(
@@ -195,8 +199,8 @@ class QuizSetServiceTest {
 				() -> assertThat(response.quizSetId()).isEqualTo(savedQuizSet.getId()),
 				() -> assertThat(response.quizResponseList()).hasSize(responseQuizCount));
 
-			for (int i = quizSequence; i < quizSet.getQuizList().size(); i++) {
-				Quiz quiz = quizSet.getQuizList().get(i);
+			for (int i = 0; i < filteredQuiz.size(); i++) {
+				Quiz quiz = filteredQuiz.get(i);
 				GetQuizResponse quizResponse = response.quizResponseList().get(i);
 
 				assertThat(quizResponse.question()).isEqualTo(quiz.getQuestion());
@@ -211,33 +215,42 @@ class QuizSetServiceTest {
 		}
 
 		static Stream<QuizSet> provideSingleAndMultipleQuizSets() {
-			QuizSet singleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID,
-				List.of(new CreateQuizRequest("질문1", "설명1",
-					List.of(new CreateQuizOptionRequest("보기1", true), new CreateQuizOptionRequest("보기2", false)))));
-
-			QuizSet multipleQuizSet = QuizSet.create(EXPECTED_BOOK_ID, EXPECTED_CHAPTER_ID,
+			CreateQuizSetRequest singleQuizRequest = new CreateQuizSetRequest(
+				EXPECTED_BOOK_ID,
+				EXPECTED_CHAPTER_ID,
 				List.of(
-					new CreateQuizRequest("질문1", "설명1", List.of(
-						new CreateQuizOptionRequest("A", true),
-						new CreateQuizOptionRequest("B", false))),
-					new CreateQuizRequest("질문2", "설명2", List.of(
-						new CreateQuizOptionRequest("C", false),
-						new CreateQuizOptionRequest("D", true)))
-				));
+					new CreateQuizRequest("질문1", "설명1",
+						List.of(
+							new CreateQuizOptionRequest("보기1", true),
+							new CreateQuizOptionRequest("보기2", false)))));
 
-			return Stream.of(singleQuizSet, multipleQuizSet);
+			CreateQuizSetRequest multipleQuizRequest = new CreateQuizSetRequest(
+				EXPECTED_BOOK_ID,
+				EXPECTED_CHAPTER_ID,
+				List.of(
+					new CreateQuizRequest("질문1", "설명1",
+						List.of(
+							new CreateQuizOptionRequest("A", true),
+							new CreateQuizOptionRequest("B", false))),
+					new CreateQuizRequest("질문2", "설명2",
+						List.of(
+							new CreateQuizOptionRequest("C", false),
+							new CreateQuizOptionRequest("D", true)))));
+
+			return Stream.of(singleQuizRequest.toEntity(), multipleQuizRequest.toEntity());
 		}
 
 		@Test
 		@DisplayName("퀴즈 세트 조회 실패 - 퀴즈 세트가 존재하지 않는 경우")
 		void get_quiz_set_fail_quiz_set_not_found() {
 			// given
-			final int quizSequence = 2;
+			final Long lastQuizId = 2L;
 			final Long nonExistingQuizSetId = 999L;
 
 			// when & then
 			RepositoryException exception = assertThrows(RepositoryException.class,
-				() -> sut.getQuizSet(nonExistingQuizSetId, quizSequence));
+				() -> sut.getQuizSet(nonExistingQuizSetId, lastQuizId));
+
 			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_QUIZ_SET);
 			verify(quizSetJpaRepositoryStub, times(1)).getQuizSetById(nonExistingQuizSetId);
 		}

@@ -1,5 +1,6 @@
 package com.readup.server.quiz.domain.model;
 
+import static com.readup.server.quiz.application.QuizSetTimeCalculator.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
@@ -11,7 +12,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -66,31 +66,20 @@ public class QuizSet extends BaseEntity {
 		this.chapterId = chapterId;
 	}
 
-	public static QuizSet create(Long bookId, Long chapterId, List<CreateQuizRequest> createQuizRequestList) {
+	public static QuizSet create(Long bookId, Long chapterId) {
 		return QuizSet.builder()
 			.bookId(bookId)
 			.chapterId(chapterId)
-			.build()
-			.addQuizzes(createQuizRequestList);
+			.build();
 	}
 
-	private QuizSet addQuizzes(List<CreateQuizRequest> createQuizRequestList) {
-		if (hasQuizRequests(createQuizRequestList)) {
-			createQuizRequestList.forEach(
-				cqr -> this.addQuiz(cqr.question(), cqr.explanation(), cqr.quizOptionRequestList()));
+	public void addQuizList(List<Quiz> quizList) {
+		if (this.quizList == null || quizList.isEmpty()) {
+			return;
 		}
-		return this;
-	}
-
-	private void addQuiz(String question, String explanation,
-		List<CreateQuizRequest.CreateQuizOptionRequest> createQuizOptionRequestList) {
-		int nextSequence = quizList.size() + 1;
-		Quiz quiz = Quiz.create(nextSequence, question, explanation, this, createQuizOptionRequestList);
-		quizList.add(quiz);
-	}
-
-	private boolean hasQuizRequests(List<CreateQuizRequest> createQuizRequestList) {
-		return createQuizRequestList != null && !createQuizRequestList.isEmpty();
+		this.quizList.addAll(quizList);
+		updateTotalQuizCount();
+		updateEstimatedTime(calculate(totalQuizCount));
 	}
 
 	public void updateTotalQuizCount() {

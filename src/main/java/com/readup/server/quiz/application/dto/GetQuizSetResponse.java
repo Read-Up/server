@@ -1,5 +1,7 @@
 package com.readup.server.quiz.application.dto;
 
+import static com.readup.server.quiz.util.SequenceGenerator.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -10,29 +12,49 @@ import com.readup.server.quiz.domain.model.QuizSet;
 public record GetQuizSetResponse(Long bookId, Long chapterId, Long quizSetId, LocalDateTime createdAt,
 								 List<GetQuizResponse> quizResponseList) {
 
-	public static GetQuizSetResponse from(QuizSet quizSet, int quizSequence) {
-		return new GetQuizSetResponse(quizSet.getBookId(), quizSet.getChapterId(), quizSet.getId(),
-			quizSet.getCreatedAt(), GetQuizResponse.from(quizSet.getQuizList(), quizSequence));
+	public static GetQuizSetResponse from(QuizSet quizSet, Long lastQuizId) {
+		return new GetQuizSetResponse(
+			quizSet.getBookId(),
+			quizSet.getChapterId(),
+			quizSet.getId(),
+			quizSet.getCreatedAt(),
+			GetQuizResponse.from(quizSet.getQuizList(), lastQuizId));
 	}
 
 	public record GetQuizResponse(Long quizId, int sequence, String question,
 								  List<GetQuizOptionResponse> quizOptionResponseList) {
 
-		public static List<GetQuizResponse> from(List<Quiz> quizList, int quizSequence) {
+		public static List<GetQuizResponse> from(List<Quiz> quizList, Long lastQuizId) {
+			List<Quiz> filteredQuizList = filterQuizById(quizList, lastQuizId);
+			return createResponsesWithSequence(filteredQuizList, GetQuizResponse::createWithSequence);
+		}
+
+		private static List<Quiz> filterQuizById(List<Quiz> quizList, Long lastQuizId) {
 			return quizList.stream()
-				.filter(q -> q.getSequence() >= quizSequence)
-				.map(q -> new GetQuizResponse(q.getId(), q.getSequence(), q.getQuestion(),
-					GetQuizOptionResponse.from(q.getQuizOptionList())))
+				.filter(q -> q.getId() > lastQuizId)
 				.toList();
+		}
+
+		private static GetQuizResponse createWithSequence(Quiz quiz, int sequence) {
+			return new GetQuizResponse(
+				quiz.getId(),
+				sequence,
+				quiz.getQuestion(),
+				GetQuizOptionResponse.from(quiz.getQuizOptionList()));
 		}
 	}
 
 	public record GetQuizOptionResponse(Long quizOptionId, int sequence, String content) {
 
 		public static List<GetQuizOptionResponse> from(List<QuizOption> quizOptionList) {
-			return quizOptionList.stream()
-				.map(qo -> new GetQuizOptionResponse(qo.getId(), qo.getSequence(), qo.getContent()))
-				.toList();
+			return createResponsesWithSequence(quizOptionList, GetQuizOptionResponse::createWithSequence);
+		}
+
+		private static GetQuizOptionResponse createWithSequence(QuizOption quizOption, int sequence) {
+			return new GetQuizOptionResponse(
+				quizOption.getId(),
+				sequence,
+				quizOption.getContent());
 		}
 	}
 }
