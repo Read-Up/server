@@ -22,8 +22,13 @@ public class UserQuizSetJpaRepositoryStub implements UserQuizSetRepository {
 		return idGenerator.get() - 1;
 	}
 
+	public int size() {
+		return userQuizSetList.size();
+	}
+
 	public void clear() {
 		userQuizSetList.clear();
+		idGenerator.set(1L);
 	}
 
 	@Override
@@ -54,7 +59,10 @@ public class UserQuizSetJpaRepositoryStub implements UserQuizSetRepository {
 
 	private UserQuizSet createUserQuizSetWithId(UserQuizSet userQuizSet) {
 		ReflectionTestUtils.setField(userQuizSet, "id", idGenerator.getAndIncrement());
-		ReflectionTestUtils.setField(userQuizSet, "createdBy", userQuizSet.getCreatedBy());
+		AtomicLong userQuizIdGenerator = new AtomicLong(1L);
+		userQuizSet.getUserQuizList().forEach(uq ->
+			ReflectionTestUtils.setField(uq, "id", userQuizIdGenerator.getAndIncrement())
+		);
 		return userQuizSet;
 	}
 }

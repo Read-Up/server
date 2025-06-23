@@ -1,5 +1,7 @@
 package com.readup.server.quiz.application.dto;
 
+import static com.readup.server.quiz.util.SequenceGenerator.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,29 +14,46 @@ public record CreateQuizSetResponse(
 	LocalDateTime createdAt, List<CreateQuizResponse> quizResponseList) {
 
 	public static CreateQuizSetResponse from(Long bookId, QuizSet quizSet) {
-		return new CreateQuizSetResponse(bookId, quizSet.getChapterId(), quizSet.getId(), quizSet.getEstimatedTime(),
-			quizSet.getTotalQuizCount(), quizSet.getCreatedAt(), CreateQuizResponse.from(quizSet.getQuizList()));
+		return new CreateQuizSetResponse(
+			bookId,
+			quizSet.getChapterId(),
+			quizSet.getId(),
+			quizSet.getEstimatedTime(),
+			quizSet.getTotalQuizCount(),
+			quizSet.getCreatedAt(),
+			CreateQuizResponse.from(quizSet.getQuizList()));
 	}
 
 	public record CreateQuizResponse(
 		Long quizId, int sequence, String question, String explanation,
 		List<CreateQuizOptionResponse> quizOptionResponseList) {
 
-		public static List<CreateQuizResponse> from(List<Quiz> quizList) {
-			return quizList.stream()
-				.map(q -> new CreateQuizResponse(q.getId(), q.getSequence(), q.getQuestion(), q.getExplanation(),
-					CreateQuizOptionResponse.from(q.getQuizOptionList())))
-				.toList();
+		private static List<CreateQuizResponse> from(List<Quiz> quizList) {
+			return createResponsesWithSequence(quizList, CreateQuizResponse::createWithSequence);
+		}
+
+		private static CreateQuizResponse createWithSequence(Quiz quiz, int sequence) {
+			return new CreateQuizResponse(
+				quiz.getId(),
+				sequence,
+				quiz.getQuestion(),
+				quiz.getExplanation(),
+				CreateQuizOptionResponse.from(quiz.getQuizOptionList()));
 		}
 	}
 
 	public record CreateQuizOptionResponse(Long quizOptionId, int sequence, String content, Boolean isCorrect) {
 
-		public static List<CreateQuizOptionResponse> from(List<QuizOption> quizOptionList) {
-			return quizOptionList.stream()
-				.map(qo -> new CreateQuizOptionResponse(qo.getId(), qo.getSequence(), qo.getContent(),
-					qo.getIsCorrect()))
-				.toList();
+		private static List<CreateQuizOptionResponse> from(List<QuizOption> quizOptionList) {
+			return createResponsesWithSequence(quizOptionList, CreateQuizOptionResponse::createWithSequence);
+		}
+
+		private static CreateQuizOptionResponse createWithSequence(QuizOption quizOption, int sequence) {
+			return new CreateQuizOptionResponse(
+				quizOption.getId(),
+				sequence,
+				quizOption.getContent(),
+				quizOption.getIsCorrect());
 		}
 	}
 }

@@ -64,10 +64,10 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final String uri = "/private/quiz-sets/{quizSetId}/my-progress";
 		final Long quizSetId = 1L;
 		final Long userQuizSetId = 1L;
-		final int quizSequence = 2;
+		final Long lastQuizId = 1L;
 		final Boolean isEvaluated = true;
 		AuthUser authUser = new AuthUser(USER_ID, NICKNAME);
-		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, quizSequence, isEvaluated);
+		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated);
 
 		// stubbing
 		when(userQuizSetService.getUserQuizSet(quizSetId, authUser)).thenReturn(response);
@@ -79,7 +79,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 				status().isOk(),
 				jsonPath("$.success").value(true),
 				jsonPath("$.data.userQuizSetId").value(userQuizSetId),
-				jsonPath("$.data.quizSequence").value(quizSequence),
+				jsonPath("$.data.lastQuizId").value(lastQuizId),
 				jsonPath("$.data.isEvaluated").value(isEvaluated),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
 
@@ -92,7 +92,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("사용자 퀴즈 세트 ID"),
-						fieldWithPath("data.quizSequence").type(NUMBER).description("현재 진행 중인 퀴즈 순서"),
+						fieldWithPath("data.lastQuizId").type(NUMBER).description("마지막으로 푼 퀴즈 ID"),
 						fieldWithPath("data.isEvaluated").type(BOOLEAN).description("평가 완료 여부"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
@@ -101,17 +101,17 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 	}
 
 	@Test
-	@DisplayName("사용자 퀴즈 답안 제출 - 정답")
+	@DisplayName("사용자 퀴즈 답안 제출")
 	void submitUserQuizAnswerCorrectTest() throws Exception {
 		// given
 		final String uri = "/private/quiz-sets/{quizSetId}/quizzes/{quizId}/answer";
 		final Long quizSetId = 1L;
 		final Long quizId = 1L;
-		final Set<Integer> selectedOptions = Set.of(1);
+		final Set<Long> selectedQuizOptionIds = Set.of(1L);
 		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
 
 		AuthUser authUser = new AuthUser(USER_ID, NICKNAME);
-		SubmitUserQuizRequest request = new SubmitUserQuizRequest(selectedOptions);
+		SubmitUserQuizRequest request = new SubmitUserQuizRequest(selectedQuizOptionIds);
 		SubmitUserQuizResponse response = new SubmitUserQuizResponse(true, explanation);
 
 		// stubbing
@@ -139,8 +139,8 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						parameterWithName("quizId").description("퀴즈 ID")
 					),
 					requestFields(
-						fieldWithPath("selectedQuizOptionSequences").type(ARRAY)
-							.description("선택한 퀴즈 옵션 순서 목록")
+						fieldWithPath("selectedQuizOptionIds").type(ARRAY)
+							.description("선택한 퀴즈 옵션 ID 리스트")
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
@@ -176,4 +176,3 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		}
 	}
 }
-

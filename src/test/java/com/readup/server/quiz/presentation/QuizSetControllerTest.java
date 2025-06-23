@@ -7,7 +7,6 @@ import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.*;
-import static org.springframework.restdocs.snippet.Attributes.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -134,9 +133,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("quizRequestList[].question").type(STRING).description("퀴즈 질문"),
 						fieldWithPath("quizRequestList[].explanation").type(STRING).description("퀴즈 해설"),
 						fieldWithPath("quizRequestList[].quizOptionRequestList[].content").type(STRING)
-							.description("보기 내용"),
+							.description("퀴즈 보기 내용"),
 						fieldWithPath("quizRequestList[].quizOptionRequestList[].isCorrect").type(BOOLEAN)
-							.description("보기 정답 여부")
+							.description("퀴즈 보기 정답 여부")
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
@@ -174,7 +173,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		private final Long quizSetId = 1L;
 		private final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0);
 
-		private final Long quizId = 1L;
+		private final Long quizId = 2L;
 		private final int quizSequence = 1;
 		private final String quizQuestion = "자바의 정수형 기본 타입 중 하나는 무엇인가요?";
 
@@ -194,17 +193,17 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		}
 
 		@Test
-		@DisplayName("성공 - 유효한 시작 퀴즈 번호")
+		@DisplayName("퀴즈 세트 상세 조회")
 		void getQuizSetSuccessTest() throws Exception {
 			// given
-			final int validStartQuizSequence = 2;
+			final Long lastQuizId = 1L;
 			GetQuizSetResponse response = createMockResponse();
 
 			// stubbing
-			when(quizSetService.getQuizSet(quizSetId, validStartQuizSequence)).thenReturn(response);
+			when(quizSetService.getQuizSet(quizSetId, lastQuizId)).thenReturn(response);
 
 			// when && then
-			mockMvc.perform(get(uri, quizSetId).param("startQuizSequence", String.valueOf(validStartQuizSequence))
+			mockMvc.perform(get(uri, quizSetId).param("lastQuizId", String.valueOf(lastQuizId))
 					.contentType(APPLICATION_JSON))
 				.andExpectAll(
 					status().isOk(),
@@ -231,8 +230,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					MockMvcRestDocumentationWrapper.document("get-quiz-set",
 						resourceDetails().tag("QuizSet"),
 						pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
-						queryParameters(parameterWithName("startQuizSequence").description("시작 퀴즈 번호").optional()
-							.attributes(key("constraints").value("퀴즈 시작 번호 최소값: 1"))),
+						queryParameters(parameterWithName("lastQuizId").description("마지막으로 푼 퀴즈 ID (default: 0)")),
 						responseFields(
 							fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 							fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),
@@ -252,36 +250,6 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						)
 					)
 				);
-		}
-
-		@Test
-		@DisplayName("실패 - 시작 퀴즈 번호 유효성 검증 실패")
-		void getQuizSetValidationFailTest() throws Exception {
-			// given
-			final int invalidStartQuizSequence = 0;
-
-			// when && then
-			mockMvc.perform(get(uri, quizSetId).param("startQuizSequence", String.valueOf(invalidStartQuizSequence))
-					.contentType(APPLICATION_JSON))
-				.andExpect(status().isBadRequest());
-		}
-
-		@Test
-		@DisplayName("성공 - (시작 퀴즈 번호가 없을 경우) 기본값 사용")
-		void getQuizSetWithDefaultParamTest() throws Exception {
-			// given
-			final int defaultStartQuizSequence = 1;
-			GetQuizSetResponse response = createMockResponse();
-
-			// stubbing
-			when(quizSetService.getQuizSet(quizSetId, defaultStartQuizSequence)).thenReturn(response);
-
-			// when && then
-			mockMvc.perform(get(uri, quizSetId)
-					.contentType(APPLICATION_JSON))
-				.andExpectAll(
-					status().isOk(),
-					jsonPath("$.success").value(true));
 		}
 	}
 }

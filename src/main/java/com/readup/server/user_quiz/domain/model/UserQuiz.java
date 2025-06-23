@@ -4,10 +4,13 @@ import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
+import java.util.Set;
+
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.quiz.domain.model.Quiz;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,8 +42,11 @@ public class UserQuiz extends BaseEntity {
 	@Column(name = "attempt_count", nullable = false)
 	private int attemptCount;
 
-	@Column(name = "is_correct")
-	private Boolean isCorrect;
+	@Column(name = "first_attempt_correct")
+	private Boolean firstAttemptCorrect;
+
+	@Column(name = "current_attempt_correct")
+	private Boolean currentAttemptCorrect;
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "user_quiz_set_id", nullable = false)
@@ -55,8 +61,16 @@ public class UserQuiz extends BaseEntity {
 		return new UserQuiz(quizId, userQuizSet);
 	}
 
-	public void submitUserQuiz(Boolean isCorrect) {
-		this.attemptCount++;
-		this.isCorrect = isCorrect;
+	public boolean submitAnswer(Quiz quiz, Set<Long> selectedQuizOptionIds) {
+		boolean isAnswerCorrect = quiz.isAnswerCorrect(selectedQuizOptionIds);
+		this.submitUserQuiz(isAnswerCorrect);
+		return isAnswerCorrect;
+	}
+
+	private void submitUserQuiz(Boolean isCorrect) {
+		if (++this.attemptCount == 1) {
+			this.firstAttemptCorrect = isCorrect;
+		}
+		this.currentAttemptCorrect = isCorrect;
 	}
 }

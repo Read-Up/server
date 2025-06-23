@@ -14,7 +14,6 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,9 +40,6 @@ public class Quiz extends BaseEntity {
 	@Column(name = "id")
 	private Long id;
 
-	@Column(name = "sequence", nullable = false)
-	private int sequence;
-
 	@Column(name = "question", nullable = false, length = 150)
 	private String question;
 
@@ -58,47 +54,33 @@ public class Quiz extends BaseEntity {
 	private List<QuizOption> quizOptionList;
 
 	@Builder(access = PRIVATE)
-	private Quiz(int sequence, String question, String explanation, QuizSet quizSet) {
-		this.sequence = sequence;
+	private Quiz(String question, String explanation, QuizSet quizSet) {
 		this.question = question;
 		this.explanation = explanation;
 		this.quizSet = quizSet;
 		this.quizOptionList = new ArrayList<>();
 	}
 
-	public static Quiz create(int sequence, String question, String explanation, QuizSet quizSet,
-		List<CreateQuizOptionRequest> createQuizOptionRequestList) {
+	public static Quiz create(String question, String explanation, QuizSet quizSet) {
 		return Quiz.builder()
-			.sequence(sequence)
 			.question(question)
 			.explanation(explanation)
 			.quizSet(quizSet)
-			.build()
-			.addQuizOptions(createQuizOptionRequestList);
+			.build();
 	}
 
-	private Quiz addQuizOptions(List<CreateQuizOptionRequest> createQuizOptionRequestList) {
-		if (hasQuizOptionRequests(createQuizOptionRequestList)) {
-			createQuizOptionRequestList.forEach(cqor -> this.addQuizOption(cqor.content(), cqor.isCorrect()));
+	public void addQuizOptionList(List<QuizOption> quizOptionList) {
+		if (quizOptionList == null || quizOptionList.isEmpty()) {
+			return;
 		}
-		return this;
+		this.quizOptionList.addAll(quizOptionList);
 	}
 
-	private void addQuizOption(String content, Boolean isCorrect) {
-		int nextSequence = quizOptionList.size() + 1;
-		QuizOption quizOption = QuizOption.create(nextSequence, content, isCorrect, this);
-		quizOptionList.add(quizOption);
-	}
-
-	private boolean hasQuizOptionRequests(List<CreateQuizOptionRequest> createQuizOptionRequestList) {
-		return createQuizOptionRequestList != null && !createQuizOptionRequestList.isEmpty();
-	}
-
-	public boolean isAnswerCorrect(Set<Integer> selectedQuizOptionSequences) {
-		Set<Integer> correctQuizOptionSequences = quizOptionList.stream()
+	public boolean isAnswerCorrect(Set<Long> selectedQuizOptionIds) {
+		Set<Long> correctQuizOptionIds = quizOptionList.stream()
 			.filter(QuizOption::getIsCorrect)
-			.map(QuizOption::getSequence)
+			.map(QuizOption::getId)
 			.collect(Collectors.toUnmodifiableSet());
-		return correctQuizOptionSequences.equals(selectedQuizOptionSequences);
+		return correctQuizOptionIds.equals(selectedQuizOptionIds);
 	}
 }

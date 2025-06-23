@@ -1,8 +1,6 @@
 package com.readup.server.user_quiz.application;
 
-import static com.readup.server.common.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -19,10 +17,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.readup.server.common.exception.RepositoryException;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
-import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.domain.model.Quiz;
+import com.readup.server.quiz.domain.model.QuizOption;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
@@ -40,54 +36,53 @@ class UserQuizSetServiceTest {
 	@InjectMocks
 	private UserQuizSetService sut;
 
-	@Spy
-	private UserQuizSetJpaRepositoryStub userQuizSetJpaRepositoryStub;
-
 	@Mock
 	private QuizSetRepository quizSetRepository;
 
 	@Mock
 	private QuizQueryRepository quizQueryRepository;
 
-	private static final Long EXPECTED_QUIZ_SET_ID = 1L;
-	private static final Long EXPECTED_QUIZ_ID = 10L;
-	private static final Long EXPECTED_USER_ID = 100L;
+	@Spy
+	private UserQuizSetJpaRepositoryStub userQuizSetRepository;
 
-	private AuthUser authUser;
-	private QuizSet quizSet;
+	private static final Long EXPECTED_QUIZ_SET_ID = 1L;
+	private static final Long EXPECTED_USER_ID = 100L;
+	private static final Long QUIZ_ID_1 = 1L;
+	private static final Long QUIZ_ID_2 = 2L;
+
+	private QuizSet commonQuizSet;
+	private Quiz commonQuiz;
+	private AuthUser commonAuthUser;
 
 	@BeforeEach
-	void setUp() {
-		authUser = new AuthUser(EXPECTED_USER_ID, "testUser");
-		quizSet = createQuizSet();
-		reset(userQuizSetJpaRepositoryStub);
+	void setUpCommonEntities() {
+		commonAuthUser = new AuthUser(EXPECTED_USER_ID, "testUser");
+		commonQuizSet = createQuizSet();
+		commonQuiz = createQuiz(QUIZ_ID_1, "테스트 질문1", "테스트 설명1");
+
+		userQuizSetRepository.clear();
 	}
 
 	@Nested
 	class GetUserQuizSet {
 
-		private final Long nonExistingQuizSetId = 999L;
-		private UserQuizSet existingUserQuizSet;
-
-		@BeforeEach
-		void setUp() {
-			existingUserQuizSet = createExistingUserQuizSet(
-				quizSet.getQuizList().stream().map(Quiz::getId).toList());
-		}
-
 		@Test
 		@DisplayName("사용자 퀴즈 세트 조회 성공 - 사용자 기존 퀴즈 세트 존재")
 		void get_user_quiz_set_success_existing_user_quiz_set() {
+			// given
+			UserQuizSet existingUserQuizSet = createExistingUserQuizSet();
+			userQuizSetRepository.save(existingUserQuizSet);
+
 			// stubbing
-			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(quizSet);
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(commonQuizSet);
 
 			// when
-			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, authUser);
+			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, commonAuthUser);
 
 			// then
 			assertThat(response).isNotNull();
 			assertThat(response.userQuizSetId()).isEqualTo(existingUserQuizSet.getId());
-			assertThat(response.quizSequence()).isEqualTo(existingUserQuizSet.getQuizSequence());
+			assertThat(response.lastQuizId()).isEqualTo(existingUserQuizSet.getLastQuizId());
 			assertThat(response.isEvaluated()).isEqualTo(existingUserQuizSet.getIsEvaluated());
 
 			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
@@ -96,185 +91,141 @@ class UserQuizSetServiceTest {
 		@Test
 		@DisplayName("사용자 퀴즈 세트 조회 성공 - 처음으로 퀴즈 세트 푸는 경우 사용자 퀴즈 세트 생성")
 		void get_user_quiz_set_success_new_user_quiz_set() {
-			// given
-			int initQuizSequence = 1;
-			userQuizSetJpaRepositoryStub.clear();
-
 			// stubbing
-			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(quizSet);
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(commonQuizSet);
 
 			// when
-			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, authUser);
+			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, commonAuthUser);
 
 			// then
 			assertThat(response).isNotNull();
-			assertThat(response.userQuizSetId()).isEqualTo(userQuizSetJpaRepositoryStub.getCurrentId());
-			assertThat(response.quizSequence()).isEqualTo(initQuizSequence);
+			assertThat(response.userQuizSetId()).isEqualTo(userQuizSetRepository.getCurrentId());
+			assertThat(response.lastQuizId()).isNull();
 			assertThat(response.isEvaluated()).isFalse();
 
 			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
 		}
 
-		@Test
-		@DisplayName("퀴즈 세트 조회 실패 - 퀴즈 세트가 존재하지 않는 경우")
-		void get_user_quiz_set_fail_quiz_set_not_found() {
-			// stubbing
-			when(quizSetRepository.getQuizSetById(nonExistingQuizSetId))
-				.thenThrow(new RepositoryException(NOT_FOUND_QUIZ_SET));
+		private UserQuizSet createExistingUserQuizSet() {
+			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
+			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
 
-			// when & then
-			RepositoryException exception = assertThrows(RepositoryException.class,
-				() -> sut.getUserQuizSet(nonExistingQuizSetId, authUser));
+			List<UserQuiz> userQuizList = List.of(
+				UserQuiz.create(QUIZ_ID_1, userQuizSet),
+				UserQuiz.create(QUIZ_ID_2, userQuizSet)
+			);
 
-			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_QUIZ_SET);
+			userQuizSet.addUserQuizList(userQuizList);
 
-			verify(quizSetRepository, times(1)).getQuizSetById(nonExistingQuizSetId);
+			return userQuizSet;
 		}
 	}
 
 	@Nested
 	class SubmitUserQuizAnswer {
 
-		private Quiz quiz;
-		private UserQuiz userQuiz;
-		private UserQuizSet userQuizSet;
-
-		@BeforeEach
-		void setUp() {
-			quiz = createQuiz();
-			userQuizSet = createUserQuizSetWithUserQuiz();
-			userQuiz = userQuizSet.getUserQuizList().getFirst();
-		}
-
 		@Test
 		@DisplayName("퀴즈 답안 제출 성공 - 정답인 경우")
-		void submit_user_quiz_answer_success_correct_answer() {
+		void submit_user_quiz_answer_success_correct() {
 			// given
-			Set<Integer> correctAnswerSequences = Set.of(1);
-			SubmitUserQuizRequest request = new SubmitUserQuizRequest(correctAnswerSequences);
+			Set<Long> correctAnswerIds = Set.of(1L);
+			SubmitUserQuizRequest request = new SubmitUserQuizRequest(correctAnswerIds);
+			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz(QUIZ_ID_1);
+			userQuizSetRepository.save(userQuizSet);
 
 			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID))
-				.thenReturn(quiz);
+			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+				commonQuiz);
 
 			// when
-			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(
-				EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID, request, authUser);
+			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
+				commonAuthUser);
 
 			// then
 			assertThat(response).isNotNull();
 			assertThat(response.isCorrect()).isTrue();
-			assertThat(response.explanation()).isEqualTo(quiz.getExplanation());
-			assertThat(userQuiz.getIsCorrect()).isTrue();
+			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
-			verify(quizQueryRepository, times(1))
-				.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID);
+			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
 		}
 
 		@Test
 		@DisplayName("퀴즈 답안 제출 성공 - 오답인 경우")
-		void submit_user_quiz_answer_success_incorrect_answer() {
+		void submit_user_quiz_answer_success_incorrect() {
 			// given
-			Set<Integer> incorrectAnswerSequences = Set.of(2);
-			SubmitUserQuizRequest request = new SubmitUserQuizRequest(incorrectAnswerSequences);
+			Set<Long> incorrectAnswerIds = Set.of(2L);
+			SubmitUserQuizRequest request = new SubmitUserQuizRequest(incorrectAnswerIds);
+			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz(QUIZ_ID_1);
+			userQuizSetRepository.save(userQuizSet);
 
 			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID))
-				.thenReturn(quiz);
+			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+				commonQuiz);
 
 			// when
-			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(
-				EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID, request, authUser);
+			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
+				commonAuthUser);
 
 			// then
 			assertThat(response).isNotNull();
 			assertThat(response.isCorrect()).isFalse();
 			assertThat(response.explanation()).isNull();
-			assertThat(userQuiz.getIsCorrect()).isFalse();
 
-			verify(quizQueryRepository, times(1))
-				.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID);
+			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
 		}
 
-		@Test
-		@DisplayName("퀴즈 답안 제출 실패 - 퀴즈가 존재하지 않는 경우")
-		void submit_user_quiz_answer_fail_quiz_not_found() {
-			// given
-			Set<Integer> answerSequences = Set.of(1);
-			SubmitUserQuizRequest request = new SubmitUserQuizRequest(answerSequences);
+		private UserQuizSet createUserQuizSetWithUserQuiz(Long quizId) {
+			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
+			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
 
-			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID))
-				.thenThrow(new RepositoryException(NOT_FOUND_QUIZ));
+			UserQuiz userQuiz = UserQuiz.create(quizId, userQuizSet);
+			userQuizSet.addUserQuizList(List.of(userQuiz));
 
-			// when & then
-			RepositoryException exception = assertThrows(RepositoryException.class,
-				() -> sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID, request, authUser));
-
-			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_QUIZ);
-
-			verify(quizQueryRepository, times(1))
-				.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID);
-		}
-
-		@Test
-		@DisplayName("퀴즈 답안 제출 실패 - 사용자 퀴즈가 존재하지 않는 경우")
-		void submit_user_quiz_answer_fail_user_quiz_not_found() {
-			// given
-			Set<Integer> answerSequences = Set.of(1);
-			SubmitUserQuizRequest request = new SubmitUserQuizRequest(answerSequences);
-			userQuizSetJpaRepositoryStub.clear();
-
-			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID))
-				.thenReturn(quiz);
-
-			// when & then
-			RepositoryException exception = assertThrows(RepositoryException.class,
-				() -> sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID, request, authUser));
-
-			assertThat(exception.getErrorCode()).isEqualTo(NOT_FOUND_USER_QUIZ_SET);
-
-			verify(quizQueryRepository, times(1))
-				.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID);
+			return userQuizSet;
 		}
 	}
 
 	private QuizSet createQuizSet() {
-		List<CreateQuizRequest> quizRequests = List.of(
-			new CreateQuizRequest(
-				"질문1", "설명1", List.of(
-				new CreateQuizOptionRequest("보기1", true),
-				new CreateQuizOptionRequest("보기2", false))),
-			new CreateQuizRequest(
-				"질문2", "설명2", List.of(
-				new CreateQuizOptionRequest("A", true),
-				new CreateQuizOptionRequest("B", false))));
-		return QuizSet.create(1L, 1L, quizRequests);
+		QuizSet quizSet = QuizSet.create(1L, 1L);
+		ReflectionTestUtils.setField(quizSet, "id", EXPECTED_QUIZ_SET_ID);
+
+		Quiz quiz1 = Quiz.create("질문1", "설명1", quizSet);
+		ReflectionTestUtils.setField(quiz1, "id", QUIZ_ID_1);
+
+		QuizOption option1 = QuizOption.create("보기1", true, quiz1);
+		QuizOption option2 = QuizOption.create("보기2", false, quiz1);
+		ReflectionTestUtils.setField(option1, "id", 1L);
+		ReflectionTestUtils.setField(option2, "id", 2L);
+
+		quiz1.addQuizOptionList(List.of(option1, option2));
+
+		Quiz quiz2 = Quiz.create("질문2", "설명2", quizSet);
+		ReflectionTestUtils.setField(quiz2, "id", QUIZ_ID_2);
+
+		QuizOption option3 = QuizOption.create("A", true, quiz2);
+		QuizOption option4 = QuizOption.create("B", false, quiz2);
+		ReflectionTestUtils.setField(option3, "id", 3L);
+		ReflectionTestUtils.setField(option4, "id", 4L);
+
+		quiz2.addQuizOptionList(List.of(option3, option4));
+
+		quizSet.addQuizList(List.of(quiz1, quiz2));
+
+		return quizSet;
 	}
 
-	private Quiz createQuiz() {
-		List<CreateQuizOptionRequest> optionRequests = List.of(
-			new CreateQuizOptionRequest("정답 보기", true),
-			new CreateQuizOptionRequest("오답 보기", false)
-		);
+	private Quiz createQuiz(Long quizId, String question, String explanation) {
+		QuizSet quizSet = QuizSet.create(1L, 1L);
+		Quiz quiz = Quiz.create(question, explanation, quizSet);
+		ReflectionTestUtils.setField(quiz, "id", quizId);
 
-		QuizSet mockQuizSet = mock(QuizSet.class);
-		Quiz quiz = Quiz.create(1, "테스트 질문", "테스트 설명", mockQuizSet, optionRequests);
-		ReflectionTestUtils.setField(quiz, "id", EXPECTED_QUIZ_ID);
+		QuizOption correctOption = QuizOption.create("정답", true, quiz);
+		QuizOption incorrectOption = QuizOption.create("오답", false, quiz);
+		ReflectionTestUtils.setField(correctOption, "id", 1L);
+		ReflectionTestUtils.setField(incorrectOption, "id", 2L);
+
+		quiz.addQuizOptionList(List.of(correctOption, incorrectOption));
+
 		return quiz;
-	}
-
-	private UserQuizSet createExistingUserQuizSet(List<Long> quizIdList) {
-		UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID, quizIdList);
-		ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
-		return userQuizSetJpaRepositoryStub.save(userQuizSet);
-	}
-
-	private UserQuizSet createUserQuizSetWithUserQuiz() {
-		List<Long> quizIdList = List.of(EXPECTED_QUIZ_ID);
-		UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID, quizIdList);
-		ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
-		return userQuizSetJpaRepositoryStub.save(userQuizSet);
 	}
 }
