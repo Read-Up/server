@@ -1,0 +1,11 @@
+// package: com.readup.server.common.annotation
+
+package com.readup.server.common.annotaion;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.PARAMETER)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface CurrentAuthUser {
+}
