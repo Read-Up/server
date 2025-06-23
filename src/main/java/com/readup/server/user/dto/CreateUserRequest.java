@@ -5,7 +5,7 @@ import java.util.List;
 import com.readup.server.terms.dto.UserTermsConsentRequest;
 
 public record CreateUserRequest(
-	List<UserTermsConsentRequest> termsConsentRequestList,
-	String nickname
+	String nickname,
+	String imageUrl
 ) {
 }
