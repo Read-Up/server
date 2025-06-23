@@ -4,6 +4,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.readup.server.user.domain.User;
 
+import java.util.Optional;
+
 public interface UserJpaRepository extends JpaRepository<User, Long> {
-	boolean existsBySocialAccount_Id(Long socialAccountId);
+	Optional<User> findBySocialAccount_Id(Long socialAccountId); // ✅ 추가
+
 }

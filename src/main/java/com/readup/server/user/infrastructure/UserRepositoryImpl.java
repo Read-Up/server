@@ -7,6 +7,8 @@ import com.readup.server.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
@@ -19,7 +21,13 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	@Override
-	public boolean existsBySocialAccountId(Long socialAccountId) {
-		return userJpaRepository.existsBySocialAccount_Id(socialAccountId);
+	public void delete(User user) {
+		userJpaRepository.delete(user);
 	}
+
+	@Override
+	public Optional<User> findBySocialAccountId(Long socialAccountId) {
+		return userJpaRepository.findBySocialAccount_Id(socialAccountId); // ✅ 추가
+	}
+
 }
