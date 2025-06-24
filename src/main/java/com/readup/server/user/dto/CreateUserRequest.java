@@ -6,6 +6,6 @@ import com.readup.server.terms.dto.UserTermsConsentRequest;
 
 public record CreateUserRequest(
 	String nickname,
-	String imageUrl
+	List<UserTermsConsentRequest> termsConsentRequestList
 ) {
 }

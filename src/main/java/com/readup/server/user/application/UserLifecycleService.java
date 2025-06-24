@@ -21,12 +21,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserLifecycleService {
 	private final UserRepository userRepository;
-	private final SocialAccountService socialAccountService;
 	private final TermsManagementService termsManagementService;
 
-	public void createUser( SocialAccount socialAccount, CreateUserRequest request) {
+	public void createUser(SocialAccount socialAccount, CreateUserRequest request) {
 		List<UserTermsConsent> consentList = termsManagementService.createUserTermsConsent(request);
-		User user = User.register(request.nickname(), socialAccount, request.imageUrl());
+		User user = User.register(request.nickname(), socialAccount);
 		user.addUserTermsConsentList(consentList);
 		userRepository.save(user);
 	}

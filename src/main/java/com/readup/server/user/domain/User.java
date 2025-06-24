@@ -42,19 +42,17 @@ public class User extends BaseEntity {
 	private UserStatus status;
 
 	@Builder(access = AccessLevel.PRIVATE)
-	private User(String nickname, SocialAccount socialAccount, String imageUrl, UserStatus status) {
+	private User(String nickname, SocialAccount socialAccount,UserStatus status) {
 		this.nickname = nickname;
 		this.socialAccount = socialAccount;
-		this.imageUrl = imageUrl;
 		this.status = status;
 	}
 
 	// 회원가입
-	public static User register(String nickname, SocialAccount socialAccount, String imageUrl) {
+	public static User register(String nickname, SocialAccount socialAccount) {
 		return User.builder()
 				.nickname(nickname)
 				.socialAccount(socialAccount)
-				.imageUrl(imageUrl)
 				.status(UserStatus.ACTIVE)
 				.build();
 	}
