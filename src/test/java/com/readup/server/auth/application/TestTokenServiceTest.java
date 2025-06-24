@@ -3,6 +3,7 @@ package com.readup.server.auth.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.readup.server.user.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ class TestTokenServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		User user = User.builder().id(1L).nickname("지적인 도마뱀").build();
+		User user = UserTestBuilder.builder().id(1L).nickname("지적인 도마뱀").build();
 
 		testAccount = SocialAccount.builder()
 			.id(1L)

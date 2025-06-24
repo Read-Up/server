@@ -3,6 +3,7 @@ package com.readup.server.terms.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.readup.server.user.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class UserTermsConsentServiceTest {
 	@Test
 	@DisplayName("사용자 약관 동의 여부 저장")
 	void testSave_WhenValidUserTermsConsent() {
-		User user = User.builder()
+		User user = UserTestBuilder.builder()
 			.id(1L)
 			.nickname("지적인 도마뱀")
 			.build();
