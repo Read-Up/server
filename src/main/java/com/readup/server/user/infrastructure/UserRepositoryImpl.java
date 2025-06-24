@@ -27,7 +27,6 @@ public class UserRepositoryImpl implements UserRepository {
 
 	@Override
 	public Optional<User> findBySocialAccountId(Long socialAccountId) {
-		return userJpaRepository.findBySocialAccount_Id(socialAccountId); // ✅ 추가
+		return userJpaRepository.findBySocialAccountId(socialAccountId);
 	}
-
 }

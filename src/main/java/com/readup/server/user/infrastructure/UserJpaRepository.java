@@ -7,6 +7,5 @@ import com.readup.server.user.domain.User;
 import java.util.Optional;
 
 public interface UserJpaRepository extends JpaRepository<User, Long> {
-	Optional<User> findBySocialAccount_Id(Long socialAccountId); // ✅ 추가
-
+	Optional<User> findBySocialAccountId(Long socialAccountId);
 }
