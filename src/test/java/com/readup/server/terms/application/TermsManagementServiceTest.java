@@ -56,8 +56,8 @@ class TermsManagementServiceTest {
 		);
 
 		createUserRequest = new CreateUserRequest(
-			"지적인 도마뱀",
-			List.of(termsConsentRequest)
+			List.of(termsConsentRequest),
+			"지적인 도마뱀"
 		);
 	}
 
