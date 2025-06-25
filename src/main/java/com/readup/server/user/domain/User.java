@@ -1,7 +1,11 @@
 package com.readup.server.user.domain;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -9,58 +13,65 @@ import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.common.entity.BaseEntity;
 import com.readup.server.terms.domain.UserTermsConsent;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 @Getter
 @Entity
-@Builder
 @Table(name = "user")
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE user SET deleted_at = NOW() WHERE id = ?")
-public class User extends BaseEntity {
 
+public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "nickname", nullable = false)
+	@Column(nullable = false)
 	private String nickname;
 
 	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private SocialAccount socialAccount;
 
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<UserTermsConsent> userTermsConsentList;
+	private List<UserTermsConsent> userTermsConsentList  = new ArrayList<>();
 
-	public static User of(String nickname, SocialAccount socialAccount) {
-		return User.builder()
-			.nickname(nickname)
-			.socialAccount(socialAccount)
-			.build();
-	}
+	@Column
+	private String imageUrl;
 
-	public void updateUserTermsConsentList(List<UserTermsConsent> userTermsConsentList) {
-		userTermsConsentList.forEach(userTermsConsent -> userTermsConsent.updateUser(this));
-		this.userTermsConsentList = userTermsConsentList;
-	}
+	@Enumerated(EnumType.STRING)
+	@Column
+	private UserStatus status;
 
-	public void updateSocialAccount(SocialAccount socialAccount) {
-		socialAccount.updateUserFromSocialAccount(this);
+	@Builder(access = AccessLevel.PRIVATE)
+	private User(String nickname, SocialAccount socialAccount,UserStatus status) {
+		this.nickname = nickname;
 		this.socialAccount = socialAccount;
+		this.status = status;
 	}
+
+	// 회원가입
+	public static User register(String nickname, SocialAccount socialAccount) {
+		return User.builder()
+				.nickname(nickname)
+				.socialAccount(socialAccount)
+				.status(UserStatus.ACTIVE)
+				.build();
+	}
+
+	// 약관추가
+	public void addUserTermsConsentList(List<UserTermsConsent> userTermsConsentList) {
+		userTermsConsentList.forEach(userTermsConsent -> userTermsConsent.updateUser(this));
+		this.userTermsConsentList.addAll(userTermsConsentList);
+	}
+
+	// 회원수정
+	public void update(String nickname, String imageUrl) {
+		this.nickname = nickname;
+		this.imageUrl = imageUrl;
+	}
+
+//	// 회원삭제
+//	public void delete() {
+//		this.status = UserStatus.DELETED;
+//		markDeletedAt();
+//	}
 }

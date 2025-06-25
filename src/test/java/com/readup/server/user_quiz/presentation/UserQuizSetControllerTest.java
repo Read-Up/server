@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Set;
 
+import com.readup.server.user.dto.AuthUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readup.server.AbstractWebMvcTest;
-import com.readup.server.auth.annotaion.CurrentUser;
-import com.readup.server.user.dto.AuthUser;
+import com.readup.server.common.annotaion.CurrentUser;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;

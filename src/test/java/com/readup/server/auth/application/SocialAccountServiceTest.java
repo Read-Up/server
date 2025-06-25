@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import com.readup.server.user.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,7 @@ class SocialAccountServiceTest {
 	@Test
 	@DisplayName("social Account에 user 업데이트")
 	void updateUser_ShouldUpdateUserWithSocialAccountInfo() {
-		User user = User.builder()
+		User user = UserTestBuilder.builder()
 			.id(2L)
 			.nickname("read-up")
 			.build();
@@ -134,7 +135,7 @@ class SocialAccountServiceTest {
 		when(authentication.getPrincipal()).thenReturn(oAuth2User);
 		when(socialAccountJpaRepository.findById(socialAccountId)).thenReturn(java.util.Optional.of(socialAccount));
 
-		User user = User.builder()
+		User user = UserTestBuilder.builder()
 			.id(2L)
 			.nickname("read-up")
 			.build();

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.readup.server.user.UserTestBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class TermsManagementServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		user = User.builder()
+		user = UserTestBuilder.builder()
 			.id(1L)
 			.nickname("지적인 도마뱀").build();
 
