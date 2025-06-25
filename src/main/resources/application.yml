@@ -80,3 +80,9 @@ springdoc:
   api-docs:
     enabled: true
     path: /api-docs
+
+cloud:
+  r2:
+    endpoint: https://336149032d9ef422f450e812b9312045.r2.cloudflarestorage.com
+    bucket: read-up-user
+    cdn-domain: https://cdn.read-up.kr
