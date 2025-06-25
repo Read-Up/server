@@ -1,6 +1,8 @@
 package com.readup.server.user.application;
 
+import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.common.util.R2Uploader;
+import com.readup.server.user.UserTestBuilder;
 import com.readup.server.user.domain.User;
 import com.readup.server.user.domain.repository.UserRepository;
 import com.readup.server.user.dto.UpdateUserRequest;
@@ -32,8 +34,14 @@ class UserInfoServiceTest {
     @Test
     void updateUser_닉네임변경() {
         // given
+        SocialAccount account = mock(SocialAccount.class);
+        when(account.getEmail()).thenReturn("test@email.com");
+
         User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(user.getNickname()).thenReturn("기존닉네임");
         when(user.getImageUrl()).thenReturn("기존_URL");
+        when(user.getSocialAccount()).thenReturn(account);
 
         UpdateUserRequest request = new UpdateUserRequest("새닉네임");
 
@@ -51,7 +59,16 @@ class UserInfoServiceTest {
     @Test
     void updateUser_닉네임_이미지_모두_변경() throws Exception {
         // given
+        SocialAccount account = mock(SocialAccount.class);
+        when(account.getEmail()).thenReturn("test@email.com");
+
         User user = mock(User.class);
+        when(user.getId()).thenReturn(1L);
+        when(user.getNickname()).thenReturn("기존닉네임");
+        when(user.getImageUrl()).thenReturn("기존_URL");
+        when(user.getSocialAccount()).thenReturn(account);
+
+
         MultipartFile file = mock(MultipartFile.class);
         when(file.isEmpty()).thenReturn(false);
 
@@ -72,16 +89,21 @@ class UserInfoServiceTest {
     @Test
     void getUser_유저정보조회() {
         // given
+        SocialAccount account = mock(SocialAccount.class);
+        when(account.getEmail()).thenReturn("test@email.com");
+
         User user = mock(User.class);
-        when(user.getNickname()).thenReturn("테스트닉네임");
-        when(user.getImageUrl()).thenReturn("https://cdn.com/image.jpg");
+        when(user.getId()).thenReturn(1L);
+        when(user.getNickname()).thenReturn("기존닉네임");
+        when(user.getImageUrl()).thenReturn("기존_URL");
+        when(user.getSocialAccount()).thenReturn(account);
 
         // when
         UserResponse response = userInfoService.getUser(user);
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.nickname()).isEqualTo("테스트닉네임");
-        assertThat(response.imageUrl()).isEqualTo("https://cdn.com/image.jpg");
+        assertThat(response.nickname()).isEqualTo("기존닉네임");
+        assertThat(response.imageUrl()).isEqualTo("기존_URL");
     }
 }

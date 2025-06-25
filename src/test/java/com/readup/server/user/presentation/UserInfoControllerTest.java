@@ -1,6 +1,7 @@
 // UserInfoControllerTest.java
 package com.readup.server.user.presentation;
 
+import com.readup.server.auth.domain.SocialAccount;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.user.UserTestBuilder;
 import com.readup.server.user.application.RandomNicknameService;
@@ -73,20 +74,28 @@ public class UserInfoControllerTest {
         MockMultipartFile image = new MockMultipartFile("image", "test.jpg", "image/jpeg", "dummy".getBytes());
         MockMultipartFile json = new MockMultipartFile("request", "", "application/json", "{\"nickname\":\"바뀐닉\"}".getBytes());
 
-        User updatedUser = UserTestBuilder.builder()
+        SocialAccount mockAccount = mock(SocialAccount.class);
+        when(mockAccount.getEmail()).thenReturn("test@email.com");
+
+        User user = UserTestBuilder.builder()
                 .id(1L)
                 .nickname("바뀐닉")
+                .socialAccount(SocialAccount.builder()
+                        .email("test@email.com")
+                        .provider("KAKAO")
+                        .providerUid("12345678")
+                        .build())
                 .build();
 
         when(userInfoService.updateUser(any(), any(), any()))
-                .thenReturn(UserResponse.from(updatedUser));
+                .thenReturn(UserResponse.from(user));
 
         // when & then
         mockMvc.perform(multipart("/private/users")
                         .file(json)
                         .file(image)
                         .with(req -> {
-                            req.setMethod("PATCH"); // PATCH override
+                            req.setMethod("PATCH");
                             return req;
                         })
                         .contentType(MediaType.MULTIPART_FORM_DATA))
