@@ -4,17 +4,15 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
-import com.readup.server.user.dto.AuthUser;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -28,7 +26,7 @@ import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
 import com.readup.server.user_quiz.domain.model.UserQuizSet;
-import com.readup.server.user_quiz.stub.UserQuizSetJpaRepositoryStub;
+import com.readup.server.user_quiz.domain.repository.UserQuizSetRepository;
 
 @ExtendWith(MockitoExtension.class)
 class UserQuizSetServiceTest {
@@ -42,26 +40,13 @@ class UserQuizSetServiceTest {
 	@Mock
 	private QuizQueryRepository quizQueryRepository;
 
-	@Spy
-	private UserQuizSetJpaRepositoryStub userQuizSetRepository;
+	@Mock
+	private UserQuizSetRepository userQuizSetRepository;
 
 	private static final Long EXPECTED_QUIZ_SET_ID = 1L;
-	private static final Long EXPECTED_USER_ID = 100L;
+	private static final Long EXPECTED_SOCIAL_ACCOUNT_ID = 100L;
 	private static final Long QUIZ_ID_1 = 1L;
 	private static final Long QUIZ_ID_2 = 2L;
-
-	private QuizSet commonQuizSet;
-	private Quiz commonQuiz;
-	private AuthUser commonAuthUser;
-
-	@BeforeEach
-	void setUpCommonEntities() {
-		commonAuthUser = new AuthUser(EXPECTED_USER_ID, "testUser");
-		commonQuizSet = createQuizSet();
-		commonQuiz = createQuiz(QUIZ_ID_1, "테스트 질문1", "테스트 설명1");
-
-		userQuizSetRepository.clear();
-	}
 
 	@Nested
 	class GetUserQuizSet {
@@ -71,13 +56,14 @@ class UserQuizSetServiceTest {
 		void get_user_quiz_set_success_existing_user_quiz_set() {
 			// given
 			UserQuizSet existingUserQuizSet = createExistingUserQuizSet();
-			userQuizSetRepository.save(existingUserQuizSet);
 
 			// stubbing
-			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(commonQuizSet);
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(createQuizSet());
+			when(userQuizSetRepository.findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(Optional.of(existingUserQuizSet));
 
 			// when
-			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, commonAuthUser);
+			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			assertThat(response).isNotNull();
@@ -86,29 +72,41 @@ class UserQuizSetServiceTest {
 			assertThat(response.isEvaluated()).isEqualTo(existingUserQuizSet.getIsEvaluated());
 
 			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
+			verify(userQuizSetRepository, times(1)).findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
 		@Test
 		@DisplayName("사용자 퀴즈 세트 조회 성공 - 처음으로 퀴즈 세트 푸는 경우 사용자 퀴즈 세트 생성")
 		void get_user_quiz_set_success_new_user_quiz_set() {
+			// given
+			UserQuizSet newUserQuizSet = createNewUserQuizSet();
+
 			// stubbing
-			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(commonQuizSet);
+			when(quizSetRepository.getQuizSetById(EXPECTED_QUIZ_SET_ID)).thenReturn(createQuizSet());
+			when(userQuizSetRepository.findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(Optional.empty());
+			when(userQuizSetRepository.save(any(UserQuizSet.class))).thenReturn(newUserQuizSet);
 
 			// when
-			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, commonAuthUser);
+			GetUserQuizSetResponse response = sut.getUserQuizSet(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			assertThat(response).isNotNull();
-			assertThat(response.userQuizSetId()).isEqualTo(userQuizSetRepository.getCurrentId());
+			assertThat(response.userQuizSetId()).isEqualTo(newUserQuizSet.getId());
 			assertThat(response.lastQuizId()).isNull();
 			assertThat(response.isEvaluated()).isFalse();
 
 			verify(quizSetRepository, times(1)).getQuizSetById(EXPECTED_QUIZ_SET_ID);
+			verify(userQuizSetRepository, times(1)).findByQuizSetIdAndCreatedBy(EXPECTED_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
+			verify(userQuizSetRepository, times(1)).save(any(UserQuizSet.class));
 		}
 
 		private UserQuizSet createExistingUserQuizSet() {
 			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
-			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
+			ReflectionTestUtils.setField(userQuizSet, "id", 1L);
+			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			List<UserQuiz> userQuizList = List.of(
 				UserQuiz.create(QUIZ_ID_1, userQuizSet),
@@ -117,6 +115,13 @@ class UserQuizSetServiceTest {
 
 			userQuizSet.addUserQuizList(userQuizList);
 
+			return userQuizSet;
+		}
+
+		private UserQuizSet createNewUserQuizSet() {
+			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
+			ReflectionTestUtils.setField(userQuizSet, "id", 1L);
+			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 			return userQuizSet;
 		}
 	}
@@ -130,16 +135,18 @@ class UserQuizSetServiceTest {
 			// given
 			Set<Long> correctAnswerIds = Set.of(1L);
 			SubmitUserQuizRequest request = new SubmitUserQuizRequest(correctAnswerIds);
-			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz(QUIZ_ID_1);
-			userQuizSetRepository.save(userQuizSet);
+			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
 			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
-				commonQuiz);
+				createQuiz());
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+				EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
 
 			// when
 			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
-				commonAuthUser);
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			assertThat(response).isNotNull();
@@ -147,6 +154,8 @@ class UserQuizSetServiceTest {
 			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
 			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
 		@Test
@@ -155,16 +164,18 @@ class UserQuizSetServiceTest {
 			// given
 			Set<Long> incorrectAnswerIds = Set.of(2L);
 			SubmitUserQuizRequest request = new SubmitUserQuizRequest(incorrectAnswerIds);
-			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz(QUIZ_ID_1);
-			userQuizSetRepository.save(userQuizSet);
+			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
 			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
-				commonQuiz);
+				createQuiz());
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+				EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
 
 			// when
 			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
-				commonAuthUser);
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			assertThat(response).isNotNull();
@@ -172,13 +183,16 @@ class UserQuizSetServiceTest {
 			assertThat(response.explanation()).isNull();
 
 			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
-		private UserQuizSet createUserQuizSetWithUserQuiz(Long quizId) {
+		private UserQuizSet createUserQuizSetWithUserQuiz() {
 			UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
-			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_USER_ID);
+			ReflectionTestUtils.setField(userQuizSet, "id", 1L);
+			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
-			UserQuiz userQuiz = UserQuiz.create(quizId, userQuizSet);
+			UserQuiz userQuiz = UserQuiz.create(QUIZ_ID_1, userQuizSet);
 			userQuizSet.addUserQuizList(List.of(userQuiz));
 
 			return userQuizSet;
@@ -214,10 +228,10 @@ class UserQuizSetServiceTest {
 		return quizSet;
 	}
 
-	private Quiz createQuiz(Long quizId, String question, String explanation) {
+	private Quiz createQuiz() {
 		QuizSet quizSet = QuizSet.create(1L, 1L);
-		Quiz quiz = Quiz.create(question, explanation, quizSet);
-		ReflectionTestUtils.setField(quiz, "id", quizId);
+		Quiz quiz = Quiz.create("테스트 질문1", "테스트 설명1", quizSet);
+		ReflectionTestUtils.setField(quiz, "id", QUIZ_ID_1);
 
 		QuizOption correctOption = QuizOption.create("정답", true, quiz);
 		QuizOption incorrectOption = QuizOption.create("오답", false, quiz);

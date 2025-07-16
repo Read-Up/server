@@ -16,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,7 +33,10 @@ import com.readup.server.bookregistration.presentation.dto.CreateBookRegistratio
 import com.readup.server.bookregistration.presentation.dto.CreateBookRegistrationResponse;
 
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(BookRegistrationController.class)
+@WebMvcTest(controllers = BookRegistrationController.class, excludeFilters = @Filter(
+	type = FilterType.REGEX,
+	pattern = "com.readup.server.common..*")
+)
 class BookRegistrationControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean

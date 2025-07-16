@@ -13,7 +13,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Set;
 
-import com.readup.server.user.dto.AuthUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -34,15 +37,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readup.server.AbstractWebMvcTest;
-import com.readup.server.common.annotaion.CurrentUser;
+import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 
-@Import(UserQuizSetControllerTest.CustomAnnotationTestConfig.class)
+@Import(UserQuizSetControllerTest.AuthenticationPrincipalConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(UserQuizSetController.class)
+@WebMvcTest(controllers = UserQuizSetController.class, excludeFilters = @Filter(
+	type = FilterType.REGEX,
+	pattern = "com.readup.server.common..*")
+)
 class UserQuizSetControllerTest extends AbstractWebMvcTest {
 
 	@MockitoBean
@@ -54,9 +60,6 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 	@Autowired
 	private ObjectMapper objectMapper;
 
-	static final Long USER_ID = 1L;
-	static final String NICKNAME = "juny";
-
 	@Test
 	@DisplayName("사용자 퀴즈 세트 조회")
 	void getUserQuizSetSuccessTest() throws Exception {
@@ -66,11 +69,10 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final Long userQuizSetId = 1L;
 		final Long lastQuizId = 1L;
 		final Boolean isEvaluated = true;
-		AuthUser authUser = new AuthUser(USER_ID, NICKNAME);
 		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated);
 
 		// stubbing
-		when(userQuizSetService.getUserQuizSet(quizSetId, authUser)).thenReturn(response);
+		when(userQuizSetService.getUserQuizSet(any(), any())).thenReturn(response);
 
 		// when && then
 		mockMvc.perform(get(uri, quizSetId).contentType(APPLICATION_JSON))
@@ -110,13 +112,11 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final Set<Long> selectedQuizOptionIds = Set.of(1L);
 		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
 
-		AuthUser authUser = new AuthUser(USER_ID, NICKNAME);
 		SubmitUserQuizRequest request = new SubmitUserQuizRequest(selectedQuizOptionIds);
 		SubmitUserQuizResponse response = new SubmitUserQuizResponse(true, explanation);
 
 		// stubbing
-		when(userQuizSetService.submitUserQuizAnswer(quizSetId, quizId, request, authUser))
-			.thenReturn(response);
+		when(userQuizSetService.submitUserQuizAnswer(any(), any(), any(), any())).thenReturn(response);
 
 		// when && then
 		mockMvc.perform(post(uri, quizSetId, quizId)
@@ -153,24 +153,26 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 	}
 
 	@TestConfiguration
-	static class CustomAnnotationTestConfig implements WebMvcConfigurer {
+	static class AuthenticationPrincipalConfig implements WebMvcConfigurer {
+
 		@Override
 		public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-			resolvers.add(currentUserArgumentResolver());
+			resolvers.add(customOAuth2UserArgumentResolver());
 		}
 
 		@Bean
-		public HandlerMethodArgumentResolver currentUserArgumentResolver() {
+		public HandlerMethodArgumentResolver customOAuth2UserArgumentResolver() {
 			return new HandlerMethodArgumentResolver() {
 				@Override
 				public boolean supportsParameter(MethodParameter parameter) {
-					return parameter.getParameterAnnotation(CurrentUser.class) != null;
+					return parameter.getParameterAnnotation(AuthenticationPrincipal.class) != null;
 				}
 
 				@Override
 				public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 					NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-					return new AuthUser(USER_ID, NICKNAME);
+					return new CustomOAuth2User(1L, "test@example.com", null,
+						List.of(new SimpleGrantedAuthority("ROLE_USER")));
 				}
 			};
 		}
