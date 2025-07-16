@@ -42,6 +42,9 @@ public class UserQuizSet extends BaseEntity {
 	@Column(name = "is_evaluated", nullable = false)
 	private Boolean isEvaluated;
 
+	@Column(name = "is_done", nullable = false)
+	private Boolean isDone;
+
 	@Column(name = "last_quiz_id")
 	private Long lastQuizId;
 
@@ -57,6 +60,7 @@ public class UserQuizSet extends BaseEntity {
 	private UserQuizSet(Long quizSetId) {
 		this.quizSetId = quizSetId;
 		this.isEvaluated = FALSE;
+		this.isDone = FALSE;
 	}
 
 	public static UserQuizSet create(Long quizSetId) {

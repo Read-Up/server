@@ -2,6 +2,7 @@ package com.readup.server.quiz.application;
 
 import static com.readup.server.common.exception.ErrorCode.*;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,7 +10,9 @@ import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
+import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
+import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 
@@ -35,6 +38,23 @@ public class QuizSetService {
 	public GetQuizSetResponse getQuizSet(Long quizSetId, Long lastQuizId) {
 		QuizSet quizSet = quizSetRepository.getQuizSetById(quizSetId);
 		return GetQuizSetResponse.from(quizSet, lastQuizId);
+	}
+
+	@Transactional(readOnly = true)
+	public SliceResponse<GetQuizSetPageResponse> getAllQuizSets(Long bookId, Long chapterId, Pageable pageable) {
+		return quizSetRepository.getAllQuizSets(bookId, chapterId, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public SliceResponse<GetQuizSetPageResponse> getMyQuizSets(Long socialAccountId, Long bookId, Long chapterId,
+		Pageable pageable) {
+		return quizSetRepository.getMyQuizSets(socialAccountId, bookId, chapterId, pageable);
+	}
+
+	@Transactional(readOnly = true)
+	public SliceResponse<GetQuizSetPageResponse> getParticipatingQuizSets(Long socialAccountId, Long bookId,
+		Long chapterId, Pageable pageable) {
+		return quizSetRepository.getParticipatingQuizSets(socialAccountId, bookId, chapterId, pageable);
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {

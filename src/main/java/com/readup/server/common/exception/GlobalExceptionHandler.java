@@ -5,9 +5,11 @@ import static com.readup.server.common.exception.ErrorCode.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.readup.server.common.dto.ErrorResponse;
 
@@ -49,9 +51,21 @@ public class GlobalExceptionHandler {
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+	public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
 		String errorMessage = ex.getBindingResult().getAllErrors().getFirst().getDefaultMessage();
 		return buildErrorResponse(INVALID_PARAMETER, "MethodArgumentNotValidException", errorMessage);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatchException(
+		MethodArgumentTypeMismatchException ex) {
+		return buildErrorResponse(INVALID_PARAMETER, "MethodArgumentTypeMismatchException", ex.getMessage());
+	}
+
+	@ExceptionHandler(MissingServletRequestParameterException.class)
+	public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(
+		MissingServletRequestParameterException ex) {
+		return buildErrorResponse(MISSING_PARAMETER, "MissingServletRequestParameterException", ex.getMessage());
 	}
 
 	@ExceptionHandler(Exception.class)
