@@ -2,7 +2,6 @@ package com.readup.server.user_quiz.application;
 
 import java.util.List;
 
-import com.readup.server.user.dto.AuthUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,17 +27,17 @@ public class UserQuizSetService {
 	private final UserQuizSetRepository userQuizSetRepository;
 
 	@Transactional
-	public GetUserQuizSetResponse getUserQuizSet(Long quizSetId, AuthUser user) {
+	public GetUserQuizSetResponse getUserQuizSet(Long quizSetId, Long socialAccountId) {
 		QuizSet quizSet = quizSetRepository.getQuizSetById(quizSetId);
-		UserQuizSet userQuizSet = getOrCreateUserQuizSet(quizSetId, user.id(), getQuizIdList(quizSet));
+		UserQuizSet userQuizSet = getOrCreateUserQuizSet(quizSetId, socialAccountId, getQuizIdList(quizSet));
 		return GetUserQuizSetResponse.from(userQuizSet);
 	}
 
 	@Transactional
 	public SubmitUserQuizResponse submitUserQuizAnswer(Long quizSetId, Long quizId, SubmitUserQuizRequest request,
-		AuthUser user) {
+		Long socialAccountId) {
 		Quiz quiz = quizQueryRepository.getQuizWithQuizOptionById(quizSetId, quizId);
-		UserQuiz userQuiz = getUserQuiz(quizSetId, quizId, user);
+		UserQuiz userQuiz = getUserQuiz(quizSetId, quizId, socialAccountId);
 		boolean isAnswerCorrect = userQuiz.submitAnswer(quiz, request.selectedQuizOptionIds());
 		return SubmitUserQuizResponse.of(isAnswerCorrect, quiz.getExplanation());
 	}
@@ -49,13 +48,13 @@ public class UserQuizSetService {
 			.toList();
 	}
 
-	private UserQuiz getUserQuiz(Long quizSetId, Long quizId, AuthUser user) {
-		return userQuizSetRepository.getUserQuizSetWithUserQuizById(quizSetId, quizId, user.id())
+	private UserQuiz getUserQuiz(Long quizSetId, Long quizId, Long socialAccountId) {
+		return userQuizSetRepository.getUserQuizSetWithUserQuizById(quizSetId, quizId, socialAccountId)
 			.getUserQuizList().getFirst();
 	}
 
-	private UserQuizSet getOrCreateUserQuizSet(Long quizSetId, Long userId, List<Long> quizIdList) {
-		return userQuizSetRepository.findByQuizSetIdAndCreatedBy(quizSetId, userId)
+	private UserQuizSet getOrCreateUserQuizSet(Long quizSetId, Long socialAccountId, List<Long> quizIdList) {
+		return userQuizSetRepository.findByQuizSetIdAndCreatedBy(quizSetId, socialAccountId)
 			.orElseGet(() -> createNewUserQuizSet(quizSetId, quizIdList));
 	}
 
