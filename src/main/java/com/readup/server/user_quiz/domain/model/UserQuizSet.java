@@ -54,9 +54,13 @@ public class UserQuizSet extends BaseEntity {
 	@OneToMany(mappedBy = "userQuizSet", cascade = ALL, orphanRemoval = true)
 	private List<UserQuiz> userQuizList = new ArrayList<>();
 
+	@Column(name = "progress", nullable = false)
+	private int progress;
+
 	private UserQuizSet(Long quizSetId) {
 		this.quizSetId = quizSetId;
 		this.isEvaluated = FALSE;
+		this.progress = 0;
 	}
 
 	public static UserQuizSet create(Long quizSetId) {
