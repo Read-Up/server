@@ -18,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,12 +32,14 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
+import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizOption;
 import com.readup.server.quiz.domain.model.QuizSet;
+import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,8 +48,11 @@ class QuizSetServiceTest {
 	@InjectMocks
 	private QuizSetService sut;
 
-	@Spy
+	@Mock
 	private QuizSetRepository quizSetRepository;
+
+	@Mock
+	private QuizQueryRepository quizQueryRepository;
 
 	@Mock
 	private BookRepository bookRepository;
@@ -250,7 +254,7 @@ class QuizSetServiceTest {
 
 		@Test
 		@DisplayName("참여한 퀴즈 세트 조회 성공")
-		void getParticipatingQuizSets_Success() {
+		void get_participating_quizSets_success() {
 			// given
 			final Pageable pageable = PageRequest.of(0, 10);
 			final SliceResponse<GetQuizSetPageResponse> mockSliceResponse = createMockSliceResponse(3, pageable);
@@ -267,6 +271,30 @@ class QuizSetServiceTest {
 			assertThat(result.contentSize()).isEqualTo(3);
 			verify(quizSetRepository, times(1)).getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID,
 				pageable);
+		}
+	}
+
+	@Nested
+	@DisplayName("퀴즈 해설 조회 테스트")
+	class GetQuizExplanation {
+
+		@Test
+		@DisplayName("퀴즈 해설 조회 성공")
+		void get_quiz_explanation_success() {
+			// given
+			final Long quizId = 1L;
+			final Quiz quiz = createQuizWithId(1L, "질문1", QuizSet.create(BOOK_ID, CHAPTER_ID));
+
+			// stubbing
+			when(quizQueryRepository.getQuizById(quizId))
+				.thenReturn(quiz);
+
+			// when
+			GetQuizExplanationResponse result = sut.getQuizExplanation(quizId);
+
+			// then
+			assertThat(result).isNotNull();
+			verify(quizQueryRepository, times(1)).getQuizById(quizId);
 		}
 	}
 
