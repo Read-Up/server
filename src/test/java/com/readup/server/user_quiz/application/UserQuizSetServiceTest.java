@@ -22,6 +22,7 @@ import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -140,7 +141,7 @@ class UserQuizSetServiceTest {
 			// stubbing
 			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
 				createQuiz());
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
 				EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
@@ -154,7 +155,8 @@ class UserQuizSetServiceTest {
 			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
 			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
+				QUIZ_ID_1,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
@@ -169,7 +171,7 @@ class UserQuizSetServiceTest {
 			// stubbing
 			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
 				createQuiz());
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
 				EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
@@ -183,7 +185,8 @@ class UserQuizSetServiceTest {
 			assertThat(response.explanation()).isNull();
 
 			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
+				QUIZ_ID_1,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
@@ -196,6 +199,29 @@ class UserQuizSetServiceTest {
 			userQuizSet.addUserQuizList(List.of(userQuiz));
 
 			return userQuizSet;
+		}
+	}
+
+	@Nested
+	class GetUserQuizSetResult {
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 결과 조회 성공")
+		void get_user_quiz_set_result_success() {
+			// given
+			UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
+
+			// when
+			GetUserQuizSetResultResponse response = sut.getUserQuizSetResult(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+
+			// then
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+
+			assertThat(response).isNotNull();
 		}
 	}
 
@@ -241,5 +267,22 @@ class UserQuizSetServiceTest {
 		quiz.addQuizOptionList(List.of(correctOption, incorrectOption));
 
 		return quiz;
+	}
+
+	private UserQuizSet createUserQuizSet() {
+		UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
+		ReflectionTestUtils.setField(userQuizSet, "id", EXPECTED_QUIZ_SET_ID);
+		ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
+
+		UserQuiz userQuiz1 = UserQuiz.create(QUIZ_ID_1, userQuizSet);
+		ReflectionTestUtils.setField(userQuiz1, "firstAttemptCorrect", true);
+		ReflectionTestUtils.setField(userQuiz1, "currentAttemptCorrect", true);
+
+		UserQuiz userQuiz2 = UserQuiz.create(QUIZ_ID_2, userQuizSet);
+		ReflectionTestUtils.setField(userQuiz2, "firstAttemptCorrect", false);
+		ReflectionTestUtils.setField(userQuiz2, "currentAttemptCorrect", true);
+
+		userQuizSet.addUserQuizList(List.of(userQuiz1, userQuiz2));
+		return userQuizSet;
 	}
 }

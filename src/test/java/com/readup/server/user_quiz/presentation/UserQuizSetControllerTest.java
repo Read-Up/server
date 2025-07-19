@@ -40,6 +40,7 @@ import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 
@@ -62,7 +63,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 
 	@Test
 	@DisplayName("사용자 퀴즈 세트 조회")
-	void getUserQuizSetSuccessTest() throws Exception {
+	void get_user_quiz_set() throws Exception {
 		// given
 		final String uri = "/private/quiz-sets/{quizSetId}/my-progress";
 		final Long quizSetId = 1L;
@@ -104,7 +105,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 
 	@Test
 	@DisplayName("사용자 퀴즈 답안 제출")
-	void submitUserQuizAnswerCorrectTest() throws Exception {
+	void submit_user_quiz_answer() throws Exception {
 		// given
 		final String uri = "/private/quiz-sets/{quizSetId}/quizzes/{quizId}/answer";
 		final Long quizSetId = 1L;
@@ -151,6 +152,52 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 				)
 			);
 	}
+
+	@Test
+	@DisplayName("유저 퀴즈 세트 결과 조회")
+	void get_user_quiz_set_result() throws Exception {
+		// given
+		final String uri = "/private/user-quiz-sets/{userQuizSetId}/result";
+		final Long  userQuizSetId = 1L;
+		final int solvedQuizCount = 5;
+		final int firstAttemptCorrectCount = 3;
+		final int retryCorrectCount = 2;
+		final boolean isAboveHalfCorrect = true;
+		final GetUserQuizSetResultResponse response = new GetUserQuizSetResultResponse(
+			solvedQuizCount,  firstAttemptCorrectCount, retryCorrectCount, isAboveHalfCorrect);
+
+		// stubbing
+		when(userQuizSetService.getUserQuizSetResult(any(), any())).thenReturn(response);
+
+		// when && then
+		mockMvc.perform(get(uri, userQuizSetId)
+				.contentType(APPLICATION_JSON))
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.solvedQuizCount").value(solvedQuizCount),
+				jsonPath("$.data.firstAttemptCorrectCount").value(firstAttemptCorrectCount),
+				jsonPath("$.data.retryCorrectCount").value(retryCorrectCount),
+				jsonPath("$.data.isAboveHalfCorrect").value(isAboveHalfCorrect),
+				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
+
+			// docs
+			.andDo(
+				MockMvcRestDocumentationWrapper.document("get-user-quiz-set-result",
+					resourceDetails().tag("UserQuizSet"),
+					pathParameters(parameterWithName("userQuizSetId").description("유저 퀴즈 세트 ID")),
+					responseFields(
+						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.solvedQuizCount").type(NUMBER).description("참여한 퀴즈 수"),
+						fieldWithPath("data.firstAttemptCorrectCount").type(NUMBER).description("한 번에 마스터한 지식"),
+						fieldWithPath("data.retryCorrectCount").type(NUMBER).description("재도전으로 강화된 지식"),
+						fieldWithPath("data.isAboveHalfCorrect").type(BOOLEAN).description("한 번에 마스터한 지식 50% 이상 여부"),
+						fieldWithPath("message").type(STRING).description("성공 메시지")
+					)
+				)
+			);
+	}
+
 
 	@TestConfiguration
 	static class AuthenticationPrincipalConfig implements WebMvcConfigurer {
