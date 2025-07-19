@@ -45,6 +45,7 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizReq
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOptionResponse;
+import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse.GetQuizOptionResponse;
@@ -261,8 +262,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 							.description("퀴즈 보기 순서"),
 						fieldWithPath("data.quizResponseList[].quizOptionResponseList[].content").type(STRING)
 							.description("퀴즈 보기 내용"),
-						fieldWithPath("message").type(STRING).description("성공 메시지")
-					)
+						fieldWithPath("message").type(STRING).description("성공 메시지"))
 				)
 			);
 	}
@@ -541,6 +541,42 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					)
 				)
 			);
+	}
+
+	@Test
+	@DisplayName("퀴즈 해설 조회")
+	void get_quiz_explanation_success() throws Exception {
+		//given
+		final String uri = "/private/quizzes/{quizId}/explanation";
+		final Long quizId = 1L;
+		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
+		final GetQuizExplanationResponse response = new GetQuizExplanationResponse(quizId, explanation);
+
+		// stubbing
+		when(quizSetService.getQuizExplanation(quizId)).thenReturn(response);
+
+		// when && then
+		mockMvc.perform(get(uri, quizId).contentType(APPLICATION_JSON))
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.quizId").value(quizId),
+				jsonPath("$.data.explanation").value(explanation),
+				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
+			)
+
+			// docs
+			.andDo(
+				MockMvcRestDocumentationWrapper.document("get-quiz-set",
+					resourceDetails().tag("QuizSet"),
+					pathParameters(parameterWithName("quizId").description("퀴즈 ID")),
+					responseFields(
+						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.quizId").type(NUMBER).description("퀴즈 ID"),
+						fieldWithPath("data.explanation").type(STRING).description("해설"),
+						fieldWithPath("message").type(STRING).description("성공 메시지"))
+				));
+
 	}
 
 	@TestConfiguration

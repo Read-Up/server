@@ -22,9 +22,21 @@ public class QuizQueryRepositoryImpl implements QuizQueryRepository {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
+	public Quiz getQuizById(Long id) {
+		return findQuizById(id)
+			.orElseThrow(() -> new RepositoryException(NOT_FOUND_QUIZ));
+	}
+
+	@Override
 	public Quiz getQuizWithQuizOptionById(Long quizSetId, Long quizId) {
 		return findQuizWithQuizOptionById(quizSetId, quizId)
 			.orElseThrow(() -> new RepositoryException(NOT_FOUND_QUIZ));
+	}
+
+	private Optional<Quiz> findQuizById(Long id) {
+		return Optional.ofNullable(queryFactory.selectFrom(quiz)
+			.where(quiz.id.eq(id))
+			.fetchOne());
 	}
 
 	private Optional<Quiz> findQuizWithQuizOptionById(Long quizSetId, Long quizId) {
