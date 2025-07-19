@@ -10,6 +10,7 @@ import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -22,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserQuizSetService {
 
+	private static final double HALF_CORRECT_THRESHOLD = 0.5;
+
 	private final QuizSetRepository quizSetRepository;
 	private final QuizQueryRepository quizQueryRepository;
 	private final UserQuizSetRepository userQuizSetRepository;
@@ -31,6 +34,12 @@ public class UserQuizSetService {
 		QuizSet quizSet = quizSetRepository.getQuizSetById(quizSetId);
 		UserQuizSet userQuizSet = getOrCreateUserQuizSet(quizSetId, socialAccountId, getQuizIdList(quizSet));
 		return GetUserQuizSetResponse.from(userQuizSet);
+	}
+
+	@Transactional(readOnly = true)
+	public GetUserQuizSetResultResponse getUserQuizSetResult(Long userQuizSetId, Long socialAccountId) {
+		UserQuizSet userQuizSet = userQuizSetRepository.getUserQuizSetWithUserQuizById(userQuizSetId, socialAccountId);
+		return calculateQuizResult(userQuizSet);
 	}
 
 	@Transactional
@@ -49,7 +58,7 @@ public class UserQuizSetService {
 	}
 
 	private UserQuiz getUserQuiz(Long quizSetId, Long quizId, Long socialAccountId) {
-		return userQuizSetRepository.getUserQuizSetWithUserQuizById(quizSetId, quizId, socialAccountId)
+		return userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(quizSetId, quizId, socialAccountId)
 			.getUserQuizList().getFirst();
 	}
 
@@ -68,5 +77,33 @@ public class UserQuizSetService {
 		return quizIdList.stream()
 			.map(qi -> UserQuiz.create(qi, newUserQuizSet))
 			.toList();
+	}
+
+	private GetUserQuizSetResultResponse calculateQuizResult(UserQuizSet userQuizSet) {
+		List<UserQuiz> userQuizList = userQuizSet.getUserQuizList();
+		int solvedCount = userQuizList.size();
+		int firstAttemptCorrect = 0;
+		int retryCorrect = 0;
+
+		for (UserQuiz quiz : userQuizList) {
+			boolean currentCorrect = Boolean.TRUE.equals(quiz.getCurrentAttemptCorrect());
+			boolean firstCorrect = Boolean.TRUE.equals(quiz.getFirstAttemptCorrect());
+
+			if (currentCorrect) {
+				if (firstCorrect) {
+					firstAttemptCorrect++;
+				} else {
+					retryCorrect++;
+				}
+			}
+		}
+
+		boolean isAboveHalf = calculateIsAboveHalfCorrect(solvedCount, firstAttemptCorrect);
+
+		return new GetUserQuizSetResultResponse(solvedCount, firstAttemptCorrect, retryCorrect, isAboveHalf);
+	}
+
+	private boolean calculateIsAboveHalfCorrect(int solvedCount, int firstAttemptCorrect) {
+		return solvedCount > 0 && (double) firstAttemptCorrect / solvedCount >= HALF_CORRECT_THRESHOLD;
 	}
 }

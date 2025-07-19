@@ -13,6 +13,7 @@ import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 
@@ -28,6 +29,12 @@ public class UserQuizSetController {
 	public ApiResponse<GetUserQuizSetResponse> getMyUserQuizSet(@PathVariable Long quizSetId,
 		@AuthenticationPrincipal CustomOAuth2User user) {
 		return successResponse(userQuizSetService.getUserQuizSet(quizSetId, user.id()));
+	}
+
+	@GetMapping("/private/user-quiz-sets/{userQuizSetId}/result")
+	public ApiResponse<GetUserQuizSetResultResponse> getMyUserQuizSetResult(@PathVariable Long userQuizSetId,
+		@AuthenticationPrincipal CustomOAuth2User user) {
+		return successResponse(userQuizSetService.getUserQuizSetResult(userQuizSetId, user.id()));
 	}
 
 	@PostMapping("/private/quiz-sets/{quizSetId}/quizzes/{quizId}/answer")

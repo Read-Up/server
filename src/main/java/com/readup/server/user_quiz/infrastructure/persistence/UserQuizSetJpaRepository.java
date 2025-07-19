@@ -14,4 +14,8 @@ public interface UserQuizSetJpaRepository extends JpaRepository<UserQuizSet, Lon
 	@Query("SELECT uqs FROM UserQuizSet uqs JOIN FETCH uqs.userQuizList uq WHERE uqs.quizSetId = :quizSetId AND uq.quizId = :quizId AND uqs.createdBy = :socialAccountId")
 	Optional<UserQuizSet> findUserQuizSetWithUserQuiz(@Param("quizSetId") Long quizSetId, @Param("quizId") Long quizId,
 		@Param("socialAccountId") Long socialAccountId);
+
+	@Query("SELECT uqs FROM UserQuizSet uqs JOIN FETCH uqs.userQuizList uq WHERE uqs.id = :userQuizSetId AND uqs.createdBy = :socialAccountId")
+	Optional<UserQuizSet> findUserQuizSetWithUserQuiz(@Param("userQuizSetId") Long userQuizSetId,
+		@Param("socialAccountId") Long socialAccountId);
 }
