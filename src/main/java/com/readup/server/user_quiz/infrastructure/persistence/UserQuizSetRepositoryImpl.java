@@ -24,13 +24,13 @@ public class UserQuizSetRepositoryImpl implements UserQuizSetRepository {
 	}
 
 	@Override
-	public Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long userId) {
-		return userQuizSetJpaRepository.findByQuizSetIdAndCreatedBy(quizSetId, userId);
+	public Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long socialAccountId) {
+		return userQuizSetJpaRepository.findByQuizSetIdAndCreatedBy(quizSetId, socialAccountId);
 	}
 
 	@Override
-	public UserQuizSet getUserQuizSetWithUserQuizById(Long quizSetId, Long quizId, Long userId) {
-		return userQuizSetJpaRepository.findUserQuizSetWithUserQuiz(quizSetId, quizId, userId)
+	public UserQuizSet getUserQuizSetWithUserQuizById(Long quizSetId, Long quizId, Long socialAccountId) {
+		return userQuizSetJpaRepository.findUserQuizSetWithUserQuiz(quizSetId, quizId, socialAccountId)
 			.orElseThrow(() -> new RepositoryException(NOT_FOUND_USER_QUIZ_SET));
 	}
 }

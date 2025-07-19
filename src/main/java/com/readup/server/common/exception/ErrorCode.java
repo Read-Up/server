@@ -52,6 +52,8 @@ public enum ErrorCode {
 	// Quiz Set
 	NOT_FOUND_QUIZ_SET(HttpStatus.NOT_FOUND, "퀴즈 세트를 찾지 못했습니다."),
 	NOT_FOUND_QUIZ(HttpStatus.NOT_FOUND, "퀴즈를 찾지 못했습니다."),
+	BAD_QUIZ_SET_SORT(HttpStatus.BAD_REQUEST, "잘못된 퀴즈 세트 정렬 요청입니다."),
+	BAD_PARTICIPATING_QUIZ_SET_SORT(HttpStatus.BAD_REQUEST, "잘못된 참여 퀴즈 세트 정렬 요청입니다."),
 
 	// User Quiz Set
 	NOT_FOUND_USER_QUIZ_SET(HttpStatus.NOT_FOUND, "유저 퀴즈 세트를 찾지 못했습니다."),

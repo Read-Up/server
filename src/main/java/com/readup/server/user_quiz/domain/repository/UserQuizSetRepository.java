@@ -7,7 +7,7 @@ import com.readup.server.user_quiz.domain.model.UserQuizSet;
 public interface UserQuizSetRepository {
 	UserQuizSet save(UserQuizSet userQuizSet);
 
-	Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long userId);
+	Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long socialAccountId);
 
-	UserQuizSet getUserQuizSetWithUserQuizById(Long quizSetId, Long quizId, Long userId);
+	UserQuizSet getUserQuizSetWithUserQuizById(Long quizSetId, Long quizId, Long socialAccountId);
 }
