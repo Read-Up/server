@@ -1,5 +1,3 @@
-// package: com.readup.server.common.annotation
-
 package com.readup.server.common.annotaion;
 
 import java.lang.annotation.*;

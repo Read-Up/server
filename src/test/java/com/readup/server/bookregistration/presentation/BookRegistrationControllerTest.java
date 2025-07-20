@@ -11,13 +11,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 
+import com.readup.server.common.config.WebConfig;
+import com.readup.server.common.resolver.CurrentAuthUserArgumentResolver;
+import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
+import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,9 +37,17 @@ import com.readup.server.bookregistration.presentation.dto.CreateBookRegistratio
 import com.readup.server.bookregistration.presentation.dto.CreateBookRegistrationResponse;
 
 @AutoConfigureMockMvc(addFilters = false)
-@WebMvcTest(controllers = BookRegistrationController.class, excludeFilters = @Filter(
-	type = FilterType.REGEX,
-	pattern = "com.readup.server.common..*")
+@WebMvcTest(
+		controllers = BookRegistrationController.class,
+		excludeFilters = @ComponentScan.Filter(
+				type = FilterType.ASSIGNABLE_TYPE,
+				classes = {
+						WebConfig.class,
+						CurrentUserArgumentResolver.class,
+						CurrentSocialAccountArgumentResolver.class,
+						CurrentAuthUserArgumentResolver.class // 이 줄 추가!
+				}
+		)
 )
 class BookRegistrationControllerTest extends AbstractWebMvcTest {
 
