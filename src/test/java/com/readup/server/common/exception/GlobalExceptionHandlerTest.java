@@ -4,12 +4,18 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.readup.server.common.config.WebConfig;
+import com.readup.server.common.resolver.CurrentAuthUserArgumentResolver;
+import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
+import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -18,7 +24,18 @@ import org.springframework.web.context.WebApplicationContext;
 import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.common.controller.TestCommonController;
 
-@WebMvcTest(TestCommonController.class)
+@WebMvcTest(
+		controllers = TestCommonController.class,
+		excludeFilters = @ComponentScan.Filter(
+				type = FilterType.ASSIGNABLE_TYPE,
+				classes = {
+						WebConfig.class,
+						CurrentUserArgumentResolver.class,
+						CurrentSocialAccountArgumentResolver.class,
+						CurrentAuthUserArgumentResolver.class
+				}
+		)
+)
 @AutoConfigureMockMvc(addFilters = false)
 class GlobalExceptionHandlerTest extends AbstractWebMvcTest {
 

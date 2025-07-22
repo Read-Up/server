@@ -11,6 +11,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.Map;
 
+import com.readup.server.common.config.WebConfig;
+import com.readup.server.common.resolver.CurrentAuthUserArgumentResolver;
+import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
+import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
@@ -44,7 +50,16 @@ import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.common.exception.DomainException;
 import com.readup.server.common.exception.ErrorCode;
 
-@WebMvcTest(BookController.class)
+@WebMvcTest(controllers = BookController.class,
+		excludeFilters = {
+				@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+						WebConfig.class,
+						CurrentUserArgumentResolver.class,
+						CurrentAuthUserArgumentResolver.class,
+						CurrentSocialAccountArgumentResolver.class
+				})
+		}
+)
 @AutoConfigureMockMvc(addFilters = false)
 class BookControllerTest extends AbstractWebMvcTest {
 
