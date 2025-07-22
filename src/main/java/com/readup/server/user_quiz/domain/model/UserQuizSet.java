@@ -73,4 +73,12 @@ public class UserQuizSet extends BaseEntity {
 		}
 		this.userQuizList.addAll(userQuizList);
 	}
+
+	public void startUserQuizSet() {
+		this.isDone = FALSE;
+	}
+
+	public void completeUserQuizSet() {
+		this.isDone = TRUE;
+	}
 }

@@ -1,5 +1,6 @@
 package com.readup.server.user_quiz.application;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -9,8 +10,10 @@ import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
+import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
+import com.readup.server.user_quiz.application.dto.StartUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -40,6 +43,22 @@ public class UserQuizSetService {
 	public GetUserQuizSetResultResponse getUserQuizSetResult(Long userQuizSetId, Long socialAccountId) {
 		UserQuizSet userQuizSet = userQuizSetRepository.getUserQuizSetWithUserQuizById(userQuizSetId, socialAccountId);
 		return calculateQuizResult(userQuizSet);
+	}
+
+	@Transactional
+	public StartUserQuizSetResponse startUserQuizSet(Long userQuizSetId, Long socialAccountId,
+		LocalDateTime startedAt) {
+		UserQuizSet userQuizSet = userQuizSetRepository.getByIdAndCreatedBy(userQuizSetId, socialAccountId);
+		userQuizSet.startUserQuizSet();
+		return StartUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId(), startedAt);
+	}
+
+	@Transactional
+	public CompleteUserQuizSetResponse completeUserQuizSet(Long userQuizSetId, Long socialAccountId,
+		LocalDateTime completedAt) {
+		UserQuizSet userQuizSet = userQuizSetRepository.getByIdAndCreatedBy(userQuizSetId, socialAccountId);
+		userQuizSet.completeUserQuizSet();
+		return CompleteUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId(), completedAt);
 	}
 
 	@Transactional
