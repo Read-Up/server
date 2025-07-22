@@ -9,6 +9,8 @@ public interface UserQuizSetRepository {
 
 	Optional<UserQuizSet> findByQuizSetIdAndCreatedBy(Long quizSetId, Long socialAccountId);
 
+	UserQuizSet getByIdAndCreatedBy(Long userQuizSetId, Long socialAccountId);
+
 	UserQuizSet getUserQuizSetWithUserQuizByQuizSetId(Long quizSetId, Long quizId, Long socialAccountId);
 
 	UserQuizSet getUserQuizSetWithUserQuizById(Long userQuizSetId, Long socialAccountId);
