@@ -79,7 +79,8 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final Long userQuizSetId = 1L;
 		final Long lastQuizId = 1L;
 		final Boolean isEvaluated = true;
-		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated);
+		final Boolean isDone = false;
+		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated, isDone);
 
 		// stubbing
 		when(userQuizSetService.getUserQuizSet(quizSetId, socialAccountId)).thenReturn(response);
@@ -93,6 +94,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 				jsonPath("$.data.userQuizSetId").value(userQuizSetId),
 				jsonPath("$.data.lastQuizId").value(lastQuizId),
 				jsonPath("$.data.isEvaluated").value(isEvaluated),
+				jsonPath("$.data.isDone").value(isDone),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
 
 			// docs
@@ -106,6 +108,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("사용자 퀴즈 세트 ID"),
 						fieldWithPath("data.lastQuizId").type(NUMBER).description("마지막으로 푼 퀴즈 ID"),
 						fieldWithPath("data.isEvaluated").type(BOOLEAN).description("평가 완료 여부"),
+						fieldWithPath("data.isDone").type(BOOLEAN).description("퀴즈 세트 완료 여부"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
