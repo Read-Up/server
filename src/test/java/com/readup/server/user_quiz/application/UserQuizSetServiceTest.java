@@ -3,6 +3,7 @@ package com.readup.server.user_quiz.application;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,8 +22,10 @@ import com.readup.server.quiz.domain.model.QuizOption;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
+import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
+import com.readup.server.user_quiz.application.dto.StartUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -45,6 +48,7 @@ class UserQuizSetServiceTest {
 	private UserQuizSetRepository userQuizSetRepository;
 
 	private static final Long EXPECTED_QUIZ_SET_ID = 1L;
+	private static final Long EXPECTED_USER_QUIZ_SET_ID = 1L;
 	private static final Long EXPECTED_SOCIAL_ACCOUNT_ID = 100L;
 	private static final Long QUIZ_ID_1 = 1L;
 	private static final Long QUIZ_ID_2 = 2L;
@@ -128,6 +132,77 @@ class UserQuizSetServiceTest {
 	}
 
 	@Nested
+	class GetUserQuizSetResult {
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 결과 조회 성공")
+		void get_user_quiz_set_result_success() {
+			// given
+			UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
+
+			// when
+			GetUserQuizSetResultResponse response = sut.getUserQuizSetResult(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+
+			// then
+			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			assertThat(response).isNotNull();
+		}
+	}
+
+	@Nested
+	class StartUserQuizSet {
+		
+		@Test
+		@DisplayName("유저 퀴즈 세트 시작 성공")
+		void start_user_quiz_set_success() {
+			// given
+			final LocalDateTime startedAt = LocalDateTime.of(2025, 7, 19, 10, 0, 0);
+			final UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
+
+			// when
+			StartUserQuizSetResponse response = sut.startUserQuizSet(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID, startedAt);
+
+			// then
+			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			assertThat(response).isNotNull();
+		}
+	}
+
+	@Nested
+	class CompleteUserQuizSet {
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 완료 성공")
+		void complete_user_quiz_set_success() {
+			// given
+			final LocalDateTime completedAt = LocalDateTime.of(2025, 7, 19, 10, 30, 0);
+			final UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
+
+			// when
+			CompleteUserQuizSetResponse response = sut.completeUserQuizSet(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID, completedAt);
+
+			// then
+			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			assertThat(response).isNotNull();
+
+		}
+	}
+
+	@Nested
 	class SubmitUserQuizAnswer {
 
 		@Test
@@ -202,29 +277,6 @@ class UserQuizSetServiceTest {
 		}
 	}
 
-	@Nested
-	class GetUserQuizSetResult {
-
-		@Test
-		@DisplayName("유저 퀴즈 세트 결과 조회 성공")
-		void get_user_quiz_set_result_success() {
-			// given
-			UserQuizSet userQuizSet = createUserQuizSet();
-
-			// stubbing
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
-				.thenReturn(userQuizSet);
-
-			// when
-			GetUserQuizSetResultResponse response = sut.getUserQuizSetResult(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
-
-			// then
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
-
-			assertThat(response).isNotNull();
-		}
-	}
-
 	private QuizSet createQuizSet() {
 		QuizSet quizSet = QuizSet.create(1L, 1L);
 		ReflectionTestUtils.setField(quizSet, "id", EXPECTED_QUIZ_SET_ID);
@@ -271,7 +323,7 @@ class UserQuizSetServiceTest {
 
 	private UserQuizSet createUserQuizSet() {
 		UserQuizSet userQuizSet = UserQuizSet.create(EXPECTED_QUIZ_SET_ID);
-		ReflectionTestUtils.setField(userQuizSet, "id", EXPECTED_QUIZ_SET_ID);
+		ReflectionTestUtils.setField(userQuizSet, "id", EXPECTED_USER_QUIZ_SET_ID);
 		ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
 		UserQuiz userQuiz1 = UserQuiz.create(QUIZ_ID_1, userQuizSet);
