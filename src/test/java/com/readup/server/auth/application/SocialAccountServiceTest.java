@@ -69,7 +69,7 @@ class SocialAccountServiceTest {
 	void findByIdTest() {
 		when(socialAccountJpaRepository.findById(1L)).thenReturn(Optional.ofNullable(socialAccount));
 
-		SocialAccount result = socialAccountService.findById(1L);
+		SocialAccount result = socialAccountService.getById(1L);
 
 		assertNotNull(result);
 		assertEquals(1L, result.getId());
@@ -81,7 +81,7 @@ class SocialAccountServiceTest {
 	void findByIdExceptionTest() {
 		when(socialAccountJpaRepository.findById(1L)).thenReturn(Optional.empty());
 
-		DomainException exception = assertThrows(DomainException.class, () -> socialAccountService.findById(1L));
+		DomainException exception = assertThrows(DomainException.class, () -> socialAccountService.getById(1L));
 
 		assertEquals(SOCIAL_ACCOUNT_NOT_FOUND, exception.getErrorCode());
 		verify(socialAccountJpaRepository, times(1)).findById(1L);
@@ -112,14 +112,14 @@ class SocialAccountServiceTest {
 		Authentication authentication = mock(Authentication.class);
 		when(authentication.getPrincipal()).thenReturn(oAuth2User);
 
-		when(socialAccountJpaRepository.findById(socialAccountId)).thenReturn(java.util.Optional.of(socialAccount));
+		when(socialAccountJpaRepository.findWithUserById(socialAccountId)).thenReturn(java.util.Optional.of(socialAccount));
 
 		boolean result = socialAccountService.isNewUser(authentication);
 
 		assertTrue(result);
 		verify(authentication, times(1)).getPrincipal();
 		verify(oAuth2User, times(1)).getName();
-		verify(socialAccountJpaRepository, times(1)).findById(socialAccountId);
+		verify(socialAccountJpaRepository, times(1)).findWithUserById(socialAccountId);
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class SocialAccountServiceTest {
 
 		Authentication authentication = mock(Authentication.class);
 		when(authentication.getPrincipal()).thenReturn(oAuth2User);
-		when(socialAccountJpaRepository.findById(socialAccountId)).thenReturn(java.util.Optional.of(socialAccount));
+		when(socialAccountJpaRepository.findWithUserById(socialAccountId)).thenReturn(java.util.Optional.of(socialAccount));
 
 		User user = UserTestBuilder.builder()
 			.id(2L)
@@ -147,6 +147,6 @@ class SocialAccountServiceTest {
 		assertFalse(result);
 		verify(authentication, times(1)).getPrincipal();
 		verify(oAuth2User, times(1)).getName();
-		verify(socialAccountJpaRepository, times(1)).findById(socialAccountId);
+		verify(socialAccountJpaRepository, times(1)).findWithUserById(socialAccountId);
 	}
 }

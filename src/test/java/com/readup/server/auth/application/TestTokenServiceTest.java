@@ -44,7 +44,7 @@ class TestTokenServiceTest {
 			.providerUid("test-provider-uid")
 			.build();
 
-		when(socialAccountService.findById(1L)).thenReturn(testAccount);
+		when(socialAccountService.getById(1L)).thenReturn(testAccount);
 
 		expectedTokens = new AuthTokens("access-token-value", "refresh-token-value");
 
@@ -58,7 +58,7 @@ class TestTokenServiceTest {
 
 		assertThat(result).isNotNull().isEqualTo(expectedTokens);
 
-		verify(socialAccountService).findById(1L);
+		verify(socialAccountService).getById(1L);
 
 		verify(tokenProvider).generateTokens(any(OAuth2AuthenticationToken.class));
 	}

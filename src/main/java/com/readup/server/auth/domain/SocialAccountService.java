@@ -40,7 +40,7 @@ public class SocialAccountService {
 	}
 
 	public void updateUser(Long socialAccountId, User user) {
-		SocialAccount savedSocialAccount = findWithUserById(socialAccountId);
+		SocialAccount savedSocialAccount = getById(socialAccountId);
 		savedSocialAccount.updateUserFromSocialAccount(user);
 	}
 
