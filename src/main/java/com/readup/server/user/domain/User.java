@@ -34,11 +34,11 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<UserTermsConsent> userTermsConsentList  = new ArrayList<>();
 
-	@Column
+	@Column(name = "image_url")
 	private String imageUrl;
 
 	@Enumerated(EnumType.STRING)
-	@Column
+	@Column(name = "status")
 	private UserStatus status;
 
 	@Builder(access = AccessLevel.PRIVATE)
