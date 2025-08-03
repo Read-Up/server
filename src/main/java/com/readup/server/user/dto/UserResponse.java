@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 public record UserResponse(
 	Long id,
 	String nickname,
-	String email,
-	List<UserTermsConsent> userTermsConsentList,
+//	String email,
+//	List<UserTermsConsent> userTermsConsentList,
 	String imageUrl,
 	UserStatus status,
 	Long createdBy,
@@ -23,14 +23,15 @@ public record UserResponse(
 ) {
 	public static UserResponse from(User user) {
 
+		// TODO: 영속성 context 문제로 lazyloading 으로 가져오는 필드값은 못 가져오는 상황
 		return new UserResponse(
 				user.getId(),
 				user.getNickname(),
-				user.getSocialAccount().getEmail(),
-				user.getUserTermsConsentList().stream().collect(Collectors.toList()),
+//				user.getSocialAccount().getEmail(),
+//				user.getUserTermsConsentList().stream().collect(Collectors.toList()),
 				user.getImageUrl(),
 				user.getStatus(),
-        		user.getCreatedBy(),
+				user.getCreatedBy(),
 				user.getCreatedAt(),
 				user.getUpdatedBy(),
 				user.getUpdatedAt(),
