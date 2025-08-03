@@ -1,6 +1,7 @@
 package com.readup.server.user.application;
 
 import com.readup.server.auth.domain.SocialAccount;
+import com.readup.server.auth.domain.SocialAccountService;
 import com.readup.server.terms.application.TermsManagementService;
 import com.readup.server.terms.domain.UserTermsConsent;
 import com.readup.server.user.domain.User;
@@ -23,6 +24,9 @@ class UserLifecycleServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private SocialAccountService socialAccountService;
+
+    @Mock
     private TermsManagementService termsManagementService;
 
     @BeforeEach
@@ -38,6 +42,7 @@ class UserLifecycleServiceTest {
 
         List<UserTermsConsent> consentList = List.of(mock(UserTermsConsent.class));
         when(termsManagementService.createUserTermsConsent(request)).thenReturn(consentList);
+        when(socialAccountService.getById(any())).thenReturn(socialAccount);
 
         // when
         userLifecycleService.createUser(socialAccount, request);
