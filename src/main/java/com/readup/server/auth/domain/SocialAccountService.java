@@ -34,20 +34,20 @@ public class SocialAccountService {
 		return socialAccountJpaRepository.save(toEntity(createSocialAccountRequest));
 	}
 
-	public SocialAccount findById(Long id) {
-		return socialAccountJpaRepository.findById(id)
+	public SocialAccount findWithUserById(Long id) {
+		return socialAccountJpaRepository.findWithUserById(id)
 			.orElseThrow(() -> new DomainException(SOCIAL_ACCOUNT_NOT_FOUND));
 	}
 
 	public void updateUser(Long socialAccountId, User user) {
-		SocialAccount savedSocialAccount = findById(socialAccountId);
+		SocialAccount savedSocialAccount = findWithUserById(socialAccountId);
 		savedSocialAccount.updateUserFromSocialAccount(user);
 	}
 
 	public boolean isNewUser(Authentication authentication) {
 		CustomOAuth2User oAuth2User = (CustomOAuth2User)authentication.getPrincipal();
 
-		return findById(Long.parseLong(oAuth2User.getName())).getUser() == null;
+		return findWithUserById(Long.parseLong(oAuth2User.getName())).getUser() == null;
 	}
 
 	private SocialAccount toEntity(CreateSocialAccountRequest createSocialAccountRequest) {
