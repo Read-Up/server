@@ -2,7 +2,7 @@ spring:
   application:
     name: server
   profiles:
-    active: local
+    active: dev
   mvc:
     servlet:
       path: /api
