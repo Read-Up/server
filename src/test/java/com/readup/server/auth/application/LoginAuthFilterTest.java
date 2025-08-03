@@ -90,13 +90,13 @@ class LoginAuthFilterTest {
 
 		when(tokenProvider.validateAccessToken(accessToken)).thenReturn(true);
 		when(tokenProvider.getUserIdFromToken(accessToken)).thenReturn(1L);
-		when(socialAccountService.findById(1L)).thenReturn(mockSocialAccount);
+		when(socialAccountService.getById(1L)).thenReturn(mockSocialAccount);
 
 		loginAuthFilter.doFilterInternal(request, response, filterChain);
 
 		verify(tokenProvider).validateAccessToken(accessToken);
 		verify(tokenProvider).getUserIdFromToken(accessToken);
-		verify(socialAccountService).findById(1L);
+		verify(socialAccountService).getById(1L);
 		assertNotNull(SecurityContextHolder.getContext().getAuthentication());
 		assertInstanceOf(OAuth2AuthenticationToken.class, SecurityContextHolder.getContext().getAuthentication());
 		verify(filterChain).doFilter(request, response);
@@ -114,7 +114,7 @@ class LoginAuthFilterTest {
 		when(tokenProvider.validateAccessToken(invalidAccessToken)).thenReturn(false);
 		when(tokenProvider.validateRefreshToken(validRefreshToken)).thenReturn(true);
 		when(refreshTokenService.getUserIdByRefreshToken(validRefreshToken)).thenReturn("1");
-		when(socialAccountService.findById(1L)).thenReturn(mockSocialAccount);
+		when(socialAccountService.getById(1L)).thenReturn(mockSocialAccount);
 
 		AuthTokens newTokens = AuthTokens.of("new.access.token", "new.refresh.token");
 		when(tokenProvider.generateTokens(any(OAuth2AuthenticationToken.class))).thenReturn(newTokens);
