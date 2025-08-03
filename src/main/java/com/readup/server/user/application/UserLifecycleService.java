@@ -32,6 +32,7 @@ public class UserLifecycleService {
 		List<UserTermsConsent> consentList = termsManagementService.createUserTermsConsent(request);
 		User user = User.register(request.nickname(), attached);
 		user.addUserTermsConsentList(consentList);
+		attached.updateUserFromSocialAccount(user);
 		userRepository.save(user);
 	}
 
