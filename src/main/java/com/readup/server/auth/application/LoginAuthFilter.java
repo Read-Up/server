@@ -96,7 +96,7 @@ public class LoginAuthFilter extends OncePerRequestFilter {
 	}
 
 	private OAuth2AuthenticationToken createAuthentication(Long userId) {
-		SocialAccount socialAccount = socialAccountService.findById(userId);
+		SocialAccount socialAccount = socialAccountService.getById(userId);
 		CustomOAuth2User user = CustomOAuth2User.from(socialAccount, Map.of());
 
 		return new OAuth2AuthenticationToken(user, user.authorities(), socialAccount.getProvider());

@@ -22,7 +22,7 @@ public class TestTokenService {
 	private final SocialAccountService socialAccountService;
 
 	public AuthTokens getTestToken() {
-		SocialAccount testAccount = socialAccountService.findById(1L);
+		SocialAccount testAccount = socialAccountService.getById(1L);
 
 		Map<String, Object> attributes = Collections.singletonMap("sub", "1");
 		CustomOAuth2User testUser = CustomOAuth2User.from(testAccount, attributes);

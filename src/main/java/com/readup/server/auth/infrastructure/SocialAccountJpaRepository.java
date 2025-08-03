@@ -10,4 +10,6 @@ import com.readup.server.auth.domain.SocialAccount;
 @Repository
 public interface SocialAccountJpaRepository extends JpaRepository<SocialAccount, Long> {
 	Optional<SocialAccount> findByProviderAndProviderUid(String provider, String providerUid);
+
+	Optional<SocialAccount> findWithUserById(Long id);
 }
