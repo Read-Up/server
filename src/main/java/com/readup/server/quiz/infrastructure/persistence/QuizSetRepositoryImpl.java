@@ -24,6 +24,7 @@ import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
+import com.readup.server.user_quiz.domain.model.UserQuizSetStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -74,7 +75,7 @@ public class QuizSetRepositoryImpl implements QuizSetRepository {
 			.innerJoin(userQuizSet)
 			.on(userQuizSet.quizSetId.eq(quizSet.id)
 				.and(userQuizSet.createdBy.eq(socialAccountId))
-				.and(userQuizSet.isDone.eq(false)))
+				.and(userQuizSet.status.eq(UserQuizSetStatus.IN_PROGRESS)))
 			.leftJoin(socialAccount).on(socialAccount.id.eq(quizSet.createdBy))
 			.leftJoin(socialAccount.user, user)
 			.where(bookIdEq(bookId), chapterIdEq(chapterId))

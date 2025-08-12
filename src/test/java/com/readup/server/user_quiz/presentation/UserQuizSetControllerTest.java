@@ -2,6 +2,7 @@ package com.readup.server.user_quiz.presentation;
 
 import static com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper.*;
 import static com.readup.server.common.dto.ApiResponse.*;
+import static com.readup.server.user_quiz.domain.model.UserQuizSetStatus.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.*;
 import static org.springframework.restdocs.payload.JsonFieldType.*;
@@ -10,7 +11,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -47,9 +47,10 @@ import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
-import com.readup.server.user_quiz.application.dto.StartUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
+import com.readup.server.user_quiz.domain.model.UserQuizSetStatus;
 
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(controllers = UserQuizSetController.class,
@@ -82,8 +83,8 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final Long userQuizSetId = 1L;
 		final Long lastQuizId = 1L;
 		final Boolean isEvaluated = true;
-		final Boolean isDone = false;
-		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated, isDone);
+		final UserQuizSetStatus status = IN_PROGRESS;
+		GetUserQuizSetResponse response = new GetUserQuizSetResponse(userQuizSetId, lastQuizId, isEvaluated, status);
 
 		// stubbing
 		when(userQuizSetService.getUserQuizSet(quizSetId, socialAccountId)).thenReturn(response);
@@ -97,7 +98,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 				jsonPath("$.data.userQuizSetId").value(userQuizSetId),
 				jsonPath("$.data.lastQuizId").value(lastQuizId),
 				jsonPath("$.data.isEvaluated").value(isEvaluated),
-				jsonPath("$.data.isDone").value(isDone),
+				jsonPath("$.data.status").value(status.toString()),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
 
 			// docs
@@ -111,7 +112,7 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("사용자 퀴즈 세트 ID"),
 						fieldWithPath("data.lastQuizId").type(NUMBER).description("마지막으로 푼 퀴즈 ID"),
 						fieldWithPath("data.isEvaluated").type(BOOLEAN).description("평가 완료 여부"),
-						fieldWithPath("data.isDone").type(BOOLEAN).description("퀴즈 세트 완료 여부"),
+						fieldWithPath("data.status").type(STRING).description("퀴즈 세트 상태 (IN_PROGRESS, COMPLETED)"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
@@ -165,18 +166,17 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 	}
 
 	@Test
-	@DisplayName("유저 퀴즈 세트 시작")
+	@DisplayName("유저 퀴즈 세트 새로풀기")
 	void start_user_quiz_set() throws Exception {
 		// given
-		final String uri = "/private/user-quiz-sets/{userQuizSetId}/start";
+		final String uri = "/private/user-quiz-sets/{userQuizSetId}/reset";
 		final Long userQuizSetId = 1L;
 		final Long socialAccountId = 1L;
 		final Long quizSetId = 1L;
-		final LocalDateTime startedAt = LocalDateTime.of(2025, 7, 19, 10, 30, 0, 0);
-		final StartUserQuizSetResponse response = StartUserQuizSetResponse.of(userQuizSetId, quizSetId, startedAt);
+		final ResetUserQuizSetResponse response = ResetUserQuizSetResponse.of(userQuizSetId, quizSetId);
 
 		// stubbing
-		when(userQuizSetService.startUserQuizSet(any(), any(), any()))
+		when(userQuizSetService.resetUserQuizSet(any(), any()))
 			.thenReturn(response);
 
 		// when && then
@@ -198,7 +198,6 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("유저 퀴즈 세트 ID"),
 						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
-						fieldWithPath("data.startedAt").type(STRING).description("유저 퀴즈 세트 시작 시각"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
@@ -213,11 +212,10 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 		final Long userQuizSetId = 1L;
 		final Long socialAccountId = 1L;
 		final Long quizSetId = 1L;
-		final LocalDateTime completedAt = LocalDateTime.of(2025, 7, 19, 10, 30, 0, 0);
-		final CompleteUserQuizSetResponse response = CompleteUserQuizSetResponse.of(userQuizSetId, quizSetId, completedAt);
+		final CompleteUserQuizSetResponse response = CompleteUserQuizSetResponse.of(userQuizSetId, quizSetId);
 
 		// stubbing
-		when(userQuizSetService.completeUserQuizSet(any(), any(), any()))
+		when(userQuizSetService.completeUserQuizSet(any(), any()))
 			.thenReturn(response);
 
 		// when && then
@@ -239,7 +237,6 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.userQuizSetId").type(NUMBER).description("유저 퀴즈 세트 ID"),
 						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
-						fieldWithPath("data.completedAt").type(STRING).description("유저 퀴즈 세트 완료 시각"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)

@@ -1,11 +1,15 @@
 package com.readup.server.user_quiz.application;
 
-import java.time.LocalDateTime;
+import static com.readup.server.common.exception.ErrorCode.*;
+import static com.readup.server.user_quiz.domain.model.UserQuizSetStatus.*;
+import static java.lang.Boolean.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
@@ -13,7 +17,7 @@ import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
-import com.readup.server.user_quiz.application.dto.StartUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -46,19 +50,17 @@ public class UserQuizSetService {
 	}
 
 	@Transactional
-	public StartUserQuizSetResponse startUserQuizSet(Long userQuizSetId, Long socialAccountId,
-		LocalDateTime startedAt) {
+	public ResetUserQuizSetResponse resetUserQuizSet(Long userQuizSetId, Long socialAccountId) {
 		UserQuizSet userQuizSet = userQuizSetRepository.getByIdAndCreatedBy(userQuizSetId, socialAccountId);
-		userQuizSet.startUserQuizSet();
-		return StartUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId(), startedAt);
+		userQuizSet.reset();
+		return ResetUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId());
 	}
 
 	@Transactional
-	public CompleteUserQuizSetResponse completeUserQuizSet(Long userQuizSetId, Long socialAccountId,
-		LocalDateTime completedAt) {
+	public CompleteUserQuizSetResponse completeUserQuizSet(Long userQuizSetId, Long socialAccountId) {
 		UserQuizSet userQuizSet = userQuizSetRepository.getByIdAndCreatedBy(userQuizSetId, socialAccountId);
-		userQuizSet.completeUserQuizSet();
-		return CompleteUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId(), completedAt);
+		userQuizSet.complete();
+		return CompleteUserQuizSetResponse.of(userQuizSet.getId(), userQuizSet.getQuizSetId());
 	}
 
 	@Transactional
@@ -98,14 +100,15 @@ public class UserQuizSetService {
 	}
 
 	private GetUserQuizSetResultResponse calculateQuizResult(UserQuizSet userQuizSet) {
+		validateUserQuizSet(userQuizSet);
 		List<UserQuiz> userQuizList = userQuizSet.getUserQuizList();
 		int solvedCount = userQuizList.size();
 		int firstAttemptCorrect = 0;
 		int retryCorrect = 0;
 
 		for (UserQuiz quiz : userQuizList) {
-			boolean currentCorrect = Boolean.TRUE.equals(quiz.getCurrentAttemptCorrect());
-			boolean firstCorrect = Boolean.TRUE.equals(quiz.getFirstAttemptCorrect());
+			boolean currentCorrect = TRUE.equals(quiz.getCurrentAttemptCorrect());
+			boolean firstCorrect = TRUE.equals(quiz.getFirstAttemptCorrect());
 
 			if (currentCorrect) {
 				if (firstCorrect) {
@@ -123,5 +126,11 @@ public class UserQuizSetService {
 
 	private boolean calculateIsAboveHalfCorrect(int solvedCount, int firstAttemptCorrect) {
 		return solvedCount > 0 && (double)firstAttemptCorrect / solvedCount >= HALF_CORRECT_THRESHOLD;
+	}
+
+	private void validateUserQuizSet(UserQuizSet userQuizSet) {
+		if (userQuizSet.getStatus() != COMPLETED) {
+			throw new ServiceException(NOT_COMPLETE_USER_QUIZ_SET);
+		}
 	}
 }

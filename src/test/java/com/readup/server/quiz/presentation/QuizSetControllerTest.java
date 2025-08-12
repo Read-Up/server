@@ -13,19 +13,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.readup.server.common.config.WebConfig;
-import com.readup.server.common.resolver.CurrentAuthUserArgumentResolver;
-import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
-import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.Sort;
@@ -43,6 +39,10 @@ import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.readup.server.AbstractWebMvcTest;
 import com.readup.server.auth.dto.CustomOAuth2User;
+import com.readup.server.common.config.WebConfig;
+import com.readup.server.common.resolver.CurrentAuthUserArgumentResolver;
+import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
+import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import com.readup.server.quiz.application.QuizSetService;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
@@ -59,16 +59,16 @@ import com.readup.server.quiz.application.dto.SliceResponse;
 @Import(QuizSetControllerTest.AuthenticationPrincipalConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
 @WebMvcTest(
-		controllers = QuizSetController.class,
-		excludeFilters = @ComponentScan.Filter(
-				type = FilterType.ASSIGNABLE_TYPE,
-				classes = {
-						WebConfig.class,
-						CurrentUserArgumentResolver.class,
-						CurrentSocialAccountArgumentResolver.class,
-						CurrentAuthUserArgumentResolver.class
-				}
-		)
+	controllers = QuizSetController.class,
+	excludeFilters = @ComponentScan.Filter(
+		type = FilterType.ASSIGNABLE_TYPE,
+		classes = {
+			WebConfig.class,
+			CurrentUserArgumentResolver.class,
+			CurrentSocialAccountArgumentResolver.class,
+			CurrentAuthUserArgumentResolver.class
+		}
+	)
 )
 class QuizSetControllerTest extends AbstractWebMvcTest {
 
@@ -258,7 +258,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 				MockMvcRestDocumentationWrapper.document("get-quiz-set",
 					resourceDetails().tag("QuizSet"),
 					pathParameters(parameterWithName("quizSetId").description("퀴즈 세트 ID")),
-					queryParameters(parameterWithName("lastQuizId").description("마지막으로 푼 퀴즈 ID (default: 0)")),
+					queryParameters(parameterWithName("lastQuizId").description("마지막으로 푼 퀴즈 ID")),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.bookId").type(NUMBER).description("책 ID"),

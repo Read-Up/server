@@ -1,9 +1,9 @@
 package com.readup.server.user_quiz.application;
 
+import static com.readup.server.common.exception.ErrorCode.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizOption;
 import com.readup.server.quiz.domain.model.QuizSet;
@@ -25,7 +26,7 @@ import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
-import com.readup.server.user_quiz.application.dto.StartUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizRequest;
 import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
@@ -136,9 +137,10 @@ class UserQuizSetServiceTest {
 
 		@Test
 		@DisplayName("유저 퀴즈 세트 결과 조회 성공")
-		void get_user_quiz_set_result_success() {
+		void get_complete_user_quiz_set_result_success() {
 			// given
 			UserQuizSet userQuizSet = createUserQuizSet();
+			userQuizSet.complete();
 
 			// stubbing
 			when(userQuizSetRepository.getWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
@@ -153,6 +155,22 @@ class UserQuizSetServiceTest {
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 			assertThat(response).isNotNull();
 		}
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 결과 조회 실패 : 완료되지 않은 유저 퀴즈 세트 결과 조회 시 실패")
+		void get_incomplete_user_quiz_set_result_fail() {
+			// given
+			UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.thenReturn(userQuizSet);
+
+			// when && then
+			assertThatThrownBy(() -> sut.getUserQuizSetResult(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.isInstanceOf(ServiceException.class)
+				.hasMessage(NOT_COMPLETE_USER_QUIZ_SET.getMessage());
+		}
 	}
 
 	@Nested
@@ -162,7 +180,6 @@ class UserQuizSetServiceTest {
 		@DisplayName("유저 퀴즈 세트 시작 성공")
 		void start_user_quiz_set_success() {
 			// given
-			final LocalDateTime startedAt = LocalDateTime.of(2025, 7, 19, 10, 0, 0);
 			final UserQuizSet userQuizSet = createUserQuizSet();
 
 			// stubbing
@@ -170,8 +187,8 @@ class UserQuizSetServiceTest {
 				.thenReturn(userQuizSet);
 
 			// when
-			StartUserQuizSetResponse response = sut.startUserQuizSet(EXPECTED_USER_QUIZ_SET_ID,
-				EXPECTED_SOCIAL_ACCOUNT_ID, startedAt);
+			ResetUserQuizSetResponse response = sut.resetUserQuizSet(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID,
@@ -187,7 +204,6 @@ class UserQuizSetServiceTest {
 		@DisplayName("유저 퀴즈 세트 완료 성공")
 		void complete_user_quiz_set_success() {
 			// given
-			final LocalDateTime completedAt = LocalDateTime.of(2025, 7, 19, 10, 30, 0);
 			final UserQuizSet userQuizSet = createUserQuizSet();
 
 			// stubbing
@@ -196,7 +212,7 @@ class UserQuizSetServiceTest {
 
 			// when
 			CompleteUserQuizSetResponse response = sut.completeUserQuizSet(EXPECTED_USER_QUIZ_SET_ID,
-				EXPECTED_SOCIAL_ACCOUNT_ID, completedAt);
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
 			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID,

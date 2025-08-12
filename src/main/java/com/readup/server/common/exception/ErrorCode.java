@@ -57,6 +57,7 @@ public enum ErrorCode {
 
 	// User Quiz Set
 	NOT_FOUND_USER_QUIZ_SET(HttpStatus.NOT_FOUND, "유저 퀴즈 세트를 찾지 못했습니다."),
+	NOT_COMPLETE_USER_QUIZ_SET(HttpStatus.BAD_REQUEST, "퀴즈 세트를 전부 풀지 않았습니다."),
 	NOT_FOUND_USER_QUIZ(HttpStatus.NOT_FOUND, "유저 퀴즈를 찾지 못했습니다.")
 	;
 
