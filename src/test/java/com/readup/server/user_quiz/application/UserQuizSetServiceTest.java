@@ -24,6 +24,8 @@ import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetRequest;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
@@ -51,8 +53,8 @@ class UserQuizSetServiceTest {
 	private static final Long EXPECTED_QUIZ_SET_ID = 1L;
 	private static final Long EXPECTED_USER_QUIZ_SET_ID = 1L;
 	private static final Long EXPECTED_SOCIAL_ACCOUNT_ID = 100L;
-	private static final Long QUIZ_ID_1 = 1L;
-	private static final Long QUIZ_ID_2 = 2L;
+	private static final Long EXPECTED_QUIZ_ID_1 = 1L;
+	private static final Long EXPECTED_QUIZ_ID_2 = 2L;
 
 	@Nested
 	class GetUserQuizSet {
@@ -115,8 +117,8 @@ class UserQuizSetServiceTest {
 			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			List<UserQuiz> userQuizList = List.of(
-				UserQuiz.create(QUIZ_ID_1, userQuizSet),
-				UserQuiz.create(QUIZ_ID_2, userQuizSet)
+				UserQuiz.create(EXPECTED_QUIZ_ID_1, userQuizSet),
+				UserQuiz.create(EXPECTED_QUIZ_ID_2, userQuizSet)
 			);
 
 			userQuizSet.addUserQuizList(userQuizList);
@@ -234,13 +236,13 @@ class UserQuizSetServiceTest {
 			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
-			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1)).thenReturn(
 				createQuiz());
 			when(userQuizSetRepository.getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
 			// when
-			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
+			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1, request,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
@@ -248,7 +250,7 @@ class UserQuizSetServiceTest {
 			assertThat(response.isCorrect()).isTrue();
 			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
-			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1);
 			verify(userQuizSetRepository, times(1)).getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
@@ -262,13 +264,13 @@ class UserQuizSetServiceTest {
 			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
-			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1)).thenReturn(
 				createQuiz());
 			when(userQuizSetRepository.getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
 			// when
-			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1, request,
+			SubmitUserQuizResponse response = sut.submitUserQuizAnswer(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1, request,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
@@ -276,7 +278,7 @@ class UserQuizSetServiceTest {
 			assertThat(response.isCorrect()).isFalse();
 			assertThat(response.explanation()).isNull();
 
-			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1);
 			verify(userQuizSetRepository, times(1)).getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
@@ -286,10 +288,75 @@ class UserQuizSetServiceTest {
 			ReflectionTestUtils.setField(userQuizSet, "id", 1L);
 			ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
-			UserQuiz userQuiz = UserQuiz.create(QUIZ_ID_1, userQuizSet);
+			UserQuiz userQuiz = UserQuiz.create(EXPECTED_QUIZ_ID_1, userQuizSet);
 			userQuizSet.addUserQuizList(List.of(userQuiz));
 
 			return userQuizSet;
+		}
+	}
+
+	@Nested
+	class EvaluateUserQuizSet {
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 평가 성공")
+		void evaluate_user_quiz_set_success() {
+			// given
+			final int likeScore = 5;
+			final EvaluateQuizSetRequest request = new EvaluateQuizSetRequest(EXPECTED_USER_QUIZ_SET_ID, likeScore);
+			final UserQuizSet userQuizSet = createUserQuizSet();
+			userQuizSet.complete();
+
+			// stubbing
+			when(userQuizSetRepository.getWithUserQuizByIdAndQuizSetId(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID)).thenReturn(userQuizSet);
+
+			// when
+			final EvaluateQuizSetResponse response = sut.evaluateUserQuizSet(EXPECTED_QUIZ_SET_ID, request,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
+
+			// then
+			assertThat(response).isNotNull();
+			verify(userQuizSetRepository, times(1)).getWithUserQuizByIdAndQuizSetId(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+		}
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 평가 실패 - 완료되지 않은 퀴즈셋 평가 시도")
+		void evaluate_incomplete_user_quiz_set_fail() {
+			// given
+			final int likeScore = 5;
+			final EvaluateQuizSetRequest request = new EvaluateQuizSetRequest(EXPECTED_USER_QUIZ_SET_ID, likeScore);
+			final UserQuizSet userQuizSet = createUserQuizSet();
+
+			// stubbing
+			when(userQuizSetRepository.getWithUserQuizByIdAndQuizSetId(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID)).thenReturn(userQuizSet);
+
+			// when && then
+			assertThatThrownBy(() -> sut.evaluateUserQuizSet(EXPECTED_QUIZ_SET_ID, request, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.isInstanceOf(ServiceException.class)
+				.hasMessage(NOT_COMPLETE_USER_QUIZ_SET.getMessage());
+		}
+
+		@Test
+		@DisplayName("유저 퀴즈 세트 평가 실패 - 이미 평가한 퀴즈셋 평가 시도")
+		void evaluate_already_evaluated_user_quiz_set_fail() {
+			// given
+			final int likeScore = 5;
+			final EvaluateQuizSetRequest request = new EvaluateQuizSetRequest(EXPECTED_USER_QUIZ_SET_ID, likeScore);
+			final UserQuizSet userQuizSet = createUserQuizSet();
+			userQuizSet.complete();
+			userQuizSet.evaluate(likeScore);
+
+			// stubbing
+			when(userQuizSetRepository.getWithUserQuizByIdAndQuizSetId(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID)).thenReturn(userQuizSet);
+
+			// when && then
+			assertThatThrownBy(() -> sut.evaluateUserQuizSet(EXPECTED_QUIZ_SET_ID, request, EXPECTED_SOCIAL_ACCOUNT_ID))
+				.isInstanceOf(ServiceException.class)
+				.hasMessage(ALREADY_EVALUATED_USER_QUIZ_SET.getMessage());
 		}
 	}
 
@@ -298,7 +365,7 @@ class UserQuizSetServiceTest {
 		ReflectionTestUtils.setField(quizSet, "id", EXPECTED_QUIZ_SET_ID);
 
 		Quiz quiz1 = Quiz.create("질문1", "설명1", quizSet);
-		ReflectionTestUtils.setField(quiz1, "id", QUIZ_ID_1);
+		ReflectionTestUtils.setField(quiz1, "id", EXPECTED_QUIZ_ID_1);
 
 		QuizOption option1 = QuizOption.create("보기1", true, quiz1);
 		QuizOption option2 = QuizOption.create("보기2", false, quiz1);
@@ -308,7 +375,7 @@ class UserQuizSetServiceTest {
 		quiz1.addQuizOptionList(List.of(option1, option2));
 
 		Quiz quiz2 = Quiz.create("질문2", "설명2", quizSet);
-		ReflectionTestUtils.setField(quiz2, "id", QUIZ_ID_2);
+		ReflectionTestUtils.setField(quiz2, "id", EXPECTED_QUIZ_ID_2);
 
 		QuizOption option3 = QuizOption.create("A", true, quiz2);
 		QuizOption option4 = QuizOption.create("B", false, quiz2);
@@ -325,7 +392,7 @@ class UserQuizSetServiceTest {
 	private Quiz createQuiz() {
 		QuizSet quizSet = QuizSet.create(1L, 1L);
 		Quiz quiz = Quiz.create("테스트 질문1", "테스트 설명1", quizSet);
-		ReflectionTestUtils.setField(quiz, "id", QUIZ_ID_1);
+		ReflectionTestUtils.setField(quiz, "id", EXPECTED_QUIZ_ID_1);
 
 		QuizOption correctOption = QuizOption.create("정답", true, quiz);
 		QuizOption incorrectOption = QuizOption.create("오답", false, quiz);
@@ -342,11 +409,11 @@ class UserQuizSetServiceTest {
 		ReflectionTestUtils.setField(userQuizSet, "id", EXPECTED_USER_QUIZ_SET_ID);
 		ReflectionTestUtils.setField(userQuizSet, "createdBy", EXPECTED_SOCIAL_ACCOUNT_ID);
 
-		UserQuiz userQuiz1 = UserQuiz.create(QUIZ_ID_1, userQuizSet);
+		UserQuiz userQuiz1 = UserQuiz.create(EXPECTED_QUIZ_ID_1, userQuizSet);
 		ReflectionTestUtils.setField(userQuiz1, "firstAttemptCorrect", true);
 		ReflectionTestUtils.setField(userQuiz1, "currentAttemptCorrect", true);
 
-		UserQuiz userQuiz2 = UserQuiz.create(QUIZ_ID_2, userQuizSet);
+		UserQuiz userQuiz2 = UserQuiz.create(EXPECTED_QUIZ_ID_2, userQuizSet);
 		ReflectionTestUtils.setField(userQuiz2, "firstAttemptCorrect", false);
 		ReflectionTestUtils.setField(userQuiz2, "currentAttemptCorrect", true);
 

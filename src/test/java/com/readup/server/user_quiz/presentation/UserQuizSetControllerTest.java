@@ -45,6 +45,8 @@ import com.readup.server.common.resolver.CurrentSocialAccountArgumentResolver;
 import com.readup.server.common.resolver.CurrentUserArgumentResolver;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetRequest;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
@@ -288,6 +290,67 @@ class UserQuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
 						fieldWithPath("data.isCorrect").type(BOOLEAN).description("정답 여부"),
 						fieldWithPath("data.explanation").type(STRING).description("정답 설명 (정답일 경우에만 제공 오답인 경우 null)"),
+						fieldWithPath("message").type(STRING).description("성공 메시지")
+					)
+				)
+			);
+	}
+
+	@Test
+	@DisplayName("유저 퀴즈 세트 평가")
+	void evaluate_user_quiz_set() throws Exception {
+		// given
+		final String uri = "/private/quiz-sets/{quizSetId}/evaluation";
+		final Long quizSetId = 1L;
+		final Long socialAccountId = 1L;
+		final Long userQuizSetId = 1L;
+		final int likeScore = 3;
+		final Boolean isEvaluated = true;
+		final UserQuizSetStatus status = COMPLETED;
+		final Double correctAnswerAverage = 3.0;
+
+		final EvaluateQuizSetRequest request = new EvaluateQuizSetRequest(userQuizSetId, likeScore);
+		final EvaluateQuizSetResponse response = new EvaluateQuizSetResponse(userQuizSetId, quizSetId, isEvaluated,
+			status, correctAnswerAverage, likeScore);
+
+		// stubbing
+		when(userQuizSetService.evaluateUserQuizSet(quizSetId, request, socialAccountId)).thenReturn(response);
+
+		// when && then
+		mockMvc.perform(post(uri, quizSetId)
+				.contentType(APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(request)))
+
+			.andExpectAll(
+				status().isOk(),
+				jsonPath("$.success").value(true),
+				jsonPath("$.data.userQuizSetId").value(userQuizSetId),
+				jsonPath("$.data.quizSetId").value(quizSetId),
+				jsonPath("$.data.isEvaluated").value(isEvaluated),
+				jsonPath("$.data.status").value(status.toString()),
+				jsonPath("$.data.correctAnswerAverage").value(correctAnswerAverage),
+				jsonPath("$.data.likeScore").value(likeScore),
+				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE))
+
+			// docs
+			.andDo(
+				MockMvcRestDocumentationWrapper.document("evaluate-user-quiz-set",
+					resourceDetails().tag("UserQuizSet"),
+					pathParameters(
+						parameterWithName("quizSetId").description("퀴즈 세트 ID")
+					),
+					requestFields(
+						fieldWithPath("userQuizSetId").type(NUMBER).description("유저 퀴즈 세트 ID"),
+						fieldWithPath("likeScore").type(NUMBER).description("퀴즈 세트 평가 점수")
+					),
+					responseFields(
+						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.userQuizSetId").type(NUMBER).description("유저 퀴즈 세트 ID"),
+						fieldWithPath("data.quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
+						fieldWithPath("data.isEvaluated").type(BOOLEAN).description("유저 퀴즈 세트 평가 여부"),
+						fieldWithPath("data.status").type(STRING).description("유저 퀴즈 세트 상태 (IN_PROGRESS, COMPLETED)"),
+						fieldWithPath("data.correctAnswerAverage").type(NUMBER).description("내 유저 퀴즈 세트 정답률"),
+						fieldWithPath("data.likeScore").type(NUMBER).description("내 퀴즈 세트 평가 점수"),
 						fieldWithPath("message").type(STRING).description("성공 메시지")
 					)
 				)
