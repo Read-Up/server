@@ -41,7 +41,7 @@ public class UserQuizSetService {
 
 	@Transactional(readOnly = true)
 	public GetUserQuizSetResultResponse getUserQuizSetResult(Long userQuizSetId, Long socialAccountId) {
-		UserQuizSet userQuizSet = userQuizSetRepository.getUserQuizSetWithUserQuizById(userQuizSetId, socialAccountId);
+		UserQuizSet userQuizSet = userQuizSetRepository.getWithUserQuizById(userQuizSetId, socialAccountId);
 		return calculateQuizResult(userQuizSet);
 	}
 
@@ -64,9 +64,13 @@ public class UserQuizSetService {
 	@Transactional
 	public SubmitUserQuizResponse submitUserQuizAnswer(Long quizSetId, Long quizId, SubmitUserQuizRequest request,
 		Long socialAccountId) {
-		Quiz quiz = quizQueryRepository.getQuizWithQuizOptionById(quizSetId, quizId);
-		UserQuiz userQuiz = getUserQuiz(quizSetId, quizId, socialAccountId);
+		Quiz quiz = quizQueryRepository.getWithQuizOptionById(quizSetId, quizId);
+		UserQuizSet userQuizSet = userQuizSetRepository.getWithUserQuizByQuizSetId(quizSetId, socialAccountId);
+		UserQuiz userQuiz = userQuizSet.findUserQuizByQuizId(quizId);
+
+		userQuizSet.updateLastQuizId(quizId);
 		boolean isAnswerCorrect = userQuiz.submitAnswer(quiz, request.selectedQuizOptionIds());
+
 		return SubmitUserQuizResponse.of(isAnswerCorrect, quiz.getExplanation());
 	}
 
@@ -74,11 +78,6 @@ public class UserQuizSetService {
 		return quizSet.getQuizList().stream()
 			.map(Quiz::getId)
 			.toList();
-	}
-
-	private UserQuiz getUserQuiz(Long quizSetId, Long quizId, Long socialAccountId) {
-		return userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(quizSetId, quizId, socialAccountId)
-			.getUserQuizList().getFirst();
 	}
 
 	private UserQuizSet getOrCreateUserQuizSet(Long quizSetId, Long socialAccountId, List<Long> quizIdList) {
@@ -123,6 +122,6 @@ public class UserQuizSetService {
 	}
 
 	private boolean calculateIsAboveHalfCorrect(int solvedCount, int firstAttemptCorrect) {
-		return solvedCount > 0 && (double) firstAttemptCorrect / solvedCount >= HALF_CORRECT_THRESHOLD;
+		return solvedCount > 0 && (double)firstAttemptCorrect / solvedCount >= HALF_CORRECT_THRESHOLD;
 	}
 }

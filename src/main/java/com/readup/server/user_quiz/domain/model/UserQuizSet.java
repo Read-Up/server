@@ -1,5 +1,6 @@
 package com.readup.server.user_quiz.domain.model;
 
+import static com.readup.server.common.exception.ErrorCode.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.*;
 import static java.lang.Boolean.*;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.common.exception.DomainException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -74,11 +76,22 @@ public class UserQuizSet extends BaseEntity {
 		this.userQuizList.addAll(userQuizList);
 	}
 
+	public UserQuiz findUserQuizByQuizId(Long quizId) {
+		return this.userQuizList.stream()
+			.filter(uq -> uq.getQuizId().equals(quizId))
+			.findAny()
+			.orElseThrow(() -> new DomainException(INVALID_REQUEST));
+	}
+
 	public void startUserQuizSet() {
 		this.isDone = FALSE;
 	}
 
 	public void completeUserQuizSet() {
 		this.isDone = TRUE;
+	}
+
+	public void updateLastQuizId(Long quizId) {
+		this.lastQuizId = quizId;
 	}
 }

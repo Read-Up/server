@@ -141,21 +141,23 @@ class UserQuizSetServiceTest {
 			UserQuizSet userQuizSet = createUserQuizSet();
 
 			// stubbing
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
+			when(userQuizSetRepository.getWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
 			// when
-			GetUserQuizSetResultResponse response = sut.getUserQuizSetResult(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			GetUserQuizSetResultResponse response = sut.getUserQuizSetResult(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 
 			// then
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			verify(userQuizSetRepository, times(1)).getWithUserQuizById(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 			assertThat(response).isNotNull();
 		}
 	}
 
 	@Nested
 	class StartUserQuizSet {
-		
+
 		@Test
 		@DisplayName("유저 퀴즈 세트 시작 성공")
 		void start_user_quiz_set_success() {
@@ -172,7 +174,8 @@ class UserQuizSetServiceTest {
 				EXPECTED_SOCIAL_ACCOUNT_ID, startedAt);
 
 			// then
-			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 			assertThat(response).isNotNull();
 		}
 	}
@@ -196,7 +199,8 @@ class UserQuizSetServiceTest {
 				EXPECTED_SOCIAL_ACCOUNT_ID, completedAt);
 
 			// then
-			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID);
+			verify(userQuizSetRepository, times(1)).getByIdAndCreatedBy(EXPECTED_USER_QUIZ_SET_ID,
+				EXPECTED_SOCIAL_ACCOUNT_ID);
 			assertThat(response).isNotNull();
 
 		}
@@ -214,10 +218,9 @@ class UserQuizSetServiceTest {
 			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
 				createQuiz());
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
-				EXPECTED_SOCIAL_ACCOUNT_ID))
+			when(userQuizSetRepository.getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
 			// when
@@ -229,9 +232,8 @@ class UserQuizSetServiceTest {
 			assertThat(response.isCorrect()).isTrue();
 			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
-			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
-				QUIZ_ID_1,
+			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(userQuizSetRepository, times(1)).getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
@@ -244,10 +246,9 @@ class UserQuizSetServiceTest {
 			UserQuizSet userQuizSet = createUserQuizSetWithUserQuiz();
 
 			// stubbing
-			when(quizQueryRepository.getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
+			when(quizQueryRepository.getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1)).thenReturn(
 				createQuiz());
-			when(userQuizSetRepository.getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1,
-				EXPECTED_SOCIAL_ACCOUNT_ID))
+			when(userQuizSetRepository.getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID, EXPECTED_SOCIAL_ACCOUNT_ID))
 				.thenReturn(userQuizSet);
 
 			// when
@@ -259,9 +260,8 @@ class UserQuizSetServiceTest {
 			assertThat(response.isCorrect()).isFalse();
 			assertThat(response.explanation()).isNull();
 
-			verify(quizQueryRepository, times(1)).getQuizWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
-			verify(userQuizSetRepository, times(1)).getUserQuizSetWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
-				QUIZ_ID_1,
+			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, QUIZ_ID_1);
+			verify(userQuizSetRepository, times(1)).getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
 				EXPECTED_SOCIAL_ACCOUNT_ID);
 		}
 
