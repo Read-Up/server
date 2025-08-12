@@ -11,6 +11,7 @@ public enum ErrorCode {
 	MISSING_PARAMETER(HttpStatus.BAD_REQUEST, "필수 요청 파라미터가 누락되었습니다."),
 	RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다."),
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
+	OPTIMISTIC_LOCKING_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "최대 재시도 횟수를 초과하였습니다."),
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증이 필요합니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "권한이 없습니다."),
 
@@ -58,6 +59,7 @@ public enum ErrorCode {
 	// User Quiz Set
 	NOT_FOUND_USER_QUIZ_SET(HttpStatus.NOT_FOUND, "유저 퀴즈 세트를 찾지 못했습니다."),
 	NOT_COMPLETE_USER_QUIZ_SET(HttpStatus.BAD_REQUEST, "퀴즈 세트를 전부 풀지 않았습니다."),
+	ALREADY_EVALUATED_USER_QUIZ_SET(HttpStatus.BAD_REQUEST, "이미 평가한 퀴즈 세트입니다."),
 	NOT_FOUND_USER_QUIZ(HttpStatus.NOT_FOUND, "유저 퀴즈를 찾지 못했습니다.")
 	;
 

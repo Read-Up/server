@@ -14,4 +14,6 @@ public interface UserQuizSetRepository {
 	UserQuizSet getWithUserQuizByQuizSetId(Long quizSetId, Long socialAccountId);
 
 	UserQuizSet getWithUserQuizById(Long userQuizSetId, Long socialAccountId);
+
+	UserQuizSet getWithUserQuizByIdAndQuizSetId(Long userQuizSetId, Long quizSetId, Long socialAccountId);
 }

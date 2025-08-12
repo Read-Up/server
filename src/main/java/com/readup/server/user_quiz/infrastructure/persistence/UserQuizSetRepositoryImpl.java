@@ -45,4 +45,10 @@ public class UserQuizSetRepositoryImpl implements UserQuizSetRepository {
 		return userQuizSetJpaRepository.findWithUserQuizById(userQuizSetId, socialAccountId)
 			.orElseThrow(() -> new RepositoryException(NOT_FOUND_USER_QUIZ_SET));
 	}
+
+	@Override
+	public UserQuizSet getWithUserQuizByIdAndQuizSetId(Long userQuizSetId, Long quizSetId, Long socialAccountId) {
+		return userQuizSetJpaRepository.findWithUserQuizByIdAndQuizSetId(userQuizSetId, quizSetId, socialAccountId)
+			.orElseThrow(() -> new RepositoryException(NOT_FOUND_USER_QUIZ_SET));
+	}
 }

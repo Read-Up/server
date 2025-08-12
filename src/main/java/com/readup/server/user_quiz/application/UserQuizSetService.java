@@ -9,12 +9,15 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.readup.server.common.event.Events;
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.domain.model.Quiz;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetRequest;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
@@ -23,6 +26,7 @@ import com.readup.server.user_quiz.application.dto.SubmitUserQuizResponse;
 import com.readup.server.user_quiz.domain.model.UserQuiz;
 import com.readup.server.user_quiz.domain.model.UserQuizSet;
 import com.readup.server.user_quiz.domain.repository.UserQuizSetRepository;
+import com.readup.server.user_quiz.event.QuizSetEvaluatedEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -76,6 +80,23 @@ public class UserQuizSetService {
 		return SubmitUserQuizResponse.of(isAnswerCorrect, quiz.getExplanation());
 	}
 
+	@Transactional
+	public EvaluateQuizSetResponse evaluateUserQuizSet(Long quizSetId, EvaluateQuizSetRequest request,
+		Long socialAccountId) {
+		UserQuizSet userQuizSet = userQuizSetRepository.getWithUserQuizByIdAndQuizSetId(request.userQuizSetId(),
+			quizSetId, socialAccountId);
+
+		validateUserQuizSetBeforeEvaluation(userQuizSet);
+
+		userQuizSet.evaluate(request.likeScore());
+
+		Events.raise(new QuizSetEvaluatedEvent(
+			userQuizSet.getQuizSetId(), userQuizSet.getId(),
+			userQuizSet.getCorrectAnswerAverage(), userQuizSet.getLikeScore()));
+
+		return EvaluateQuizSetResponse.from(userQuizSet);
+	}
+
 	private List<Long> getQuizIdList(QuizSet quizSet) {
 		return quizSet.getQuizList().stream()
 			.map(Quiz::getId)
@@ -100,7 +121,7 @@ public class UserQuizSetService {
 	}
 
 	private GetUserQuizSetResultResponse calculateQuizResult(UserQuizSet userQuizSet) {
-		validateUserQuizSet(userQuizSet);
+		validateUserQuizSetIsCompleted(userQuizSet);
 		List<UserQuiz> userQuizList = userQuizSet.getUserQuizList();
 		int solvedCount = userQuizList.size();
 		int firstAttemptCorrect = 0;
@@ -128,9 +149,20 @@ public class UserQuizSetService {
 		return solvedCount > 0 && (double)firstAttemptCorrect / solvedCount >= HALF_CORRECT_THRESHOLD;
 	}
 
-	private void validateUserQuizSet(UserQuizSet userQuizSet) {
+	private void validateUserQuizSetBeforeEvaluation(UserQuizSet userQuizSet) {
+		validateUserQuizSetIsCompleted(userQuizSet);
+		validateUserQuizSetIsNotEvaluated(userQuizSet);
+	}
+
+	private void validateUserQuizSetIsCompleted(UserQuizSet userQuizSet) {
 		if (userQuizSet.getStatus() != COMPLETED) {
 			throw new ServiceException(NOT_COMPLETE_USER_QUIZ_SET);
+		}
+	}
+
+	private void validateUserQuizSetIsNotEvaluated(UserQuizSet userQuizSet) {
+		if (TRUE.equals(userQuizSet.getIsEvaluated())) {
+			throw new ServiceException(ALREADY_EVALUATED_USER_QUIZ_SET);
 		}
 	}
 }

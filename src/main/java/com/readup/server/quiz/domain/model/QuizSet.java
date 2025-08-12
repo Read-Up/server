@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,9 @@ public class QuizSet extends BaseEntity {
 	@GeneratedValue(strategy = IDENTITY)
 	@Column(name = "id")
 	private Long id;
+
+	@Version
+	private Long version;
 
 	@Column(name = "book_id", nullable = false)
 	private Long bookId;
@@ -82,11 +86,31 @@ public class QuizSet extends BaseEntity {
 		updateEstimatedTime(calculate(totalQuizCount));
 	}
 
-	public void updateTotalQuizCount() {
+	public void applyNewEvaluation(double newCorrectAnswerAverage, int newLikeScore) {
+		int currentParticipantCount = this.participantCount;
+		updateParticipantCount();
+		updateLikeScore(newLikeScore, currentParticipantCount);
+		updateCorrectAnswerAverage(newCorrectAnswerAverage, currentParticipantCount);
+	}
+
+	private void updateTotalQuizCount() {
 		this.totalQuizCount = this.quizList.size();
 	}
 
-	public void updateEstimatedTime(int estimatedTime) {
+	private void updateEstimatedTime(int estimatedTime) {
 		this.estimatedTime = estimatedTime;
+	}
+
+	private void updateParticipantCount() {
+		this.participantCount += 1;
+	}
+
+	private void updateLikeScore(int newLikeScore, int currentParticipantCount) {
+		this.likeAverage = ((this.likeAverage * currentParticipantCount) + newLikeScore) / this.participantCount;
+	}
+
+	private void updateCorrectAnswerAverage(double newCorrectAnswerAverage, int currentParticipantCount) {
+		this.correctAnswerAverage =
+			((this.correctAnswerAverage * currentParticipantCount) + newCorrectAnswerAverage) / this.participantCount;
 	}
 }

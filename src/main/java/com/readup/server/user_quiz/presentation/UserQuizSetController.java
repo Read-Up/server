@@ -3,6 +3,7 @@ package com.readup.server.user_quiz.presentation;
 import static com.readup.server.common.dto.ApiResponse.*;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,8 @@ import com.readup.server.auth.dto.CustomOAuth2User;
 import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.user_quiz.application.UserQuizSetService;
 import com.readup.server.user_quiz.application.dto.CompleteUserQuizSetResponse;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetRequest;
+import com.readup.server.user_quiz.application.dto.EvaluateQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResponse;
 import com.readup.server.user_quiz.application.dto.GetUserQuizSetResultResponse;
 import com.readup.server.user_quiz.application.dto.ResetUserQuizSetResponse;
@@ -56,5 +59,11 @@ public class UserQuizSetController {
 		@PathVariable Long quizId, @AuthenticationPrincipal CustomOAuth2User user,
 		@RequestBody SubmitUserQuizRequest request) {
 		return successResponse(userQuizSetService.submitUserQuizAnswer(quizSetId, quizId, request, user.id()));
+	}
+
+	@PostMapping("/private/quiz-sets/{quizSetId}/evaluation")
+	public ApiResponse<EvaluateQuizSetResponse> evaluateQuizSet(@PathVariable Long quizSetId,
+		@Validated @RequestBody EvaluateQuizSetRequest request, @AuthenticationPrincipal CustomOAuth2User user) {
+		return successResponse(userQuizSetService.evaluateUserQuizSet(quizSetId, request, user.id()));
 	}
 }
