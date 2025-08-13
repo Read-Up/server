@@ -32,7 +32,6 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
-import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
@@ -274,30 +273,6 @@ class QuizSetServiceTest {
 		}
 	}
 
-	@Nested
-	@DisplayName("퀴즈 해설 조회 테스트")
-	class GetQuizExplanation {
-
-		@Test
-		@DisplayName("퀴즈 해설 조회 성공")
-		void get_quiz_explanation_success() {
-			// given
-			final Long quizId = 1L;
-			final Quiz quiz = createQuizWithId(1L, "질문1", QuizSet.create(BOOK_ID, CHAPTER_ID));
-
-			// stubbing
-			when(quizQueryRepository.getQuizById(quizId))
-				.thenReturn(quiz);
-
-			// when
-			GetQuizExplanationResponse result = sut.getQuizExplanation(quizId);
-
-			// then
-			assertThat(result).isNotNull();
-			verify(quizQueryRepository, times(1)).getQuizById(quizId);
-		}
-	}
-
 	private CreateQuizSetRequest createQuizSetRequest(int quizCount) {
 		List<CreateQuizRequest> quizRequests = Stream.iterate(1, i -> i + 1)
 			.limit(quizCount)
@@ -387,7 +362,8 @@ class QuizSetServiceTest {
 	private SliceResponse<GetQuizSetPageResponse> createMockSliceResponse(int contentSize, Pageable pageable) {
 		List<GetQuizSetPageResponse> content = Stream.iterate(1, i -> i + 1)
 			.limit(contentSize)
-			.map(i -> new GetQuizSetPageResponse(1L, "사용자" + i, "profileImageUrl", (long)i, 10, 100, 4.5, 0.8, 300, LocalDateTime.now()))
+			.map(i -> new GetQuizSetPageResponse(1L, "사용자" + i, "profileImageUrl", (long)i, 10, 100, 4.5, 0.8, 300,
+				LocalDateTime.now()))
 			.toList();
 
 		return SliceResponse.from(new SliceImpl<>(content, pageable, false));

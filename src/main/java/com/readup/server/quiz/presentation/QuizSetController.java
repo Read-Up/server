@@ -18,7 +18,6 @@ import com.readup.server.common.dto.ApiResponse;
 import com.readup.server.quiz.application.QuizSetService;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
-import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
@@ -67,10 +66,5 @@ public class QuizSetController {
 		@RequestParam(required = false) @Min(value = 1, message = "챕터 ID는 1 이상이어야 합니다.") Long chapterId,
 		@PageableDefault(sort = "solvedAt", direction = DESC) Pageable pageable) {
 		return successResponse(quizSetService.getParticipatingQuizSets(user.id(), bookId, chapterId, pageable));
-	}
-
-	@GetMapping("/private/quizzes/{quizId}/explanation")
-	public ApiResponse<GetQuizExplanationResponse> getQuizExplanation(@PathVariable Long quizId) {
-		return successResponse(quizSetService.getQuizExplanation(quizId));
 	}
 }

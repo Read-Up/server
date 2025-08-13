@@ -10,12 +10,10 @@ import com.readup.server.book.domain.repository.BookRepository;
 import com.readup.server.common.exception.ServiceException;
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
-import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
-import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +24,6 @@ public class QuizSetService {
 
 	private final BookRepository bookRepository;
 	private final QuizSetRepository quizSetRepository;
-	private final QuizQueryRepository quizQueryRepository;
 
 	@Transactional
 	public CreateQuizSetResponse createQuizSet(CreateQuizSetRequest request) {
@@ -58,11 +55,6 @@ public class QuizSetService {
 	public SliceResponse<GetQuizSetPageResponse> getParticipatingQuizSets(Long socialAccountId, Long bookId,
 		Long chapterId, Pageable pageable) {
 		return quizSetRepository.getParticipatingQuizSets(socialAccountId, bookId, chapterId, pageable);
-	}
-
-	@Transactional(readOnly = true)
-	public GetQuizExplanationResponse getQuizExplanation(Long quizId) {
-		return GetQuizExplanationResponse.from(quizQueryRepository.getQuizById(quizId));
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {
