@@ -28,7 +28,7 @@ public class QuizQueryRepositoryImpl implements QuizQueryRepository {
 	}
 
 	@Override
-	public Quiz getQuizWithQuizOptionById(Long quizSetId, Long quizId) {
+	public Quiz getWithQuizOptionById(Long quizSetId, Long quizId) {
 		return findQuizWithQuizOptionById(quizSetId, quizId)
 			.orElseThrow(() -> new RepositoryException(NOT_FOUND_QUIZ));
 	}

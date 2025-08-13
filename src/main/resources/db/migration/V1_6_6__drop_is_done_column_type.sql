@@ -1,0 +1,5 @@
+ALTER TABLE user_quiz_set
+DROP COLUMN is_done;
+
+ALTER TABLE user_quiz_set
+ADD COLUMN status VARCHAR(20) NOT NULL DEFAULT 'IN_PROGRESS';

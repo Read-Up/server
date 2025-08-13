@@ -1,5 +1,7 @@
 package com.readup.server.user_quiz.domain.model;
 
+import static com.readup.server.common.exception.ErrorCode.*;
+import static com.readup.server.user_quiz.domain.model.UserQuizSetStatus.*;
 import static jakarta.persistence.CascadeType.*;
 import static jakarta.persistence.GenerationType.*;
 import static java.lang.Boolean.*;
@@ -12,9 +14,12 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import com.readup.server.common.entity.BaseEntity;
+import com.readup.server.common.exception.DomainException;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -42,8 +47,9 @@ public class UserQuizSet extends BaseEntity {
 	@Column(name = "is_evaluated", nullable = false)
 	private Boolean isEvaluated;
 
-	@Column(name = "is_done", nullable = false)
-	private Boolean isDone;
+	@Column(name = "status", length = 20, nullable = false)
+	@Enumerated(EnumType.STRING)
+	private UserQuizSetStatus status;
 
 	@Column(name = "last_quiz_id")
 	private Long lastQuizId;
@@ -60,7 +66,7 @@ public class UserQuizSet extends BaseEntity {
 	private UserQuizSet(Long quizSetId) {
 		this.quizSetId = quizSetId;
 		this.isEvaluated = FALSE;
-		this.isDone = FALSE;
+		this.status = IN_PROGRESS;
 	}
 
 	public static UserQuizSet create(Long quizSetId) {
@@ -74,11 +80,52 @@ public class UserQuizSet extends BaseEntity {
 		this.userQuizList.addAll(userQuizList);
 	}
 
-	public void startUserQuizSet() {
-		this.isDone = FALSE;
+	public UserQuiz findUserQuizByQuizId(Long quizId) {
+		return this.userQuizList.stream()
+			.filter(uq -> uq.getQuizId().equals(quizId))
+			.findAny()
+			.orElseThrow(() -> new DomainException(INVALID_REQUEST));
 	}
 
-	public void completeUserQuizSet() {
-		this.isDone = TRUE;
+	public void reset() {
+		this.userQuizList.forEach(UserQuiz::reset);
+		this.status = IN_PROGRESS;
+	}
+
+	public void complete() {
+		this.status = COMPLETED;
+	}
+
+	public void updateLastQuizId(Long quizId) {
+		this.lastQuizId = quizId;
+	}
+
+	public void evaluate(int likeScore) {
+		updateLikeScore(likeScore);
+		updateCorrectAnswerAverage();
+		this.isEvaluated = TRUE;
+	}
+
+	private void updateLikeScore(int likeScore) {
+		this.likeScore = likeScore;
+	}
+
+	private void updateCorrectAnswerAverage() {
+		if (this.userQuizList == null || this.userQuizList.isEmpty()) {
+			this.correctAnswerAverage = 0.0;
+			return;
+		}
+
+		boolean hasNullValue = userQuizList.stream()
+			.anyMatch(uq -> uq.getFirstAttemptCorrect() == null);
+		if (hasNullValue) {
+			throw new DomainException(NOT_COMPLETE_USER_QUIZ_SET);
+		}
+
+		long correctCount = userQuizList.stream()
+			.filter(uq -> uq.getFirstAttemptCorrect().equals(Boolean.TRUE))
+			.count();
+
+		this.correctAnswerAverage = (double)correctCount / userQuizList.size();
 	}
 }

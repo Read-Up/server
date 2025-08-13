@@ -67,6 +67,12 @@ public class UserQuiz extends BaseEntity {
 		return isAnswerCorrect;
 	}
 
+	public void reset() {
+		this.attemptCount = 0;
+		this.firstAttemptCorrect = null;
+		this.currentAttemptCorrect = null;
+	}
+
 	private void submitUserQuiz(Boolean isCorrect) {
 		if (++this.attemptCount == 1) {
 			this.firstAttemptCorrect = isCorrect;
