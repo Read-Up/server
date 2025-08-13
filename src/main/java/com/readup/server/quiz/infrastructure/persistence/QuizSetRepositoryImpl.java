@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class QuizSetRepositoryImpl implements QuizSetRepository {
 
 	private static final String WITHDRAWN_NICKNAME = "알 수 없음";
+	private static final String WITHDRAWN_IMAGE_URL = "탈퇴한 유저 프로필 이미지 URL 필요";
 
 	private final JPAQueryFactory jpaQueryFactory;
 	private final QuizSetJpaRepository quizSetJpaRepository;
@@ -106,7 +107,9 @@ public class QuizSetRepositoryImpl implements QuizSetRepository {
 
 	private ConstructorExpression<GetQuizSetPageResponse> createQuizSetProjection() {
 		return Projections.constructor(GetQuizSetPageResponse.class,
+			user.id,
 			user.nickname.coalesce(WITHDRAWN_NICKNAME),
+			user.imageUrl.coalesce(WITHDRAWN_IMAGE_URL),
 			quizSet.id,
 			quizSet.totalQuizCount,
 			quizSet.participantCount,

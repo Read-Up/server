@@ -216,9 +216,9 @@ class QuizSetServiceTest {
 			SliceResponse<GetQuizSetPageResponse> result = sut.getAllQuizSets(BOOK_ID, CHAPTER_ID, pageable);
 
 			// then
-			assertThat(result.contentSize()).isEqualTo(5);
-			assertThat(result.currentPage()).isEqualTo(pageable.getPageNumber());
-			assertThat(result.pageSize()).isEqualTo(pageable.getPageSize());
+			assertThat(result.responseContentSize()).isEqualTo(5);
+			assertThat(result.currentPageNumber()).isEqualTo(pageable.getPageNumber());
+			assertThat(result.requestContentSize()).isEqualTo(pageable.getPageSize());
 			verify(quizSetRepository, times(1)).getAllQuizSets(BOOK_ID, CHAPTER_ID, pageable);
 		}
 	}
@@ -243,7 +243,7 @@ class QuizSetServiceTest {
 				pageable);
 
 			// then
-			assertThat(result.contentSize()).isEqualTo(5);
+			assertThat(result.responseContentSize()).isEqualTo(5);
 			verify(quizSetRepository, times(1)).getMyQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID, pageable);
 		}
 	}
@@ -268,7 +268,7 @@ class QuizSetServiceTest {
 				CHAPTER_ID, pageable);
 
 			// then
-			assertThat(result.contentSize()).isEqualTo(3);
+			assertThat(result.responseContentSize()).isEqualTo(3);
 			verify(quizSetRepository, times(1)).getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID,
 				pageable);
 		}
@@ -387,7 +387,7 @@ class QuizSetServiceTest {
 	private SliceResponse<GetQuizSetPageResponse> createMockSliceResponse(int contentSize, Pageable pageable) {
 		List<GetQuizSetPageResponse> content = Stream.iterate(1, i -> i + 1)
 			.limit(contentSize)
-			.map(i -> new GetQuizSetPageResponse("사용자" + i, (long)i, 10, 100, 4.5, 0.8, 300, LocalDateTime.now()))
+			.map(i -> new GetQuizSetPageResponse(1L, "사용자" + i, "profileImageUrl", (long)i, 10, 100, 4.5, 0.8, 300, LocalDateTime.now()))
 			.toList();
 
 		return SliceResponse.from(new SliceImpl<>(content, pageable, false));
