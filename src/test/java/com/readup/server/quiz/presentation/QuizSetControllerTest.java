@@ -479,6 +479,7 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final Long myId = 1L;
 		final Long bookId = 1L;
 		final Long chapterId = 1L;
+		final String userQuizSetStatus = "COMPLETED";
 		final Long userId = 1L;
 		final String nickname = "testUser";
 		final String profileImageUrl = "testProfileImageUrl";
@@ -504,13 +505,14 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		when(mockUser.id()).thenReturn(myId);
 
 		// stubbing
-		when(quizSetService.getParticipatingQuizSets(eq(myId), eq(bookId), eq(chapterId), any())).thenReturn(
-			response);
+		when(quizSetService.getParticipatingQuizSets(eq(myId), eq(bookId), eq(chapterId), any(), any()))
+			.thenReturn(response);
 
 		// when && then
 		mockMvc.perform(get(uri)
 				.param("bookId", String.valueOf(bookId))
 				.param("chapterId", String.valueOf(chapterId))
+				.param("userQuizSetStatus", userQuizSetStatus)
 				.param("page", "0")
 				.param("size", "20")
 				.param("sort", "solvedAt")
@@ -542,10 +544,12 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					queryParameters(
 						parameterWithName("bookId").description("책 ID)"),
 						parameterWithName("chapterId").description("챕터 ID"),
+						parameterWithName("userQuizSetStatus").description(
+							"유저 퀴즈 세트 상태(ALL(default), IN_PROGRESS, COMPLETED)").optional(),
 						parameterWithName("page").description("페이지 번호 (default: 0)").optional(),
 						parameterWithName("size").description("페이지 크기 (default: 10)").optional(),
 						parameterWithName("sort").description(
-							"정렬 기준 (solvedAt(default DESC), createdAt, correctAnswerAverage, likeAverage)").optional()
+							"정렬 기준 (solvedAt(default DESC) 최근 푼 퀴즈 세트)").optional()
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),

@@ -15,6 +15,7 @@ import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
+import com.readup.server.user_quiz.domain.model.UserQuizSetStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,8 +54,9 @@ public class QuizSetService {
 
 	@Transactional(readOnly = true)
 	public SliceResponse<GetQuizSetPageResponse> getParticipatingQuizSets(Long socialAccountId, Long bookId,
-		Long chapterId, Pageable pageable) {
-		return quizSetRepository.getParticipatingQuizSets(socialAccountId, bookId, chapterId, pageable);
+		Long chapterId, String userQuizSetStatus, Pageable pageable) {
+		return quizSetRepository.getParticipatingQuizSets(socialAccountId, bookId, chapterId,
+			UserQuizSetStatus.fromString(userQuizSetStatus), pageable);
 	}
 
 	private void validateChapter(Long bookId, Long chapterId) {

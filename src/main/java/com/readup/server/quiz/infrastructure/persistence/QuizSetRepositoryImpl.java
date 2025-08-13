@@ -61,22 +61,21 @@ public class QuizSetRepositoryImpl implements QuizSetRepository {
 	public SliceResponse<GetQuizSetPageResponse> getMyQuizSets(Long socialAccountId, Long bookId, Long chapterId,
 		Pageable pageable) {
 		List<GetQuizSetPageResponse> content = createQuizSetPageBaseQuery(pageable)
-			.where(socialAccountIdEq(socialAccountId), bookIdEq(bookId), chapterIdEq(chapterId))
+			.where(quizSetCreatedByEq(socialAccountId), bookIdEq(bookId), chapterIdEq(chapterId))
 			.fetch();
 		return createQuizSetSliceResponse(content, pageable);
 	}
 
 	@Override
 	public SliceResponse<GetQuizSetPageResponse> getParticipatingQuizSets(Long socialAccountId, Long bookId,
-		Long chapterId,
-		Pageable pageable) {
+		Long chapterId, UserQuizSetStatus userQuizSetStatus, Pageable pageable) {
 		List<GetQuizSetPageResponse> content = jpaQueryFactory
 			.select(createQuizSetProjection())
 			.from(quizSet)
 			.innerJoin(userQuizSet)
 			.on(userQuizSet.quizSetId.eq(quizSet.id)
-				.and(userQuizSet.createdBy.eq(socialAccountId))
-				.and(userQuizSet.status.eq(UserQuizSetStatus.IN_PROGRESS)))
+				.and(userQuizSetCreatedByEq(socialAccountId))
+				.and(userQuizSetStatusEq(userQuizSetStatus)))
 			.leftJoin(socialAccount).on(socialAccount.id.eq(quizSet.createdBy))
 			.leftJoin(socialAccount.user, user)
 			.where(bookIdEq(bookId), chapterIdEq(chapterId))
@@ -119,8 +118,12 @@ public class QuizSetRepositoryImpl implements QuizSetRepository {
 			quizSet.createdAt);
 	}
 
-	private BooleanExpression socialAccountIdEq(Long socialAccountId) {
-		return quizSet.createdBy.eq(socialAccountId);
+	private BooleanExpression quizSetCreatedByEq(Long socialAccountId) {
+		return socialAccountId != null ? quizSet.createdBy.eq(socialAccountId) : null;
+	}
+
+	private static BooleanExpression userQuizSetCreatedByEq(Long socialAccountId) {
+		return socialAccountId != null ? userQuizSet.createdBy.eq(socialAccountId) : null;
 	}
 
 	private BooleanExpression bookIdEq(Long bookId) {
@@ -129,6 +132,10 @@ public class QuizSetRepositoryImpl implements QuizSetRepository {
 
 	private BooleanExpression chapterIdEq(Long chapterId) {
 		return chapterId != null ? quizSet.chapterId.eq(chapterId) : null;
+	}
+
+	private static BooleanExpression userQuizSetStatusEq(UserQuizSetStatus userQuizSetStatus) {
+		return userQuizSetStatus != null ? userQuizSet.status.eq(userQuizSetStatus) : null;
 	}
 
 	private boolean hasNextPage(List<GetQuizSetPageResponse> content, Pageable pageable) {

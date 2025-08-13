@@ -40,6 +40,7 @@ import com.readup.server.quiz.domain.model.QuizOption;
 import com.readup.server.quiz.domain.model.QuizSet;
 import com.readup.server.quiz.domain.repository.QuizQueryRepository;
 import com.readup.server.quiz.domain.repository.QuizSetRepository;
+import com.readup.server.user_quiz.domain.model.UserQuizSetStatus;
 
 @ExtendWith(MockitoExtension.class)
 class QuizSetServiceTest {
@@ -255,21 +256,24 @@ class QuizSetServiceTest {
 		@DisplayName("참여한 퀴즈 세트 조회 성공")
 		void get_participating_quizSets_success() {
 			// given
+			final String userQuizSetStatus = "COMPLETED";
+			UserQuizSetStatus status = UserQuizSetStatus.fromString(userQuizSetStatus);
 			final Pageable pageable = PageRequest.of(0, 10);
 			final SliceResponse<GetQuizSetPageResponse> mockSliceResponse = createMockSliceResponse(3, pageable);
 
 			// stubbing
-			when(quizSetRepository.getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID, pageable))
+
+			when(quizSetRepository.getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID, status, pageable))
 				.thenReturn(mockSliceResponse);
 
 			// when
 			SliceResponse<GetQuizSetPageResponse> result = sut.getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID,
-				CHAPTER_ID, pageable);
+				CHAPTER_ID, userQuizSetStatus, pageable);
 
 			// then
 			assertThat(result.responseContentSize()).isEqualTo(3);
 			verify(quizSetRepository, times(1)).getParticipatingQuizSets(SOCIAL_ACCOUNT_ID, BOOK_ID, CHAPTER_ID,
-				pageable);
+				status, pageable);
 		}
 	}
 

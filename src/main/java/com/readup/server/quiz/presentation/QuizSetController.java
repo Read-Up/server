@@ -64,7 +64,9 @@ public class QuizSetController {
 		@AuthenticationPrincipal CustomOAuth2User user,
 		@RequestParam(required = false) @Min(value = 1, message = "책 ID는 1 이상이어야 합니다.") Long bookId,
 		@RequestParam(required = false) @Min(value = 1, message = "챕터 ID는 1 이상이어야 합니다.") Long chapterId,
+		@RequestParam(required = false, defaultValue = "ALL") String userQuizSetStatus,
 		@PageableDefault(sort = "solvedAt", direction = DESC) Pageable pageable) {
-		return successResponse(quizSetService.getParticipatingQuizSets(user.id(), bookId, chapterId, pageable));
+		return successResponse(
+			quizSetService.getParticipatingQuizSets(user.id(), bookId, chapterId, userQuizSetStatus, pageable));
 	}
 }
