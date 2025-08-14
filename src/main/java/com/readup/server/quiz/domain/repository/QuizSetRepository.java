@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.SliceResponse;
 import com.readup.server.quiz.domain.model.QuizSet;
+import com.readup.server.user_quiz.domain.model.UserQuizSetStatus;
 
 public interface QuizSetRepository {
 	QuizSet save(QuizSet quizSet);
@@ -17,5 +18,5 @@ public interface QuizSetRepository {
 		Pageable pageable);
 
 	SliceResponse<GetQuizSetPageResponse> getParticipatingQuizSets(Long socialAccountId, Long bookId, Long chapterId,
-		Pageable pageable);
+		UserQuizSetStatus userQuizSetStatus, Pageable pageable);
 }

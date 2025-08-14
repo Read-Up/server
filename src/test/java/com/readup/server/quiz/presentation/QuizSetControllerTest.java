@@ -49,7 +49,6 @@ import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizReq
 import com.readup.server.quiz.application.dto.CreateQuizSetRequest.CreateQuizRequest.CreateQuizOptionRequest;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse;
 import com.readup.server.quiz.application.dto.CreateQuizSetResponse.CreateQuizOptionResponse;
-import com.readup.server.quiz.application.dto.GetQuizExplanationResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetPageResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse;
 import com.readup.server.quiz.application.dto.GetQuizSetResponse.GetQuizOptionResponse;
@@ -286,7 +285,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final String uri = "/private/quiz-sets";
 		final Long bookId = 1L;
 		final Long chapterId = 1L;
+		final Long userId = 1L;
 		final String nickname = "testUser";
+		final String profileImageUrl = "testProfileImageUrl";
 		final Long quizSetId = 1L;
 		final int totalQuizCount = 5;
 		final int participantCount = 10;
@@ -296,12 +297,12 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0, 0);
 
 		final GetQuizSetPageResponse quizSetResponse = new GetQuizSetPageResponse(
-			nickname, quizSetId, totalQuizCount, participantCount, likeAverage,
+			userId, nickname, profileImageUrl, quizSetId, totalQuizCount, participantCount, likeAverage,
 			correctAnswerAverage, estimatedTime, createdAt
 		);
 
 		final SliceResponse<GetQuizSetPageResponse> response = new SliceResponse<>(
-			List.of(quizSetResponse), 1, 0, 20, true, true, List.of(
+			List.of(quizSetResponse), 20, 1, 0, true, true, List.of(
 			new SliceResponse.SortResponse("liveAverage", Sort.Direction.DESC))
 		);
 
@@ -319,16 +320,18 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.success").value(true),
+				jsonPath("$.data.content[0].userId").value(userId),
 				jsonPath("$.data.content[0].nickname").value(nickname),
+				jsonPath("$.data.content[0].profileImageUrl").value(profileImageUrl),
 				jsonPath("$.data.content[0].quizSetId").value(quizSetId),
 				jsonPath("$.data.content[0].totalQuizCount").value(totalQuizCount),
 				jsonPath("$.data.content[0].participantCount").value(participantCount),
 				jsonPath("$.data.content[0].likeAverage").value(likeAverage),
 				jsonPath("$.data.content[0].correctAnswerAverage").value(correctAnswerAverage),
 				jsonPath("$.data.content[0].estimatedTime").value(estimatedTime),
-				jsonPath("$.data.contentSize").value(1),
-				jsonPath("$.data.currentPage").value(0),
-				jsonPath("$.data.pageSize").value(20),
+				jsonPath("$.data.requestContentSize").value(20),
+				jsonPath("$.data.responseContentSize").value(1),
+				jsonPath("$.data.currentPageNumber").value(0),
 				jsonPath("$.data.isFirst").value(true),
 				jsonPath("$.data.isLast").value(true),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
@@ -348,7 +351,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.content[].userId").type(NUMBER).description("작성자 ID(PK)"),
 						fieldWithPath("data.content[].nickname").type(STRING).description("작성자 닉네임"),
+						fieldWithPath("data.content[].profileImageUrl").type(STRING).description("작성자 프로필 이미지 URL"),
 						fieldWithPath("data.content[].quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
 						fieldWithPath("data.content[].totalQuizCount").type(NUMBER).description("총 퀴즈 개수"),
 						fieldWithPath("data.content[].participantCount").type(NUMBER).description("참여자 수"),
@@ -356,9 +361,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.content[].correctAnswerAverage").type(NUMBER).description("평균 정답률"),
 						fieldWithPath("data.content[].estimatedTime").type(NUMBER).description("예상 소요 시간"),
 						fieldWithPath("data.content[].createdAt").type(STRING).description("생성 일시"),
-						fieldWithPath("data.contentSize").type(NUMBER).description("현재 페이지 콘텐츠 수"),
-						fieldWithPath("data.currentPage").type(NUMBER).description("현재 페이지 번호"),
-						fieldWithPath("data.pageSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.requestContentSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.responseContentSize").type(NUMBER).description("응답 콘텐츠 수"),
+						fieldWithPath("data.currentPageNumber").type(NUMBER).description("현재 페이지 번호"),
 						fieldWithPath("data.isFirst").type(BOOLEAN).description("첫 페이지 여부"),
 						fieldWithPath("data.isLast").type(BOOLEAN).description("마지막 페이지 여부"),
 						fieldWithPath("data.sortList[].field").type(STRING).description("정렬 필드명"),
@@ -374,10 +379,12 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 	void get_my_quiz_sets_success() throws Exception {
 		// given
 		final String uri = "/private/my/quiz-sets";
-		final Long userId = 1L;
+		final Long myId = 1L;
 		final Long bookId = 1L;
 		final Long chapterId = 1L;
+		final Long userId = 1L;
 		final String nickname = "testUser";
+		final String profileImageUrl = "testProfileImageUrl";
 		final Long quizSetId = 1L;
 		final int totalQuizCount = 5;
 		final int participantCount = 10;
@@ -387,17 +394,17 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0, 0);
 
 		final GetQuizSetPageResponse quizSetResponse = new GetQuizSetPageResponse(
-			nickname, quizSetId, totalQuizCount, participantCount, likeAverage,
+			userId, nickname, profileImageUrl, quizSetId, totalQuizCount, participantCount, likeAverage,
 			correctAnswerAverage, estimatedTime, createdAt
 		);
 
 		final SliceResponse<GetQuizSetPageResponse> response = new SliceResponse<>(
-			List.of(quizSetResponse), 1, 0, 20, true, true, List.of(
+			List.of(quizSetResponse), 20, 1, 0, true, true, List.of(
 			new SliceResponse.SortResponse("liveAverage", Sort.Direction.DESC))
 		);
 
 		// stubbing
-		when(quizSetService.getMyQuizSets(eq(userId), eq(bookId), eq(chapterId), any())).thenReturn(response);
+		when(quizSetService.getMyQuizSets(eq(myId), eq(bookId), eq(chapterId), any())).thenReturn(response);
 
 		// when && then
 		mockMvc.perform(get(uri)
@@ -410,16 +417,18 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.success").value(true),
+				jsonPath("$.data.content[0].userId").value(userId),
 				jsonPath("$.data.content[0].nickname").value(nickname),
+				jsonPath("$.data.content[0].profileImageUrl").value(profileImageUrl),
 				jsonPath("$.data.content[0].quizSetId").value(quizSetId),
 				jsonPath("$.data.content[0].totalQuizCount").value(totalQuizCount),
 				jsonPath("$.data.content[0].participantCount").value(participantCount),
 				jsonPath("$.data.content[0].likeAverage").value(likeAverage),
 				jsonPath("$.data.content[0].correctAnswerAverage").value(correctAnswerAverage),
 				jsonPath("$.data.content[0].estimatedTime").value(estimatedTime),
-				jsonPath("$.data.contentSize").value(1),
-				jsonPath("$.data.currentPage").value(0),
-				jsonPath("$.data.pageSize").value(20),
+				jsonPath("$.data.requestContentSize").value(20),
+				jsonPath("$.data.responseContentSize").value(1),
+				jsonPath("$.data.currentPageNumber").value(0),
 				jsonPath("$.data.isFirst").value(true),
 				jsonPath("$.data.isLast").value(true),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
@@ -439,7 +448,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.content[].userId").type(NUMBER).description("작성자 ID(PK)"),
 						fieldWithPath("data.content[].nickname").type(STRING).description("작성자 닉네임"),
+						fieldWithPath("data.content[].profileImageUrl").type(STRING).description("작성자 프로필 이미지 URL"),
 						fieldWithPath("data.content[].quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
 						fieldWithPath("data.content[].totalQuizCount").type(NUMBER).description("총 퀴즈 개수"),
 						fieldWithPath("data.content[].participantCount").type(NUMBER).description("참여자 수"),
@@ -447,9 +458,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.content[].correctAnswerAverage").type(NUMBER).description("평균 정답률"),
 						fieldWithPath("data.content[].estimatedTime").type(NUMBER).description("예상 소요 시간"),
 						fieldWithPath("data.content[].createdAt").type(STRING).description("생성 일시"),
-						fieldWithPath("data.contentSize").type(NUMBER).description("현재 페이지 콘텐츠 수"),
-						fieldWithPath("data.currentPage").type(NUMBER).description("현재 페이지 번호"),
-						fieldWithPath("data.pageSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.requestContentSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.responseContentSize").type(NUMBER).description("응답 콘텐츠 수"),
+						fieldWithPath("data.currentPageNumber").type(NUMBER).description("현재 페이지 번호"),
 						fieldWithPath("data.isFirst").type(BOOLEAN).description("첫 페이지 여부"),
 						fieldWithPath("data.isLast").type(BOOLEAN).description("마지막 페이지 여부"),
 						fieldWithPath("data.sortList[].field").type(STRING).description("정렬 필드명"),
@@ -465,10 +476,13 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 	void get_participating_quiz_sets_success() throws Exception {
 		// given
 		final String uri = "/private/participating/quiz-sets";
-		final Long userId = 1L;
+		final Long myId = 1L;
 		final Long bookId = 1L;
 		final Long chapterId = 1L;
+		final String userQuizSetStatus = "COMPLETED";
+		final Long userId = 1L;
 		final String nickname = "testUser";
+		final String profileImageUrl = "testProfileImageUrl";
 		final Long quizSetId = 1L;
 		final int totalQuizCount = 5;
 		final int participantCount = 10;
@@ -478,26 +492,27 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 		final LocalDateTime createdAt = LocalDateTime.of(2025, 4, 16, 10, 0, 0);
 
 		GetQuizSetPageResponse quizSetResponse = new GetQuizSetPageResponse(
-			nickname, quizSetId, totalQuizCount, participantCount, likeAverage,
+			userId, nickname, profileImageUrl, quizSetId, totalQuizCount, participantCount, likeAverage,
 			correctAnswerAverage, estimatedTime, createdAt
 		);
 
 		final SliceResponse<GetQuizSetPageResponse> response = new SliceResponse<>(
-			List.of(quizSetResponse), 1, 0, 20, true, true, List.of(
+			List.of(quizSetResponse), 20, 1, 0, true, true, List.of(
 			new SliceResponse.SortResponse("liveAverage", Sort.Direction.DESC))
 		);
 
 		CustomOAuth2User mockUser = mock(CustomOAuth2User.class);
-		when(mockUser.id()).thenReturn(userId);
+		when(mockUser.id()).thenReturn(myId);
 
 		// stubbing
-		when(quizSetService.getParticipatingQuizSets(eq(userId), eq(bookId), eq(chapterId), any())).thenReturn(
-			response);
+		when(quizSetService.getParticipatingQuizSets(eq(myId), eq(bookId), eq(chapterId), any(), any()))
+			.thenReturn(response);
 
 		// when && then
 		mockMvc.perform(get(uri)
 				.param("bookId", String.valueOf(bookId))
 				.param("chapterId", String.valueOf(chapterId))
+				.param("userQuizSetStatus", userQuizSetStatus)
 				.param("page", "0")
 				.param("size", "20")
 				.param("sort", "solvedAt")
@@ -505,16 +520,18 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 			.andExpectAll(
 				status().isOk(),
 				jsonPath("$.success").value(true),
+				jsonPath("$.data.content[0].userId").value(userId),
 				jsonPath("$.data.content[0].nickname").value(nickname),
+				jsonPath("$.data.content[0].profileImageUrl").value(profileImageUrl),
 				jsonPath("$.data.content[0].quizSetId").value(quizSetId),
 				jsonPath("$.data.content[0].totalQuizCount").value(totalQuizCount),
 				jsonPath("$.data.content[0].participantCount").value(participantCount),
 				jsonPath("$.data.content[0].likeAverage").value(likeAverage),
 				jsonPath("$.data.content[0].correctAnswerAverage").value(correctAnswerAverage),
 				jsonPath("$.data.content[0].estimatedTime").value(estimatedTime),
-				jsonPath("$.data.contentSize").value(1),
-				jsonPath("$.data.currentPage").value(0),
-				jsonPath("$.data.pageSize").value(20),
+				jsonPath("$.data.requestContentSize").value(20),
+				jsonPath("$.data.responseContentSize").value(1),
+				jsonPath("$.data.currentPageNumber").value(0),
 				jsonPath("$.data.isFirst").value(true),
 				jsonPath("$.data.isLast").value(true),
 				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
@@ -527,14 +544,18 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					queryParameters(
 						parameterWithName("bookId").description("책 ID)"),
 						parameterWithName("chapterId").description("챕터 ID"),
+						parameterWithName("userQuizSetStatus").description(
+							"유저 퀴즈 세트 상태(ALL(default), IN_PROGRESS, COMPLETED)").optional(),
 						parameterWithName("page").description("페이지 번호 (default: 0)").optional(),
 						parameterWithName("size").description("페이지 크기 (default: 10)").optional(),
 						parameterWithName("sort").description(
-							"정렬 기준 (solvedAt(default DESC), createdAt, correctAnswerAverage, likeAverage)").optional()
+							"정렬 기준 (solvedAt(default DESC) 최근 푼 퀴즈 세트)").optional()
 					),
 					responseFields(
 						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
+						fieldWithPath("data.content[].userId").type(NUMBER).description("작성자 ID(PK)"),
 						fieldWithPath("data.content[].nickname").type(STRING).description("작성자 닉네임"),
+						fieldWithPath("data.content[].profileImageUrl").type(STRING).description("작성자 프로필 이미지 URL"),
 						fieldWithPath("data.content[].quizSetId").type(NUMBER).description("퀴즈 세트 ID"),
 						fieldWithPath("data.content[].totalQuizCount").type(NUMBER).description("총 퀴즈 개수"),
 						fieldWithPath("data.content[].participantCount").type(NUMBER).description("참여자 수"),
@@ -542,9 +563,9 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 						fieldWithPath("data.content[].correctAnswerAverage").type(NUMBER).description("평균 정답률"),
 						fieldWithPath("data.content[].estimatedTime").type(NUMBER).description("예상 소요 시간"),
 						fieldWithPath("data.content[].createdAt").type(STRING).description("생성 일시"),
-						fieldWithPath("data.contentSize").type(NUMBER).description("현재 페이지 콘텐츠 수"),
-						fieldWithPath("data.currentPage").type(NUMBER).description("현재 페이지 번호"),
-						fieldWithPath("data.pageSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.requestContentSize").type(NUMBER).description("요청 콘텐츠 수"),
+						fieldWithPath("data.responseContentSize").type(NUMBER).description("응답 콘텐츠 수"),
+						fieldWithPath("data.currentPageNumber").type(NUMBER).description("현재 페이지 번호"),
 						fieldWithPath("data.isFirst").type(BOOLEAN).description("첫 페이지 여부"),
 						fieldWithPath("data.isLast").type(BOOLEAN).description("마지막 페이지 여부"),
 						fieldWithPath("data.sortList[].field").type(STRING).description("정렬 필드명"),
@@ -553,42 +574,6 @@ class QuizSetControllerTest extends AbstractWebMvcTest {
 					)
 				)
 			);
-	}
-
-	@Test
-	@DisplayName("퀴즈 해설 조회")
-	void get_quiz_explanation_success() throws Exception {
-		//given
-		final String uri = "/private/quizzes/{quizId}/explanation";
-		final Long quizId = 1L;
-		final String explanation = "-2^31 ~ 2^31-1 의 범위를 갖습니다.";
-		final GetQuizExplanationResponse response = new GetQuizExplanationResponse(quizId, explanation);
-
-		// stubbing
-		when(quizSetService.getQuizExplanation(quizId)).thenReturn(response);
-
-		// when && then
-		mockMvc.perform(get(uri, quizId).contentType(APPLICATION_JSON))
-			.andExpectAll(
-				status().isOk(),
-				jsonPath("$.success").value(true),
-				jsonPath("$.data.quizId").value(quizId),
-				jsonPath("$.data.explanation").value(explanation),
-				jsonPath("$.message").value(DEFAULT_SUCCESS_MESSAGE)
-			)
-
-			// docs
-			.andDo(
-				MockMvcRestDocumentationWrapper.document("get-quiz-set",
-					resourceDetails().tag("QuizSet"),
-					pathParameters(parameterWithName("quizId").description("퀴즈 ID")),
-					responseFields(
-						fieldWithPath("success").type(BOOLEAN).description("성공 여부"),
-						fieldWithPath("data.quizId").type(NUMBER).description("퀴즈 ID"),
-						fieldWithPath("data.explanation").type(STRING).description("해설"),
-						fieldWithPath("message").type(STRING).description("성공 메시지"))
-				));
-
 	}
 
 	@TestConfiguration

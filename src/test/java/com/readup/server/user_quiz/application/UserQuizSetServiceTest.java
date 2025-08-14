@@ -276,7 +276,7 @@ class UserQuizSetServiceTest {
 			// then
 			assertThat(response).isNotNull();
 			assertThat(response.isCorrect()).isFalse();
-			assertThat(response.explanation()).isNull();
+			assertThat(response.explanation()).isEqualTo("테스트 설명1");
 
 			verify(quizQueryRepository, times(1)).getWithQuizOptionById(EXPECTED_QUIZ_SET_ID, EXPECTED_QUIZ_ID_1);
 			verify(userQuizSetRepository, times(1)).getWithUserQuizByQuizSetId(EXPECTED_QUIZ_SET_ID,
